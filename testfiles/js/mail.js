@@ -60,9 +60,9 @@ mail.clickMail = function(MailID) {
 };
 
 mail.mailLoaded = function(result) {
-  var malm = '<div>{0}</div>'.format(result.body);
+  var malm = '<div>{0}</div>'.format(result);
   // TODO: we should return mailID in the json data, to prevent timing errors
-  $('#mail' + mail.mailID).html(malm);
+  $('#_' + mail.mailId).show().html(malm);
 };
 
 // who the mail is from
