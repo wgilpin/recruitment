@@ -46,17 +46,20 @@ mail.clickMail = function(MailID) {
   mail.mailId = MailID;
   //var content = this.nextElementSibling;
   //content.style.display = content.style.display === 'block' ? 'none' : 'block';
-
-  $.post({
-    url: 'Pullpage.php',
-    data: {
-      id: global.id,
-      scope: 'mail',
-      MailID: MailID,
-    },
-    dataType: 'json',
-    success: mail.mailLoaded,
-  });
+  if (!$('#_' + mail.mailId).html().trim()){
+    $.post({
+      url: 'Pullpage.php',
+      data: {
+        id: global.id,
+        scope: 'mail',
+        MailID: MailID,
+      },
+      dataType: 'json',
+      success: mail.mailLoaded,
+    });
+  } else {
+    $('#_' + mail.mailId).toggle();
+  }
 };
 
 mail.mailLoaded = function(result) {
