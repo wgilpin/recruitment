@@ -46,6 +46,29 @@ function loggedin($str,$yn)
     if ($_SESSION['loggedin'] == $yn){ echo $str;}
 }
 
+class cache
+{
+    private $host;
+    private $dbName;
+    private $dbPass;
+    private $charset;
+
+    public function __construct()
+    {
+        include_once 'Config.php';
+        $this->host = $EVEDBHost;
+        $this->dbName = $EVEDBdbName;
+        $this->dbPass = $EVEDBdbPass;
+        $this->charset = $EVEDBCharset;
+    }
+
+    private function Connect(){
+        $connect = new PDO("mysql:host=$this->host;dbname=$this->dbName;charset=$this->charset", $this->dbName, $this->dbPass);
+        $connect->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        return $connect;
+    }
+}
+
 class localEveDB
 {
     private $Host;
@@ -91,7 +114,7 @@ class localEveDB
         return $returnArray;
     }
 
-    private function Connect()
+    protected function Connect()
     {
         $connect = new PDO("mysql:host=$this->Host;dbname=$this->dbName;charset=$this->Charset", $this->dbName, $this->dbPass);
         $connect->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -214,6 +237,105 @@ class localEveDB
     }
 
 //_____________________________________________________________________________________________________________________\\
+}
+
+class localEveCache extends localEveDB
+{
+    private $connect;
+    private $days;
+
+    public function __construct()
+    {
+        localEveDB::__construct();
+        include 'Config.php';
+        $this->connect = $this->Connect();
+        $this->days = $days;
+    }
+
+    private function selectQueryMaker($array){
+        $query = "";
+            foreach ($array as $key => $value){
+                $query = $query . " SELECT * FROM groupCache WHERE ID = '$value' UNION ALL";
+            }
+            $query = substr($query, 0, -9);
+            return $query;
+    }
+    private function selectQuery($array){
+        $query = $this->selectQueryMaker($array);
+        $stmt = $this->connect->query($query);
+        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
+            $data = $this->dateChecker($row);
+            foreach ($data["validID"] as $key => $value){
+                foreach ($value as $key2 => $value2){
+                    if (!($value2)){
+                        unset($data["validID"][$key][$key2]);
+                    }
+                }
+            }
+            return $data;
+        }
+    }
+    private function dateChecker($data){
+        $date = date("Y-m-d H:i:s", strtotime($this->days));
+        foreach ($data as $key => $value) {
+                $datetimeUpload = $data[$key]["datetimeUpload"];
+                $datetime = date("Y-m-d H:i:s", strtotime($datetimeUpload));
+                if ($datetime < $date) {
+                    $data["expiredID"] = array($data[$key]["ID"] => array("ID" => $data[$key]["ID"], "type" => $data[$key]["type"]));
+                    unset($data[$key]);
+                }else{
+                    $data["validID"][$data[$key]["ID"]] = $value;
+                    unset($data[$key]);
+                }
+        }
+
+        return $data;
+    }
+    private function IDsplitter($data){
+        $tempArray = array();
+        $tempArray2 = array();
+        foreach ($data["validID"] as $key => $value){
+            if ($value["corporation_id"]){
+                if (in_array($value["corporation_id"], $tempArray)) {
+                    //doet niets
+                }else{
+                    $tempArray[$value["corporation_id"]] = $value["corporation_id"];
+                }
+            }
+            if ($value["alliance_id"]){
+                if (in_array($value["alliance_id"], $tempArray2)) {
+                    //doet niets
+                }else{
+                    $tempArray2[$value["alliance_id"]] = $value["alliance_id"];
+                }
+            }
+        }
+        $temp = $this->selectQuery($tempArray);
+        $temp2 = $this->selectQuery($tempArray2);
+        foreach ($data["validID"] as $key => $value){
+            foreach ($temp["validID"] as $key2 => $value2) {
+                if ($value["corporation_id"] == $value2["ID"]) {
+                    $data["validID"][$key]["corporation_id"] = array($value2);
+                }
+            }
+            foreach ($temp2["validID"] as $key3 => $value3){
+                if ($value["alliance_id"] == $value3["ID"]){
+                    $data["validID"][$key]["alliance_id"] = array($value3);
+                }
+            }
+        }
+        return $data;
+    }
+
+    public function selector($array){
+        $data1 = $this->selectQuery($array);                                        //data1 is initial ID's
+        $data2 = $this->IDsplitter($data1);                                         //data2 splits the corp/alliance id
+        dprintr($data2);                                                                            //and returns all data back.
+//        return $returnArray;
+    }
+    public function insertUpdate($array){
+        
+    }
 }
 
 class DBconn

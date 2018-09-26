@@ -1,0 +1,3 @@
+global = {};
+
+global.id = null;

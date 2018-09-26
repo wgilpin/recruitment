@@ -1,6 +1,6 @@
 <?php
-include_once "tempfunc.php";
-include_once "Functions.php";
+include_once "../tempfunc.php";
+include_once "../Functions.php";
 session_start();
 
 $Obj = new pullclass("login");
@@ -11,7 +11,3 @@ $test3 = "GzKY8Qk5vvF4gJi_4hCyKwqkGjCw4MWidfEZqpIedYDi9l5jENDq_Diq1P9yidoN4ZUPh2
 $test4 = "MDMtiwlkU_0nJjv3QbVCKB8YkvSyOQuQDgHXRBSC8efC7XMXul_d_YX2OTxAKryq-r2m74Zl2W4AHUAfS_J8ts6n0RgwRIZt6E4AAoIZW598j7W1Spl3GVDxwqJQDb0j83JThUfV4_qviMP5BYDXneUrtTlN8b8cLlpEjd0LyovY8548v1l6RIJCiZDN42J26GeuoFuywbKDfSg-pD0PmLAAkFEErgR-gW3jJSBmb0QthBW0YA5MHK94chZeeR2AnZBaDRO6YFXoqgFrCN9TExdIRmyr2kB-7D4VWoUnQFVtqlTvOUiS5tsSyfUErLF_7BzklThl8-ElDY-UFesXkaMgcA4kRp4Nudcx14wXVb_eRb0xKvfkpdUl83avOMT7m_eJTA2-axhZ6kfeam9Trg2";
 echo "<pre>";
 print_r($Obj->_Return($test2));
-
-
-
-
