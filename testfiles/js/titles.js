@@ -1,6 +1,8 @@
-titles = {}
+'use strict';
 
-titles.click = function() {
+titles = {};
+
+titles.click = function () {
   var scope = 'titles';
   $.post({
     url: 'Pullpage.php',
@@ -10,18 +12,11 @@ titles.click = function() {
   });
 };
 
-login.onLoad = function(result) {
-  
-  var titlesDom = $('#TITELS')
-    .parent()
-    .find('.content');
+login.onLoad = function (result) {
+
+  var titlesDom = $('#TITELS').parent().find('.content');
 
   // create html via template
-  templates.prepareAndApply(
-    './templates/kvp.hbs', 
-    'kvp', 
-    titlesDom, 
-    { result: result }
-  );
-  
+  templates.prepareAndApply('./templates/kvp.hbs', 'kvp', titlesDom, { result: result });
 };
+//# sourceMappingURL=titles.js.map

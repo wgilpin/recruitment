@@ -1,6 +1,0 @@
-<?php
-include_once 'Functions.php';
-$recruitment = new recruitmentEscalations();
-$db = new questions;
-$test = $db->questionHandler("lnU4mGliS3KAt7s3WwySmJb1v8RIi9Lydl2WN0eWauNpWnRGcX7UPXBxuEVf0cNiiqMhfKpd6ogO7iBiq5yJr05bO3h89cInXSnVwHUZH7j-5wrI6IpTsw1lFdZM-HXojIB43_Lv9QtDZBBB45eHyre7rwQSsFQhXIKCPw-VfQ7EkKo9ee7ciw4mJgDSWurcN-tJ4BFpKb8kOzgDCdF17mWldbfoTt3DOPAt8cgFQHYHESQ4Sul1HECigKcvDKNYRNd0UMogXJL0byhc8kTOYZXvsWR-r-Cejuxw4hsQmv6nlivRh_SxjCH3bbqP2KZjfoDHyZIIo6pmPUDXGRWwWz1TubaEaiCE_BC7PYu8C1C4NtNVaTEZWd8rFULjrA3JBu5DteZ_pgcg5cstwmu3ow2");
-dprintr($test);

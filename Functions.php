@@ -46,29 +46,6 @@ function loggedin($str,$yn)
     if ($_SESSION['loggedin'] == $yn){ echo $str;}
 }
 
-class cache
-{
-    private $host;
-    private $dbName;
-    private $dbPass;
-    private $charset;
-
-    public function __construct()
-    {
-        include_once 'Config.php';
-        $this->host = $EVEDBHost;
-        $this->dbName = $EVEDBdbName;
-        $this->dbPass = $EVEDBdbPass;
-        $this->charset = $EVEDBCharset;
-    }
-
-    private function Connect(){
-        $connect = new PDO("mysql:host=$this->host;dbname=$this->dbName;charset=$this->charset", $this->dbName, $this->dbPass);
-        $connect->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        return $connect;
-    }
-}
-
 class localEveDB
 {
     private $Host;
@@ -266,12 +243,16 @@ class localEveCache extends localEveDB
         while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
             $data = $this->dateChecker($row);
             foreach ($data["validID"] as $key => $value){
+                if (in_array($key, $array)){
+                    unset($array[$key]);
+                }
                 foreach ($value as $key2 => $value2){
                     if (!($value2)){
                         unset($data["validID"][$key][$key2]);
                     }
                 }
             }
+            if ($array){$data["unknown"] = $array;}
             return $data;
         }
     }
@@ -288,53 +269,52 @@ class localEveCache extends localEveDB
                     unset($data[$key]);
                 }
         }
-
         return $data;
     }
     private function IDsplitter($data){
-        $tempArray = array();
-        $tempArray2 = array();
+        $tempArray = array("alliance" => "", "corporation" => "");
         foreach ($data["validID"] as $key => $value){
-            if ($value["corporation_id"]){
-                if (in_array($value["corporation_id"], $tempArray)) {
-                    //doet niets
-                }else{
-                    $tempArray[$value["corporation_id"]] = $value["corporation_id"];
-                }
+            if (!in_array($value["alliance_id"], $tempArray["alliance"])){
+                $tempArray["alliance"] = array($value["alliance_id"] => $value["alliance_id"]);
             }
-            if ($value["alliance_id"]){
-                if (in_array($value["alliance_id"], $tempArray2)) {
-                    //doet niets
-                }else{
-                    $tempArray2[$value["alliance_id"]] = $value["alliance_id"];
-                }
+            if (!in_array($value["corporation_id"], $tempArray["corporation"])){
+                $tempArray["corporation"] = array($value["corporation_id"] => $value["corporation_id"]);
             }
         }
-        $temp = $this->selectQuery($tempArray);
-        $temp2 = $this->selectQuery($tempArray2);
+        $temp = array("alliance" => $this->selectQuery($tempArray["alliance"]), "corporation" => $this->selectQuery($tempArray["corporation"]));
+        unset($temp["alliance"]["unknown"]);
+        unset($temp["corporation"]["unknown"]);
+        dprintr($temp);
+        if (!$temp) {
+            $checkDate = array("alliance" => $this->dateChecker($temp["alliance"]["validID"]), "corporation" => $this->dateChecker($temp["corporation"]["validID"]));
+        }
         foreach ($data["validID"] as $key => $value){
-            foreach ($temp["validID"] as $key2 => $value2) {
-                if ($value["corporation_id"] == $value2["ID"]) {
-                    $data["validID"][$key]["corporation_id"] = array($value2);
-                }
+            if (array_key_exists($value["alliance_id"], $checkDate["alliance"]["validID"])){
+                $data["validID"][$key]["alliance_id"] = $checkDate["alliance"]["validID"][$value["alliance_id"]];
             }
-            foreach ($temp2["validID"] as $key3 => $value3){
-                if ($value["alliance_id"] == $value3["ID"]){
-                    $data["validID"][$key]["alliance_id"] = array($value3);
-                }
+            if (array_key_exists($value["corporation_id"], $checkDate["corporation"]["validID"])){
+                $data["validID"][$key]["corporation_id"] = $checkDate["corporation"]["validID"][$value["corporation_id"]];
             }
         }
+        dprintr($data);
         return $data;
     }
 
     public function selector($array){
         $data1 = $this->selectQuery($array);                                        //data1 is initial ID's
         $data2 = $this->IDsplitter($data1);                                         //data2 splits the corp/alliance id
-        dprintr($data2);                                                                            //and returns all data back.
+        //and returns all data back.
 //        return $returnArray;
     }
     public function insertUpdate($array){
         
+    }
+
+    public function groupCache($array, $charFunc, $corpFunc, $allyFunc, $unknownFunc){
+
+    }
+    public function structCache($array, $structFunc){
+
     }
 }
 
