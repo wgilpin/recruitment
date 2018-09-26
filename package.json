@@ -1,0 +1,27 @@
+{
+  "name": "recruitment",
+  "version": "1.0.0",
+  "description": "ASCEE recruitment",
+  "main": "js/Javascript.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wgilpin/recruitment.git"
+  },
+  "author": "wgilpin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wgilpin/recruitment/issues"
+  },
+  "homepage": "https://github.com/wgilpin/recruitment#readme",
+  "dependencies": {
+    "babel-eslint": "^10.0.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.7.0"
+  }
+}
