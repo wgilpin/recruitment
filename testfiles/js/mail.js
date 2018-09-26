@@ -1,24 +1,31 @@
 mail = {};
 
 mail.click = function() {
+  mail.mailDom = $('#MAIL')
+    .parent()
+    .find('.content');
+
   if (global.id) {
-    $.post({
-      url: 'Pullpage.php',
-      data: { id: global.id, scope: 'mail' },
-      dataType: 'json',
-      success: mail.onLoaded,
-    });
-    return;
+    if (global.mailState == 'unloaded') {
+      // fetch all mail for alt
+      $.post({
+        url: 'Pullpage.php',
+        data: { id: global.id, scope: 'mail' },
+        dataType: 'json',
+        success: mail.onLoaded,
+      });
+      return;
+    } else {
+      // show or hide already loaded mail list
+      this.mailLoaded.mailDom.toggle();
+    }
   }
   alert('No character selected\n\nPlease choose an alt');
 };
 
 mail.onLoaded = function(result) {
   console.log(result);
-
-  mail.mailDom = $('#MAIL')
-    .parent()
-    .find('.content');
+  global.mailState = 'loaded';
 
   // create html via template
   templates.prepareAndApply('./templates/mailList.hbs', 'mail', mail.mailDom, {
@@ -46,7 +53,11 @@ mail.clickMail = function(MailID) {
   mail.mailId = MailID;
   //var content = this.nextElementSibling;
   //content.style.display = content.style.display === 'block' ? 'none' : 'block';
-  if (!$('#_' + mail.mailId).html().trim()){
+  if (
+    !$('#_' + mail.mailId)
+      .html()
+      .trim()
+  ) {
     $.post({
       url: 'Pullpage.php',
       data: {
@@ -65,7 +76,9 @@ mail.clickMail = function(MailID) {
 mail.mailLoaded = function(result) {
   var malm = '<div>{0}</div>'.format(result);
   // TODO: we should return mailID in the json data, to prevent timing errors
-  $('#_' + mail.mailId).show().html(malm);
+  $('#_' + mail.mailId)
+    .show()
+    .html(malm);
 };
 
 // who the mail is from
