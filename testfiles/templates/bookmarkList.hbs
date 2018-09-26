@@ -1,0 +1,19 @@
+<div>
+  {{#each result}}
+  <div class="fancy">
+    <button class="bookmarks">
+      <div class="subject">
+        {{location_id}}
+      </div>
+      <div class="from">
+      </div>
+      <div class="name">' +
+        {{creator_id}}
+      </div>
+    </button>
+    <div class="allinside" style="display: none;">
+      {{process JSON.stringify(result)}}
+    </div>
+  </div>
+  {{/each}}
+</div>

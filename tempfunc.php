@@ -1,0 +1,713 @@
+<?php
+
+
+class ESI
+{
+    //_Usually_Used_Variables__\\
+    protected $Client_BasicLogin;                                  //| The Codes for logging in
+    protected $Client_Basic;                                       //| The Codes for Pulling information
+    protected $RefreshToken;                                       //| Refresh tokens
+    protected $AccessToken;                                        //| AccessToken - always use Tokenchecker
+    protected $scope;
+
+    //_Usually_Used_Objects__\\
+    protected $Standing;
+    protected $Standinglist;
+    protected $Datacall;
+
+    //__Used_Functions__\\
+    protected $Pull_Func;
+    protected $Write_Func;
+    protected $Write_standing_Func;
+    protected $idArray_Changer;
+
+    public function __construct()
+    {
+        include 'Config.php';
+        include_once 'Functions.php';
+        $this->Client_Basic = $Client_Basic;
+        $this->Client_BasicLogin = $Client_BasicLogin;
+        $this->Datacall = new localEveDB();
+        $this->Standing = new standingList();
+        $this->Standinglist = $this->Standing->allStandingPuller();
+
+        //__ALL_USED_RECALL_FUNCTIONS__\\
+        $this->Pull_Func = function ($key, $value, $returnarray, $keyarray, $array, $last, $counter) {
+            if (in_array($key, $keyarray) and $key != "0") {
+                $returnarray[$value] = $value;
+                $temp = $returnarray;
+                return $temp;
+            } else {
+                return false;
+            }
+        };
+        $this->Pull_Redirect_Func = function ($key, $value, $returnarray, $keyarray, $array, $last, $counter) {
+            if (array_key_exists($key, $keyarray) and $key != "0") {
+                if ($value == $keyarray[$key][0]) {
+                    $returnarray[$array[$keyarray[$key][1]]]=$keyarray[$key][0];
+                    return $returnarray;
+                }
+                else{$returnarray[$array[$keyarray[$key][1]]]=$keyarray[$key][2];
+                    return $returnarray;}
+            } else {
+                return false;
+            }
+
+        };
+        $this->Write_Func = function ($key, $value, $returnarray, $keyarray, $array, $last, $counter) {
+            if (array_key_exists($value, $keyarray)) {
+                $value = $keyarray[$value];
+
+                if ($key != "second_party_id" && $key != "tax_receiver_id" && $key != "timestamp") {
+                    $returnarray[$key] = $value;
+                    return $returnarray;
+                }
+                if ($last) {
+                    $returnarray[$key] = $value;
+                    $temparray = array();
+                    $newarray = array();
+                    foreach ($returnarray as $key => $value) {
+                        if (is_numeric($key)) {
+                            $temparray[$key] = $value;
+                        } else {
+                            $newarray[$key] = $value;
+                        }
+                    }
+                    $temparray[] = $newarray;
+                    return $temparray;
+                } else {
+
+                    return $returnarray;
+                }
+            } else {
+                if ($last) {
+                    if ($key != "second_party_id" && $key != "tax_receiver_id" && $key != "timestamp") {
+                        $returnarray[$key] = $value;
+                        return $returnarray;
+                    }
+                    $returnarray[$key] = $value;
+                    $temparray = array();
+                    $newarray = array();
+                    foreach ($returnarray as $key => $value) {
+//                        echo count(array_intersect_key($value,$keyarray))."<br>";
+                        if (is_numeric($key) && is_array($value)) {
+
+                            $temparray[$key] = $value;
+                        } else {
+                            $newarray[$key] = $value;
+                        }
+                    }
+                    $temparray[$counter] = $newarray;
+                    return $temparray;
+                } else {
+                    $returnarray[$key] = $value;
+                    return $returnarray;
+                }
+            }
+        };
+        $this->Write_standing_Func = function ($key, $value, $returnarray, $keyarray, $array, $last, $counter) {
+            if (array_key_exists($value, $keyarray)) {
+                if (array_key_exists($value, $this->Standinglist)) {
+
+                    $value = array("standing" => $this->Standinglist[$value]["standing"], "id" => $keyarray[$value]);
+                } else {
+                    $value = array("standing" => "0", "id" => $keyarray[$value]);
+                }
+                if ($key != "second_party_id" && $key != "tax_receiver_id" && $key != "timestamp") {
+                    $returnarray[$key] = $value;
+                    return $returnarray;
+                }
+                if ($last) {
+                    $returnarray[$key] = $value;
+                    $temparray = array();
+                    $newarray = array();
+                    foreach ($returnarray as $key => $value) {
+
+                        if (is_numeric($key)) {
+
+                            $temparray[$key] = $value;
+                        } else {
+                            $newarray[$key] = $value;
+                        }
+                    }
+                    $temparray[] = $newarray;
+                    return $temparray;
+                } else {
+
+                    return $returnarray;
+                }
+            } else {
+                if ($last) {
+                    if ($key != "second_party_id" && $key != "tax_receiver_id" && $key != "timestamp") {
+                        $returnarray[$key] = $value;
+                        return $returnarray;
+                    }
+                    $returnarray[$key] = $value;
+                    $temparray = array();
+                    $newarray = array();
+                    foreach ($returnarray as $key => $value) {
+//                        echo count(array_intersect_key($value,$keyarray))."<br>";
+                        if (is_numeric($key) && is_array($value)) {
+
+                            $temparray[$key] = $value;
+                        } else {
+                            $newarray[$key] = $value;
+                        }
+                    }
+                    $temparray[$counter] = $newarray;
+                    return $temparray;
+                } else {
+                    $returnarray[$key] = $value;
+                    return $returnarray;
+                }
+            }
+        };
+        $this->idArray_Changer = function ($key, $value, $returnarray, $keyarray, $array, $last, $counter) {
+            if ($key == "id" && $key != "0") {
+                $new[$value] = $array["name"];
+                $temp = $new;
+                return $temp;
+            } else {
+                return false;
+            }
+        };
+    }
+
+    protected function dprintr($printer)
+    {
+        echo "<pre>";
+        print_r($printer);
+        echo "</pre>";
+    }
+
+    protected function _Foreach($array, $returnarray, $function, $keyarray, $counter)
+    {
+        $counter = $counter ?: 0;
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                $counter++;
+                $temp = $this->_Foreach($value, $returnarray, $function, $keyarray, $counter);
+                if ($temp) {
+                    $returnarray = $returnarray + $temp;
+                }
+
+            } else {
+                end($array);
+                if ($key === key($array)) {
+                    $last = true;
+                } else {
+                    $last = false;
+                }
+                $temp2 = $function($key, $value, $returnarray, $keyarray, $array, $last, $counter);
+                if (is_array($temp2)) {
+                    $returnarray = $temp2;
+                }
+            }
+        };
+        return $returnarray;
+    }
+
+
+    //__All_the_ESI_Pulls__\\
+    protected function AccesTokenDispencer($refresh_token)
+    {
+
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, "https://login.eveonline.com/oauth/token");                                           //Host Site
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);                                                                        //
+        curl_setopt($ch, CURLOPT_POSTFIELDS, "{\"grant_type\":\"refresh_token\", \"refresh_token\":\"$refresh_token\"}");         //Making the post
+        curl_setopt($ch, CURLOPT_POST, 1);                                                                                  //
+
+        $headers = array();                                                                                                                          //
+        $headers[] = "Content-Type: application/json";                                                                                               //
+        $headers[] = ("Authorization: Basic " . $this->Client_Basic);    //
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);                                                                                       //
+
+        $result = curl_exec($ch);
+        $result = json_decode($result, true);
+
+        if (curl_errno($ch)) {
+            echo 'Error:' . curl_error($ch);
+        }
+        curl_close($ch);
+        return $result[access_token];
+    }
+
+    protected function Verify($accessToken)
+    {
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, "https://esi.tech.ccp.is/verify/");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+
+        $headers = array();
+        $headers[] = "Authorization: Bearer $accessToken";
+        $headers[] = "Host: esi.tech.ccp.is";
+        $headers[] = "Content-Type: application/json";
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $result = curl_exec($ch);
+        $array = json_decode($result, true);
+        $this->CharID = $array[CharacterID];
+        if (curl_errno($ch)) {
+            echo 'Error:' . curl_error($ch);
+        }
+        curl_close($ch);
+        return $array;
+    }
+
+    protected function DATAPOST($place, $scope, $token)
+    {
+        if (!empty($token)) {
+            $token = "&token=" . $token;
+        }
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, "https://esi.evetech.net/latest/$place/?datasource=tranquility$token");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, "[$scope]");
+        curl_setopt($ch, CURLOPT_POST, 1);
+
+        $headers = array();
+        $headers[] = "Accept: application/json";
+        $headers[] = "Content-Type: application/json";
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $result = curl_exec($ch);
+        if (curl_errno($ch)) {
+            echo 'Error:' . curl_error($ch);
+        }
+        curl_close($ch);
+        return json_decode($result, true);
+
+    }
+
+    protected function DATAPULLPAGE($accessToken, $scope, $page)
+    {
+        if (is_numeric($page)) {
+            $page = "&page=$page";
+        } else {
+            $page = "";
+        }
+        $ch = curl_init();
+
+        if (empty($accessToken)) {
+            $token = "";
+        } else {
+            $token = "&token=$accessToken";
+        }
+        curl_setopt($ch, CURLOPT_URL, "https://esi.evetech.net/latest/$scope/?datasource=tranquility$page$token");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+
+
+        $headers[] = "Accept: application/json";
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        $response = curl_exec($ch);
+
+        return json_decode($response, true);
+    }
+
+    protected function DATAPULLUNAUTH($scope)
+    {
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, "https://esi.evetech.net/latest/$scope/?datasource=tranquility");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+        curl_setopt($ch, CURLOPT_VERBOSE, 1);
+        curl_setopt($ch, CURLOPT_HEADER, 1);
+        // this function is called by curl for each header received
+        curl_setopt($ch, CURLOPT_HEADERFUNCTION,
+            function ($curl, $header) use (&$headers) {
+                $len = strlen($header);
+                $header = explode(':', $header, 2);
+                if (count($header) < 2) // ignore invalid headers
+                    return $len;
+
+                $name = strtolower(trim($header[0]));
+                if (!array_key_exists($name, $headers))
+                    $headers[$name] = [trim($header[1])];
+                else
+                    $headers[$name][] = trim($header[1]);
+                return $len;
+            }
+        );
+
+        $headers = array();
+        $headers[] = "Accept: application/json";
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        $response = curl_exec($ch);
+        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $body = substr($response, $header_size);
+        $body = json_decode($body, true);
+        if (array_key_exists("x-pages", $headers)) {
+            if ($headers["x-pages"][0] < 2) {
+                return $body;
+            } else {
+                for ($x = 0; $x < $headers["x-pages"][0]; $x++) {
+                    $temp = $this->DATAPULLPAGE("", $scope, ($x + 1));
+                    $body = array_merge($body, $temp);
+                }
+            }
+
+            return $body;
+        }
+        return $body;
+    }
+
+    protected function DATAPULLAUTH($accessToken, $scope)
+    {
+
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, "https://esi.evetech.net/latest/$scope/?datasource=tranquility&token=$accessToken");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+        curl_setopt($ch, CURLOPT_VERBOSE, 1);
+        curl_setopt($ch, CURLOPT_HEADER, 1);
+        // this function is called by curl for each header received
+        curl_setopt($ch, CURLOPT_HEADERFUNCTION,
+            function ($curl, $header) use (&$headers) {
+                $len = strlen($header);
+                $header = explode(':', $header, 2);
+                if (count($header) < 2) // ignore invalid headers
+                    return $len;
+
+                $name = strtolower(trim($header[0]));
+                if (!array_key_exists($name, $headers))
+                    $headers[$name] = [trim($header[1])];
+                else
+                    $headers[$name][] = trim($header[1]);
+                return $len;
+            }
+        );
+
+        $headers = array();
+        $headers[] = "Accept: application/json";
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        $response = curl_exec($ch);
+        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $body = substr($response, $header_size);
+        $body = json_decode($body, true);
+        if (array_key_exists("x-pages", $headers)) {
+            if ($headers["x-pages"][0] < 2) {
+                return $body;
+            } else {
+                for ($x = 0; $x < $headers["x-pages"][0]; $x++) {
+                    $temp = $this->DATAPULLPAGE($accessToken, $scope, ($x + 1));
+                    $body = array_merge($body, $temp);
+                }
+            }
+
+            return $body;
+        }
+        return $body;
+    }
+
+    //__Support_for_ESI__\
+
+    protected function Scopemaker($pulltype, $char, $pull, $ID)
+    {
+        if ((empty($char)) and (empty($ID))) {
+            $char = $this->CharID;
+            $scope = "$pulltype/$char/$pull";
+        } elseif ((empty($char)) and (!empty($ID))) {
+            $char = $this->CharID;
+            $scope = "$pulltype/$char/$pull/$ID";
+        } elseif ((!empty($char)) and (!empty($ID))) {
+            $scope = "$pulltype/$char/$pull/$ID";
+        } elseif (!empty($char) and (!empty($pull) and (empty($ID)))) {
+            $scope = "characters/$char/$pull";
+        } elseif ((!empty($char)) and (empty($pull))) {
+            $scope = "$pulltype/$char";
+        } elseif ((!empty($char)) and (empty($ID))) {
+            $char = $this->CharID;
+            $scope = "$pulltype/$char/$pull";;
+        } else {
+            $scope = "";
+        }
+
+        return $scope;
+    }
+
+    protected function ArraytoString($array, $yn)
+    {
+        $new = "";
+        if ($yn) {
+            foreach ($array as $key => $nothing) {
+                $new = (string)$new . (string)$key . ", ";
+            }
+        } elseif ($yn or empty($yn)) {
+            foreach ($array as $key => $value) {
+                $new = (string)$new . (string)$value . ", ";
+            }
+        } else {
+            echo "error";
+        }
+        $new = substr($new, 0, -2);
+        return $new;
+    }
+
+}
+
+class EveOauth extends ESI
+{
+    private function rToken($AccessCode, $Login)
+
+    {
+        if (empty($Login)) {
+            $yn = 1;
+            $temp = $this->Client_Basic;
+        } else {
+            $yn = 2;
+            $temp = $this->Client_BasicLogin;
+        }
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, "https://login.eveonline.com/oauth/token");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, "{\"grant_type\":\"authorization_code\", \"code\":\"$AccessCode\"}");
+        curl_setopt($ch, CURLOPT_POST, 1);
+
+        $headers = array();
+        $headers[] = "Content-Type: application/json";
+        $headers[] = ("Authorization: Basic " . $temp);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $result = curl_exec($ch);
+
+
+        if (curl_errno($ch)) {
+            echo 'Error:' . curl_error($ch);
+        }
+        curl_close($ch);
+        return json_decode($result, true);
+    }             //| if you feed it a AccessCode in it shits out a fresh Access Token
+
+    public function Run($accescode, $var2)
+    {
+        $Tokes = $this->rToken($accescode, $var2);
+        $Info = $this->Verify($Tokes["access_token"]);
+        $Info["refresh_token"] = $Tokes["refresh_token"];
+        return $Info;
+    }
+
+
+}
+
+class Portrait extends ESI
+{
+    public function Run($CharID, $refresh_token ,$YN)
+    {
+        if (empty($CharID)) {
+            $temp = $this->verify($this->AccesTokenDispencer($refresh_token));
+            $CharID = $temp["CharacterID"];
+        }
+        $this->Scope = $this->Scopemaker("", $CharID, "portrait");
+        if($YN){
+            $temp2 = $this->DATAPULLUNAUTH($this->Scope);
+            $temp3 = array("Name"=>$temp["CharacterName"]);
+            $temp2 = $temp3+$temp2;
+            return $temp2;
+        }
+        return $this->DATAPULLUNAUTH($this->Scope);
+    }
+
+}
+
+class Wallet extends ESI
+{
+
+    public function Run($refresh_token)
+    {
+
+
+        $keyarray = array("first_party_id", "second_party_id", "tax_receiver_id");
+        $returnarray = array();
+
+        $this->AccessToken = $this->AccesTokenDispencer($refresh_token);
+        $CharID = $this->verify($this->AccessToken)["CharacterID"];
+        $this->Scope = $this->Scopemaker("characters", $CharID, "wallet", "journal");
+        $array = $this->DATAPULLAUTH($this->AccessToken, $this->Scope);
+        $idArray = $this->_Foreach($array, $returnarray, $this->Pull_Func, $keyarray);
+        $Replacearray = $this->DATAPOST("universe/names", $this->ArraytoString($idArray));
+        $idArray = $this->_Foreach($Replacearray, array(), $this->idArray_Changer);
+        $FinalArray = $this->_Foreach($array, $returnarray, $this->Write_standing_Func, $idArray);
+        return $FinalArray;
+    }
+
+}
+
+class Mail extends ESI
+{
+    public function run($refresh_token)
+    {
+        $keyarray = array("from", "recipient_id");
+        $returnarray = array();
+
+
+        $this->AccessToken = $this->AccesTokenDispencer($refresh_token);
+        $CharID = $this->verify($this->AccessToken)["CharacterID"];
+        $this->Scope = $this->Scopemaker("characters", $CharID, "mail");
+        $array = $this->DATAPULLAUTH($this->AccessToken, $this->Scope);
+
+        $idArray = $this->_Foreach($array, $returnarray, $this->Pull_Func, $keyarray);
+        $Replacearray = $this->DATAPOST("universe/names", $this->ArraytoString($idArray));
+        $idArray = $this->_Foreach($Replacearray, array(), $this->idArray_Changer);
+        $FinalArray = $this->_Foreach($array, $returnarray, $this->Write_standing_Func, $idArray);
+        array_shift($FinalArray);
+        return $FinalArray;
+    }
+}
+
+class Assets extends ESI
+{
+    private $namefunc;
+    private $DbCon;
+    private $list;
+
+    public function __construct()
+    {
+        ESI::__construct();                                 // call Grandpa's constructor
+        $this->namefunc = function ($key) {
+            echo $key;
+        };
+    }
+
+    private function NameArray($array)
+    {
+        $output = array();
+        foreach ($array as $key => $value) {
+            if ($value["name"] != "None") {
+                $output[$value["item_id"]] = $value["name"];
+            } else {
+                $output[$value["item_id"]] = false;
+            }
+        }
+        return $output;
+    }
+
+    public function Run($refresh_token)
+    {
+
+        $Keyarray = array("location_flag" =>array("Hangar","location_id","ItemLocation"));
+        $Itemarray = array("item_id");
+        $TypeArray = array("type_id");
+        $returnarray = array();
+
+//        $this->dprintr($Keyarray);
+//
+//        $this->dprintr($this->_Foreach($testarray,$returnarray,$this->Pull_Redirect_Func,$Keyarray));
+
+        $this->AccessToken = $this->AccesTokenDispencer($refresh_token);
+        $CharID = $this->verify($this->AccessToken)["CharacterID"];
+        Echo $CharID . "  REE  " . $this->AccessToken. "  REE  ";
+        $this->Scope = $this->Scopemaker("characters", $CharID, "assets");
+        $array = $this->DATAPULLAUTH($this->AccessToken, $this->Scope);
+        $ItemArray = $this->_Foreach($array, $returnarray, $this->Pull_Func, $Itemarray);
+//        $this->dprintr($ItemArray);
+        $typeArray = $this->_Foreach($array, $returnarray, $this->Pull_Func, $TypeArray);
+        $itemString = $this->ArraytoString($ItemArray);
+        $ReplaceItemarray = $this->DATAPOST("characters/$CharID/assets/names", $itemString, $this->AccessToken);
+        $ReplaceItemarray = $this->NameArray($ReplaceItemarray);
+        $test = $this->_Foreach($array,$returnarray,$this->Pull_Redirect_Func,$Keyarray);
+        $Hangar = array_keys($test, "Hangar");
+        $this->dprintr($Hangar);
+        foreach ($Hangar as $key=>$value)
+        {
+            if(in_array($value,$ItemArray))
+            {
+                $test[$value] = "ItemLocation";
+                unset($Hangar[$key]);
+            }
+        }
+        $this->dprintr($test);
+        $Datacheck = $Hangar + $typeArray;
+        $DataOutput = $this->Datacall->data($Datacheck);
+        foreach ($DataOutput[2] as $key=>$value)
+        {
+            echo $value."<br>";
+            $anotherarray[] = $this->DATAPULLAUTH($this->AccessToken,"universe/structures/$value");
+        }
+        $this->dprintr($anotherarray);
+        $this->dprintr($array);
+    }
+
+}
+
+
+class pullclass
+{
+    private $Obj;
+
+    public function __construct($scope)
+    {
+        switch ($scope) {
+
+            case "titles":
+                $value = $this->Puller("characters", '', "titles");
+                break;
+            case "blueprints":
+                if (!empty($_POST['number'])) {
+
+                    $value = $this->Puller("characters", '', "blueprints", $_POST['number']);
+                    $_POST['number'] = '';
+                } else {
+                    $value = $this->Puller("characters", '', "blueprints");
+                    $keyarray = array('type_id');
+                    $value = $this->CharCorpAllyconverter($keyarray, $value);
+                }
+                break;
+            case "bookmarks":
+                $value = $this->Puller("characters", '', "bookmarks");
+                $keyarray = array('creator_id', 'location_id');
+                $value = $this->CharCorpAllyconverter($keyarray, $value);
+                break;
+            case "login":
+                $value = $this->Puller("characters", '', "online");
+                break;
+            case "pi":
+                $value = $this->Puller("characters", '', "planets");
+                break;
+
+            //_ON_THE_PULL_PAGE__\\
+
+            case "wallet":
+
+                $this->Obj = new Wallet();
+                break;              //| Input: refresh_token              |Output:      Array
+
+            case "mail":
+                $this->Obj = new Mail();
+                break;              //| Input: refresh_token              |Output:      Array
+
+            case "assets":
+                $this->Obj = new Assets();
+                break;
+
+            //__NOT_ON_THE_PULL_PAGE__\\
+
+            case "Oauth":
+                $this->Obj = new EveOauth();
+                break;               //| Input: accesscode                |Output:      Array
+            case "Portrait":
+                $this->Obj = new Portrait();
+                break;          //| Input: characterID              |Output:      Array
+            default:
+                echo "Wrong What Not Mate";
+                break;
+        }
+    }
+
+    Public function _Echo($var1, $var2, $var3, $var4)
+    {
+        echo $this->Obj->Run($var1, $var2, $var3, $var4);
+    }
+
+    Public function _Return($var1, $var2, $var3, $var4)
+    {
+        return $this->Obj->Run($var1, $var2, $var3, $var4);
+    }
+
+}

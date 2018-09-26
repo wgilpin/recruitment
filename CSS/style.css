@@ -1,0 +1,193 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+header{
+    background-color: lightgreen;
+}
+#header{
+    margin-left: 10px;
+}
+#questionChanger{
+    margin-top: 25px;
+    text-align: center;
+    width: 30%;
+    margin-left: 35%;
+    margin-right: 35%;
+}
+#questionChanger input{
+    margin-bottom: 5px;
+    width: 350px;
+}
+#questionChanger2{
+    margin-top: 100px;
+    text-align: center;
+    width: 30%;
+    margin-left: 35%;
+    margin-right: 35%;
+}
+#questionChanger2 input{
+    margin-bottom: 5px;
+    width: 100px;
+}
+#questions{
+    width: 30%;
+    height: 500px;
+    float: left;
+    background-color: lightgray;
+}
+
+#evidence{
+    height: 500px;
+    width: 70%;
+    float: right;
+}
+.Profilepic p{
+    margin-left: 10px;
+}
+.Profilepic{
+    border: #7f0000 2px solid;
+    background-color: pink;
+}
+#insertpage{
+    margin-left: 10px;
+}
+.fcancy{
+    background-color: orangered;
+    border: midnightblue 2px dashed;
+    border-radius: 5px;
+}
+
+
+/* Style the button that is used to open and close the collapsible content */
+.collapsible {
+    background-color: orangered;
+    border: midnightblue 2px dashed;
+    border-radius: 5px;
+    color: #444;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    text-align: left;
+    outline: none;
+    font-size: 15px;
+}
+
+/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+.active, .collapsible:hover {
+    background-color: coral;
+}
+
+/* Style the collapsible content. Note: hidden by default */
+.content {
+    padding: 0 18px;
+    /* display: none; */
+    overflow: hidden;
+    background-color: #f1f1f1;
+}
+#blueprint{
+    background-color: darkslategray;
+    border: hotpink 2px solid;
+    color: whitesmoke;
+    width: 100%;
+}
+.mails{
+    width: 100%;
+    background-color: yellow;
+    border: royalblue 2px solid;
+    color: saddlebrown;
+}
+.subject{
+    color: #7f0000;
+}
+.from{
+    font-size: medium;
+    color: orangered;
+}
+.name{
+    color: #1c6ba0;
+}
+.bookmarks{
+    background-color: white;
+    width: 100%;
+}
+.collapsible.frontbutton{
+    padding: 0%;
+    text-align: center;
+    height: 40px;
+}
+
+.mails{
+    padding: 0%;
+    height: 60px;
+}
+
+.fancy{
+    width: 100%;
+    background-color: #2a2a2a;
+}
+
+#CurrentBalance{
+    text-align: center;
+    width: 100%;
+    color: saddlebrown;
+    font-weight: bold;
+}
+
+.balance{
+    color: white;
+}
+
+table, th, td {
+    border: 1px solid black;
+    border-color: black;
+
+}
+.behinditall{
+    background-color: black;
+    color: lightslategrey;
+}
+.beginrow{
+    font-size: large;
+    font-style: oblique;
+    background-color: black;
+    color: #7f0000;
+}
+
+.amountplus{
+    color: lightgreen;
+}
+
+.amountneg{
+    color: red;
+}
+
+.row1{
+    background-color: #2a2a2a;
+    color: lightgray;
+}
+.row0{
+    background-color: #41484d;
+    color: lightgray;
+}
+
+.row1:hover{background-color: #f38630; color: #0b0d0f}
+
+.row0:hover{background-color: #f38630;}
+
+.left{
+    width: 33.33%;
+}
+
+.middle{
+    width: 33.33%;
+    background-color: #1c6ba0;
+}
+
+.right{
+    width: 33.33%;
+}
+
+#wallet-table td{
+    padding: 0.5em;
+}
