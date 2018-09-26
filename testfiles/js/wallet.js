@@ -1,4 +1,6 @@
-wallet = {};
+wallet = {
+  state: 'unloaded',
+};
 
 wallet.onLoaded = function(result) {
   // update with the correct third party for the item
@@ -11,12 +13,13 @@ wallet.onLoaded = function(result) {
   });
 
   var fullResult = {
-    balance: transactions[0].balance, 
+    balance: transactions[0].balance,
     balance_words: transactions[0].balance.commarize(),
-    transactions: transactions 
+    transactions: transactions,
   };
 
   global.onLoaded(fullResult, '#WALLET', 'walletList');
+  wallet.state = 'loaded';
 };
 
 wallet.loadError = function(xhr, status, error) {
@@ -24,4 +27,17 @@ wallet.loadError = function(xhr, status, error) {
   console.log(error);
 };
 
-wallet.load = global.onCLick('wallet', wallet.onLoaded);
+wallet.load = function() {
+  if (wallet.state == 'unloaded') {
+    if (global.id) {
+      $.post({
+        url: 'Pullpage.php',
+        data: { id: global.id, scope: 'wallet' },
+        dataType: 'json',
+        success: wallet.onLoaded,
+      });
+    } else {
+      alert('No character selected\n\nPlease choose an alt');
+    }
+  } 
+};

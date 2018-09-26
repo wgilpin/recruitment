@@ -1,4 +1,6 @@
-mail = {};
+mail = {
+  state: 'unloaded',
+};
 
 mail.click = function() {
   mail.mailDom = $('#MAIL')
@@ -6,7 +8,7 @@ mail.click = function() {
     .find('.content');
 
   if (global.id) {
-    if (global.mailState == 'unloaded') {
+    if (mail.state == 'unloaded') {
       // fetch all mail for alt
       $.post({
         url: 'Pullpage.php',
@@ -15,37 +17,20 @@ mail.click = function() {
         success: mail.onLoaded,
       });
       return;
-    } else {
-      // show or hide already loaded mail list
-      this.mailLoaded.mailDom.toggle();
     }
+  } else {
+    alert('No character selected\n\nPlease choose an alt');
   }
-  alert('No character selected\n\nPlease choose an alt');
 };
 
 mail.onLoaded = function(result) {
   console.log(result);
-  global.mailState = 'loaded';
+  mail.state = 'loaded';
 
   // create html via template
   templates.prepareAndApply('./templates/mailList.hbs', 'mail', mail.mailDom, {
     result: result.info,
   });
-
-  // var coll = document.getElementsByClassName('mails');
-  // var i;
-  // for (i = 0; i < coll.length; i++) {
-  //   coll[i].addEventListener('click', function() {
-  //     this.classList.toggle('active');
-
-  //     var content = this.nextElementSibling;
-  //     if (content.style.display === 'block') {
-  //       content.style.display = 'none';
-  //     } else {
-  //       content.style.display = 'block';
-  //     }
-  //   });
-  // }
 };
 
 mail.clickMail = function(MailID) {

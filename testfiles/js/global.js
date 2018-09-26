@@ -1,6 +1,5 @@
 global = {
-  id: null,
-  mailState: 'unloaded'
+  id: null
 };
 
 global.onCLick = function(scope, cb) {

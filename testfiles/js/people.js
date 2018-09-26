@@ -13,5 +13,8 @@ people.click = function() {
   $('.Profilepic').removeClass('active');
   $('.collapsible').removeClass('active');
   $(this).addClass('active');
-  global.mailState = 'unloaded';
+  
+  mail.state = 'unloaded';
+  assets.state = 'unloaded';
+  wallet.state = 'unloaded';
 };
