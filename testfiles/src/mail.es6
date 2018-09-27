@@ -37,7 +37,7 @@ class Mail extends Base {
       $(`#_${mail.mailId}`).toggle();
     }
   };
-
+ 
   mailLoaded(result) {
     let malm = `<div>${result}</div>`;
     // TODO: we should return mailID in the json data, to prevent timing errors
