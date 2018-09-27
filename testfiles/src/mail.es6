@@ -28,16 +28,16 @@ class Mail extends Base {
     // toggle header
     $(this).toggleClass('active');
     // is the mail already loaded?
-    let mailLoaded = !$('#_' + mail.mailId).html().trim();
+    let mailLoaded = $('#_' + MailID).html().trim();
     if (!mailLoaded) {
       // not loaded - get it
       super.get({MailID}).done(this.mailLoaded);
     } else {
       // loaded - show it
-      $(`#_${mail.mailId}`).toggle();
+      $(`#_${MailID}`).toggle();
     }
   };
- 
+
   mailLoaded(result) {
     let malm = `<div>${result}</div>`;
     // TODO: we should return mailID in the json data, to prevent timing errors

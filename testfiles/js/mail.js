@@ -46,13 +46,13 @@ var Mail = function (_Base) {
       // toggle header
       $(this).toggleClass('active');
       // is the mail already loaded?
-      var mailLoaded = !$('#_' + mail.mailId).html().trim();
+      var mailLoaded = $('#_' + MailID).html().trim();
       if (!mailLoaded) {
         // not loaded - get it
         _get(Mail.prototype.__proto__ || Object.getPrototypeOf(Mail.prototype), 'get', this).call(this, { MailID: MailID }).done(this.mailLoaded);
       } else {
         // loaded - show it
-        $('#_' + mail.mailId).toggle();
+        $('#_' + MailID).toggle();
       }
     }
   }, {
