@@ -1,7 +1,5 @@
 'use strict';
 
-
-
 class Base {
   constructor(scope, selector) {
     this.states = {
@@ -42,7 +40,7 @@ class Base {
     });
   }
 
-  resetState(){
+  resetState() {
     this.state = this.states.unloaded;
   }
 }

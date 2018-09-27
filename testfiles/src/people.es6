@@ -1,6 +1,6 @@
 class People {
   constructor() {
-    $('.Profilepic').on('click', this.click,bind(this));
+    $('.Profilepic').on('click', this.click.bind(this));
   }
 
   click () {

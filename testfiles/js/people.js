@@ -8,7 +8,7 @@ var People = function () {
   function People() {
     _classCallCheck(this, People);
 
-    $('.Profilepic').on('click', this.click, bind(this));
+    $('.Profilepic').on('click', this.click.bind(this));
   }
 
   _createClass(People, [{
