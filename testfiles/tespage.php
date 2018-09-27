@@ -60,7 +60,7 @@
 
                 </div><!--ASSETS -->
                 <div class="fancy">
-                    <button id="LOGIN" class="collapsible">LOGIN</button>
+                    <button id="LOGIN" class="collapsible frontbutton">LOGIN</button>
                     <div class="content">
 
                     </div>

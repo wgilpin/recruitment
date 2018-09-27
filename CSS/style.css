@@ -2,12 +2,18 @@
     margin: 0;
     padding: 0;
 }
+
+html {
+    font: 16px robot0, arial, sans-serif;
+}
 header{
     background-color: lightgreen;
 }
+
 #header{
     margin-left: 10px;
 }
+
 #questionChanger{
     margin-top: 25px;
     text-align: center;
@@ -15,10 +21,12 @@ header{
     margin-left: 35%;
     margin-right: 35%;
 }
+
 #questionChanger input{
     margin-bottom: 5px;
     width: 350px;
 }
+
 #questionChanger2{
     margin-top: 100px;
     text-align: center;
@@ -26,10 +34,12 @@ header{
     margin-left: 35%;
     margin-right: 35%;
 }
+
 #questionChanger2 input{
     margin-bottom: 5px;
     width: 100px;
 }
+
 #questions{
     width: 30%;
     height: 500px;
@@ -42,16 +52,20 @@ header{
     width: 70%;
     float: right;
 }
+
 .Profilepic p{
     margin-left: 10px;
 }
+
 .Profilepic{
     border: #7f0000 2px solid;
     background-color: pink;
 }
+
 #insertpage{
     margin-left: 10px;
 }
+
 .fcancy{
     background-color: orangered;
     border: midnightblue 2px dashed;
