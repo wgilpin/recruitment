@@ -23,7 +23,9 @@ var Base = function () {
     key: 'onClick',
     value: function onClick(data, cb) {
       if (window.global.id) {
-        return this.get(data).done(cb);
+        if (this.state == this.states.unloaded) {
+          return this.get(data).done(cb);
+        }
       }
       alert('No character selected\n\nPlease choose an alt');
     }

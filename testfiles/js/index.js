@@ -14,6 +14,10 @@ $(document).ready(function () {
   window.bookmarks = new Bookmarks('#BOOKMARKS');
 
   $('.collapsible').each(function () {
+    $(this).next().hide();
+  });
+
+  $('.collapsible').each(function () {
     $(this).on('click', function () {
       $(this).toggleClass('active').next().toggle();
     });
@@ -26,4 +30,4 @@ String.prototype.format = function () {
     return args[+a.substr(1, a.length - 2) || 0];
   });
 };
-//# sourceMappingURL=Javascript.js.map
+//# sourceMappingURL=index.js.map

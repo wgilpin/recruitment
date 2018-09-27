@@ -1,5 +1,5 @@
 $(document).ready(function() {
-  
+
   window.global = new Global();
   window.templates = new Templates();
   window.people = new People();
@@ -10,6 +10,10 @@ $(document).ready(function() {
   window.mail = new Mail('#MAIL');
   window.blueprints = new Blueprints('#BLUEPINTS');
   window.bookmarks = new Bookmarks('#BOOKMARKS');
+
+  $('.collapsible').each(function() {
+    $(this).next().hide();
+  });
 
   $('.collapsible').each(function() {
     $(this).on('click', function() {

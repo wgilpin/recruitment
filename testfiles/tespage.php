@@ -111,7 +111,7 @@
         <script type="text/javascript" src="js/mail.js"></script>
         <script type="text/javascript" src="js/titles.js"></script>
         <script type="text/javascript" src="js/blueprints.js"></script>
-        <script type="text/javascript" src="js/Javascript.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
 
     </body>
 </html>
