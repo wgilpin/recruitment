@@ -1,75 +1,69 @@
-mail = {
-  state: 'unloaded',
-};
+'use strict';
 
-mail.click = function() {
-  mail.mailDom = $('#MAIL')
-    .parent()
-    .find('.content');
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-  if (global.id) {
-    if (mail.state == 'unloaded') {
-      // fetch all mail for alt
-      $.post({
-        url: 'Pullpage.php',
-        data: { id: global.id, scope: 'mail' },
-        dataType: 'json',
-        success: mail.onLoaded,
-      });
-      return;
-    }
-  } else {
-    alert('No character selected\n\nPlease choose an alt');
-  }
-};
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-mail.onLoaded = function(result) {
-  console.log(result);
-  mail.state = 'loaded';
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-  // create html via template
-  templates.prepareAndApply('./templates/mailList.hbs', 'mail', mail.mailDom, {
-    result: result.info,
-  });
-};
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-mail.clickMail = function(MailID) {
-  $(this).toggleClass('active');
-  mail.mailId = MailID;
-  //var content = this.nextElementSibling;
-  //content.style.display = content.style.display === 'block' ? 'none' : 'block';
-  if (
-    !$('#_' + mail.mailId)
-      .html()
-      .trim()
-  ) {
-    $.post({
-      url: 'Pullpage.php',
-      data: {
-        id: global.id,
-        scope: 'mail',
-        MailID: MailID,
-      },
-      dataType: 'json',
-      success: mail.mailLoaded,
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Mail = function (_Base) {
+  _inherits(Mail, _Base);
+
+  function Mail(selector) {
+    _classCallCheck(this, Mail);
+
+    var _this = _possibleConstructorReturn(this, (Mail.__proto__ || Object.getPrototypeOf(Mail)).call(this, 'mail', selector));
+
+    _this.mailId = null;
+    $(selector).on('click', _this.click.bind(_this));
+
+    // who the mail is from
+    Handlebars.registerHelper('mailTypes', function (rType, rId) {
+      return rType == 'corporation' || rType == 'alliance' ? rId : '';
     });
-  } else {
-    $('#_' + mail.mailId).toggle();
-  }
-};
 
-mail.mailLoaded = function(result) {
-  var malm = '<div>{0}</div>'.format(result);
-  // TODO: we should return mailID in the json data, to prevent timing errors
-  $('#_' + mail.mailId)
-    .show()
-    .html(malm);
-};
-
-// who the mail is from
-Handlebars.registerHelper('mailTypes', function(recipient_type, recipient_id) {
-  if (recipient_type == 'corporation' || recipient_type == 'alliance') {
-    return recipient_id;
+    return _this;
   }
-  return '';
-});
+
+  _createClass(Mail, [{
+    key: 'click',
+    value: function click() {
+      _get(Mail.prototype.__proto__ || Object.getPrototypeOf(Mail.prototype), 'onClick', this).call(this, {}, this.onLoaded.bind(this));
+    }
+  }, {
+    key: 'onLoaded',
+    value: function onLoaded(result) {
+      _get(Mail.prototype.__proto__ || Object.getPrototypeOf(Mail.prototype), 'onLoaded', this).call(this, result.info, 'mailList');
+    }
+  }, {
+    key: 'clickMail',
+    value: function clickMail(MailID) {
+      this.mailId = MailID;
+      // toggle header
+      $(this).toggleClass('active');
+      // is the mail already loaded?
+      var mailLoaded = !$('#_' + mail.mailId).html().trim();
+      if (!mailLoaded) {
+        // not loaded - get it
+        _get(Mail.prototype.__proto__ || Object.getPrototypeOf(Mail.prototype), 'get', this).call(this, { MailID: MailID }).done(this.mailLoaded);
+      } else {
+        // loaded - show it
+        $('#_' + mail.mailId).toggle();
+      }
+    }
+  }, {
+    key: 'mailLoaded',
+    value: function mailLoaded(result) {
+      var malm = '<div>' + result + '</div>';
+      // TODO: we should return mailID in the json data, to prevent timing errors
+      $('#_' + mail.mailId).show().html(malm);
+    }
+  }]);
+
+  return Mail;
+}(Base);
+//# sourceMappingURL=mail.js.map

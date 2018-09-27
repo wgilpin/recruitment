@@ -1,32 +1,11 @@
-global = {
-  id: null
+'use strict';
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Global = function Global() {
+  _classCallCheck(this, Global);
+
+  this.id = null;
+  this.myName = '';
 };
-
-global.onCLick = function(scope, cb) {
-  return function (){
-    if (global.id) {
-      $.post({
-        url: 'Pullpage.php',
-        data: { id: global.id, scope: scope },
-        dataType: 'json',
-        success: cb,
-      });
-      return;
-    }
-    alert('No character selected\n\nPlease choose an alt');
-}};
-
-global.onLoaded = function(result, domId, templateName) {
-  console.log(result);
-  var dom = $(domId)
-    .parent()
-    .find('.content');
-
-  // create html via template
-  templates.prepareAndApply(
-    './templates/{0}.hbs'.format(templateName), 
-    templateName, 
-    dom, 
-    { result: result }
-  );
-};
+//# sourceMappingURL=global.js.map

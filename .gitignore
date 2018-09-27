@@ -1,2 +1,6 @@
 #node
 node_modules
+
+# don't git the babel-generated js code
+*.map
+
