@@ -37,7 +37,11 @@ var Mail = function (_Base) {
   }, {
     key: 'onLoaded',
     value: function onLoaded(result) {
+<<<<<<< HEAD
       _get(Mail.prototype.__proto__ || Object.getPrototypeOf(Mail.prototype), 'onLoaded', this).call(this, result.info, 'mailList');
+=======
+      _get(Mail.prototype.__proto__ || Object.getPrototypeOf(Mail.prototype), 'onLoaded', this).call(this, result.info);
+>>>>>>> 8d67ba82c09723b67aa9152a920fb23b4a607403
     }
   }, {
     key: 'clickMail',

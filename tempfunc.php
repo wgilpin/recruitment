@@ -44,11 +44,12 @@ class ESI
         $this->Pull_Redirect_Func = function ($key, $value, $returnarray, $keyarray, $array, $last, $counter) {
             if (array_key_exists($key, $keyarray) and $key != "0") {
                 if ($value == $keyarray[$key][0]) {
-                    $returnarray[$array[$keyarray[$key][1]]]=$keyarray[$key][0];
+                    $returnarray[$array[$keyarray[$key][1]]] = $keyarray[$key][0];
+                    return $returnarray;
+                } else {
+                    $returnarray[$array[$keyarray[$key][1]]] = $keyarray[$key][2];
                     return $returnarray;
                 }
-                else{$returnarray[$array[$keyarray[$key][1]]]=$keyarray[$key][2];
-                    return $returnarray;}
             } else {
                 return false;
             }
@@ -108,10 +109,9 @@ class ESI
         $this->Write_standing_Func = function ($key, $value, $returnarray, $keyarray, $array, $last, $counter) {
             if (array_key_exists($value, $keyarray)) {
                 if (array_key_exists($value, $this->Standinglist)) {
-
-                    $value = array("standing" => $this->Standinglist[$value]["standing"], "id" => $keyarray[$value]);
+                    $value = array("standing" => $this->Standinglist[$value]["standing"], "id" => $value, "name" => $keyarray[$value]);
                 } else {
-                    $value = array("standing" => "0", "id" => $keyarray[$value]);
+                    $value = array("standing" => "0", "name" => $keyarray[$value], "id" => $value);
                 }
                 if ($key != "second_party_id" && $key != "tax_receiver_id" && $key != "timestamp") {
                     $returnarray[$key] = $value;
@@ -170,9 +170,10 @@ class ESI
             } else {
                 return false;
             }
-        };
+        }; //Pulls the information behind "name" and puts "ID" as key
     }
 
+//  __Suppport_functions_\\
     protected function dprintr($printer)
     {
         echo "<pre>";
@@ -207,6 +208,16 @@ class ESI
         return $returnarray;
     }
 
+    protected function Blacklist($array, $info)
+    {
+        $return = array();
+        foreach ($array as $key => $value) {
+            if ((key_exists($key, $this->Standinglist)) and ($this->Standinglist[$key]["standing"] < 0)) {
+                $return[$key] = array("standing" => $this->Standinglist[$key]["standing"], "info" => $info[$key]);
+            }
+        }
+        return $return;
+    }
 
     //__All_the_ESI_Pulls__\\
     protected function AccesTokenDispencer($refresh_token)
@@ -498,17 +509,17 @@ class EveOauth extends ESI
 
 class Portrait extends ESI
 {
-    public function Run($CharID, $refresh_token ,$YN)
+    public function Run($CharID, $refresh_token, $YN)
     {
         if (empty($CharID)) {
             $temp = $this->verify($this->AccesTokenDispencer($refresh_token));
             $CharID = $temp["CharacterID"];
         }
         $this->Scope = $this->Scopemaker("", $CharID, "portrait");
-        if($YN){
+        if ($YN) {
             $temp2 = $this->DATAPULLUNAUTH($this->Scope);
-            $temp3 = array("Name"=>$temp["CharacterName"]);
-            $temp2 = $temp3+$temp2;
+            $temp3 = array("Name" => $temp["CharacterName"]);
+            $temp2 = $temp3 + $temp2;
             return $temp2;
         }
         return $this->DATAPULLUNAUTH($this->Scope);
@@ -522,7 +533,6 @@ class Wallet extends ESI
     public function Run($refresh_token)
     {
 
-
         $keyarray = array("first_party_id", "second_party_id", "tax_receiver_id");
         $returnarray = array();
 
@@ -534,14 +544,19 @@ class Wallet extends ESI
         $Replacearray = $this->DATAPOST("universe/names", $this->ArraytoString($idArray));
         $idArray = $this->_Foreach($Replacearray, array(), $this->idArray_Changer);
         $FinalArray = $this->_Foreach($array, $returnarray, $this->Write_standing_Func, $idArray);
-        return $FinalArray;
+        $returnarray = array();
+        $returnarray["blacklist"] = $this->Blacklist($idArray);
+        $returnarray["info"] = $FinalArray;
+        $returnarray["list"] = $idArray;
+        return $returnarray;
     }
 
 }
 
 class Mail extends ESI
 {
-    public function run($refresh_token)
+
+    private function Maillist($refresh_token)
     {
         $keyarray = array("from", "recipient_id");
         $returnarray = array();
@@ -557,21 +572,42 @@ class Mail extends ESI
         $idArray = $this->_Foreach($Replacearray, array(), $this->idArray_Changer);
         $FinalArray = $this->_Foreach($array, $returnarray, $this->Write_standing_Func, $idArray);
         array_shift($FinalArray);
-        return $FinalArray;
+        $returnarray["blacklist"] = $this->Blacklist($idArray);
+        $returnarray["info"] = $FinalArray;
+        $returnarray["list"] = $idArray;
+        return $returnarray;
+    }
+
+    private function MailID($refresh_token, $MailID)
+    {
+        $this->AccessToken = $this->AccesTokenDispencer($refresh_token);
+        $CharID = $this->verify($this->AccessToken)["CharacterID"];
+        $this->Scope = $this->Scopemaker("characters", $CharID, "mail",$MailID);
+        $array = $this->DATAPULLAUTH($this->AccessToken, $this->Scope);
+        return $array["body"];
+    }
+
+    public function run($refresh_token, $MailID)
+    {
+        if ($MailID) {
+            Return $this->MailID($refresh_token, $MailID);
+        } Else {
+            Return $this->Maillist($refresh_token);
+        }
     }
 }
 
 class Assets extends ESI
 {
-    private $namefunc;
+    private $placearray;
     private $DbCon;
     private $list;
 
     public function __construct()
     {
         ESI::__construct();                                 // call Grandpa's constructor
-        $this->namefunc = function ($key) {
-            echo $key;
+        $this->placearray = function ($key, $value, $returnarray, $keyarray, $array, $last, $counter) {
+            $this->dprintr($array);
         };
     }
 
@@ -591,7 +627,7 @@ class Assets extends ESI
     public function Run($refresh_token)
     {
 
-        $Keyarray = array("location_flag" =>array("Hangar","location_id","ItemLocation"));
+        $Keyarray = array("location_flag" => array("Hangar", "location_id", "ItemLocation"));
         $Itemarray = array("item_id");
         $TypeArray = array("type_id");
         $returnarray = array();
@@ -602,7 +638,7 @@ class Assets extends ESI
 
         $this->AccessToken = $this->AccesTokenDispencer($refresh_token);
         $CharID = $this->verify($this->AccessToken)["CharacterID"];
-        Echo $CharID . "  REE  " . $this->AccessToken. "  REE  ";
+        Echo $CharID . "  REE  " . $this->AccessToken . "  REE  ";
         $this->Scope = $this->Scopemaker("characters", $CharID, "assets");
         $array = $this->DATAPULLAUTH($this->AccessToken, $this->Scope);
         $ItemArray = $this->_Foreach($array, $returnarray, $this->Pull_Func, $Itemarray);
@@ -611,31 +647,44 @@ class Assets extends ESI
         $itemString = $this->ArraytoString($ItemArray);
         $ReplaceItemarray = $this->DATAPOST("characters/$CharID/assets/names", $itemString, $this->AccessToken);
         $ReplaceItemarray = $this->NameArray($ReplaceItemarray);
-        $test = $this->_Foreach($array,$returnarray,$this->Pull_Redirect_Func,$Keyarray);
+        $test = $this->_Foreach($array, $returnarray, $this->Pull_Redirect_Func, $Keyarray);
         $Hangar = array_keys($test, "Hangar");
-        $this->dprintr($Hangar);
-        foreach ($Hangar as $key=>$value)
-        {
-            if(in_array($value,$ItemArray))
-            {
+//        $this->dprintr($Hangar);
+        foreach ($Hangar as $key => $value) {
+            if (in_array($value, $ItemArray)) {
                 $test[$value] = "ItemLocation";
                 unset($Hangar[$key]);
             }
         }
-        $this->dprintr($test);
+//        $this->dprintr($test);
         $Datacheck = $Hangar + $typeArray;
         $DataOutput = $this->Datacall->data($Datacheck);
-        foreach ($DataOutput[2] as $key=>$value)
-        {
-            echo $value."<br>";
-            $anotherarray[] = $this->DATAPULLAUTH($this->AccessToken,"universe/structures/$value");
+        foreach ($DataOutput[2] as $key => $value) {
+            $info = $this->DATAPULLAUTH($this->AccessToken, "universe/structures/$value");
+            if ($info["error"]) {
+                $error[$value] = $value;
+                unset($DataOutput[2][$key]);
+            } else {
+                $anotherarray[$value] = $info;
+                unset($DataOutput[2][$key]);
+            }
         }
-        $this->dprintr($anotherarray);
-        $this->dprintr($array);
+        $DataOutput[2] = $DataOutput[2] + $anotherarray;
+        $Solar_ID = $this->_Foreach($DataOutput[2], $returnarray, $this->Pull_Func, array("solar_system_id"));
+        $this->dprintr($Solar_ID);
     }
 
 }
 
+class Login extends ESI
+{
+    public function run($refresh_token){
+        $this->AccessToken = $this->AccesTokenDispencer($refresh_token);
+        $CharID = $this->verify($this->AccessToken)["CharacterID"];
+        $this->Scope = $this->Scopemaker("characters", $CharID, "online");
+        return $this->DATAPULLAUTH($this->AccessToken, $this->Scope);
+    }
+}
 
 class pullclass
 {
@@ -664,9 +713,6 @@ class pullclass
                 $keyarray = array('creator_id', 'location_id');
                 $value = $this->CharCorpAllyconverter($keyarray, $value);
                 break;
-            case "login":
-                $value = $this->Puller("characters", '', "online");
-                break;
             case "pi":
                 $value = $this->Puller("characters", '', "planets");
                 break;
@@ -686,6 +732,10 @@ class pullclass
                 $this->Obj = new Assets();
                 break;
 
+            case "login":
+                $this->Obj = new Login();
+                break;
+
             //__NOT_ON_THE_PULL_PAGE__\\
 
             case "Oauth":
@@ -695,7 +745,7 @@ class pullclass
                 $this->Obj = new Portrait();
                 break;          //| Input: characterID              |Output:      Array
             default:
-                echo "Wrong What Not Mate";
+                echo "Wrong Scope Mate";
                 break;
         }
     }

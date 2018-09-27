@@ -1,0 +1,92 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+header{
+    background-color: lightgreen;
+}
+#header{
+    margin-left: 10px;
+}
+#questionChanger{
+    margin-top: 25px;
+    text-align: center;
+    width: 30%;
+    margin-left: 35%;
+    margin-right: 35%;
+}
+#questionChanger input{
+    margin-bottom: 5px;
+    width: 350px;
+}
+#questionChanger2{
+    margin-top: 100px;
+    text-align: center;
+    width: 30%;
+    margin-left: 35%;
+    margin-right: 35%;
+}
+#questionChanger2 input{
+    margin-bottom: 5px;
+    width: 100px;
+}
+#questions{
+    width: 30%;
+    height: 500px;
+    float: left;
+    background-color: lightgray;
+}
+
+#evidence{
+    height: 500px;
+    width: 70%;
+    float: right;
+}
+.Profilepic p{
+    margin-left: 10px;
+}
+.Profilepic{
+    border: #7f0000 2px solid;
+    background-color: pink;
+}
+#insertpage{
+    margin-left: 10px;
+}
+.fcancy{
+    background-color: orangered;
+    border: midnightblue 2px dashed;
+    border-radius: 5px;
+}
+
+
+/* Style the button that is used to open and close the collapsible content */
+.collapsible {
+    background-color: orangered;
+    border: midnightblue 2px dashed;
+    border-radius: 5px;
+    color: #444;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    text-align: left;
+    outline: none;
+    font-size: 15px;
+}
+
+/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+.active, .collapsible:hover {
+    background-color: coral;
+}
+
+/* Style the collapsible content. Note: hidden by default */
+.content {
+    padding: 0 18px;
+    display: none;
+    overflow: hidden;
+    background-color: #f1f1f1;
+}
+#blueprint{
+    background-color: darkslategray;
+    border: hotpink 2px solid;
+    color: whitesmoke;
+}

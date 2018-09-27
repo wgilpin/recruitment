@@ -11,6 +11,9 @@ var Templates = function () {
     _classCallCheck(this, Templates);
 
     this.items = {};
+    _classCallCheck(this, Templates);
+
+    templates.items = {};
     // return odd if index is odd, even if even
     Handlebars.registerHelper('oddEven', function (index, odd, even) {
       return index % 2 == 0 ? even : odd;

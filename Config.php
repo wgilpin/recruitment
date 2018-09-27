@@ -41,7 +41,8 @@ $EVEDBCharset = "utf8";
 $EVEDBinventoryType = "invTypes";
 //Stations table name
 $EVEDBstations = "staStations";
-
+//amount of days for expired data in localEveCache
+$days = "7";
 
 
 
@@ -52,7 +53,8 @@ $EVEDBstations = "staStations";
 //Client Basic
 $Client_Basic = base64_encode(($Client_ID . ":" . $Client_Pass));
 $Client_BasicLogin =  base64_encode(($Client_IDLogin . ":" . $Client_PassLogin));
-
+//Date Calc
+$days = "-$days days";
 
 
 
