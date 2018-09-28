@@ -14,6 +14,7 @@ class ESI
     protected $Standing;
     protected $Standinglist;
     protected $Datacall;
+    protected $Cachecall;
 
     //__Used_Functions__\\
     protected $Pull_Func;
@@ -29,6 +30,7 @@ class ESI
         $this->Client_BasicLogin = $Client_BasicLogin;
         $this->Datacall = new localEveDB();
         $this->Standing = new standingList();
+        $this->Cachecall = new localEveCache();
         $this->Standinglist = $this->Standing->allStandingPuller();
 
         //__ALL_USED_RECALL_FUNCTIONS__\\
@@ -417,6 +419,100 @@ class ESI
         return $body;
     }
 
+    //Database_Cache_and_EveDump_\\
+    protected function Cachepull($accessToken, $array, $reason)
+    {
+        $replace_KEY = function ($key, $value, $returnarray, $keyarray, $array, $last, $counter) {
+            if (key_exists($key, $keyarray)) {
+                if ($keyarray[$key]) $returnarray[$key] = $value;
+            } else {
+                $returnarray[$key] = $value;
+            }
+            if ($last) {
+                $temparray = array();
+                $newarray = array();
+                foreach ($returnarray as $key => $value) {
+                    if (is_numeric($key) && is_array($value)) {
+                        $temparray[$key] = $value;
+                    } else {
+                        $newarray[$key] = $value;
+                    }
+                }
+                $temparray[$counter] = $newarray;
+                return $temparray;
+            } else {
+                return $returnarray;
+            }
+        };
+        $Char_Key_list = array(
+            "alliance_id" => "alliance_id",
+            "ancestry_id" => false,
+            "birthday" => "creationDate",
+            "bloodline_id" => false,
+            "corporation_id" => "corporation_id",
+            "description" => "description",
+            "gender" => false,
+            "name" => "name",
+            "race_id" => false,
+            "security_status" => "SecStatus"
+        );
+        $Corp_Key_list = array(
+            "alliance_id" => "alliance_id",
+            "ceo_id" => "ceo_id",
+            "creator_id" => "creator_id",
+            "date_founded" => "creationDate",
+            "description" => "description",
+            "home_station_id" => "home_station_id",
+            "member_count" => "member_count",
+            "name" => "name",
+            "shares" => "false",
+            "tax_rate" => "false",
+            "ticker" => "ticker",
+            "url" => "url"
+        );
+        $Ally_Key_list = array(
+            "creator_corporation_id" => "creator_id",
+            "creator_id" => "false",
+            "date_founded" => "date_founded",
+            "executor_corporation_id" => "corporation_id",
+            "name" => "name",
+            "ticker" => "ticker"
+        );
+        $this->AccessToken = $accessToken;
+        $Char_Func = function ($Char_Array) {
+            $return = array();
+            foreach ($Char_Array as $key => $value) {
+                $return[] = $this->DATAPULLUNAUTH("characters/$key");
+            }
+            return $return;
+        };
+        $Corp_Func = function ($Corp_Array) {
+            $return = array();
+            foreach ($Corp_Array as $key => $value) {
+                $return[] = $this->DATAPULLUNAUTH("corporations/$key");
+            }
+            return $return;
+        };
+        $Ally_Func = function ($Ally_Array) {
+            $return = array();
+            foreach ($Ally_Array as $key => $value) {
+                $return[] = $this->DATAPULLUNAUTH("alliances/$key");
+            }
+            return $return;
+        };
+        $Unknown_Func = function ($Unknown_Array) {
+        };
+        $Struct_Func = function ($Struct_Array) {
+            return $this->AccessToken;
+        };
+
+        if ($reason) {
+            return $this->Cachecall->groupCache($array, $Char_Func, $Corp_Func, $Ally_Func, $Unknown_Func);
+        } else {
+            return $this->Cachecall->structCache($array, $Struct_Func);
+        }
+    }
+
     //__Support_for_ESI__\
 
     protected function Scopemaker($pulltype, $char, $pull, $ID)
@@ -582,7 +678,7 @@ class Mail extends ESI
     {
         $this->AccessToken = $this->AccesTokenDispencer($refresh_token);
         $CharID = $this->verify($this->AccessToken)["CharacterID"];
-        $this->Scope = $this->Scopemaker("characters", $CharID, "mail",$MailID);
+        $this->Scope = $this->Scopemaker("characters", $CharID, "mail", $MailID);
         $array = $this->DATAPULLAUTH($this->AccessToken, $this->Scope);
         return $array["body"];
     }
@@ -678,11 +774,22 @@ class Assets extends ESI
 
 class Login extends ESI
 {
-    public function run($refresh_token){
+    public function run($refresh_token)
+    {
         $this->AccessToken = $this->AccesTokenDispencer($refresh_token);
         $CharID = $this->verify($this->AccessToken)["CharacterID"];
         $this->Scope = $this->Scopemaker("characters", $CharID, "online");
         return $this->DATAPULLAUTH($this->AccessToken, $this->Scope);
+    }
+}
+
+class Debug extends ESI
+{
+
+    public function Run($array)
+    {
+        echo "This is the test";
+        return $this->Cachepull("1", $array, "lol");
     }
 }
 
@@ -738,6 +845,9 @@ class pullclass
 
             //__NOT_ON_THE_PULL_PAGE__\\
 
+            case "debug":
+                $this->Obj = new Debug();
+                break;
             case "Oauth":
                 $this->Obj = new EveOauth();
                 break;               //| Input: accesscode                |Output:      Array

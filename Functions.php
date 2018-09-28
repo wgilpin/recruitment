@@ -314,7 +314,7 @@ class localEveCache extends localEveDB
 
     }
     public function structCache($array, $structFunc){
-
+        echo $array;
     }
 }
 
