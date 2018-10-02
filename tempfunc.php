@@ -422,88 +422,148 @@ class ESI
     //Database_Cache_and_EveDump_\\
     protected function Cachepull($accessToken, $array, $reason)
     {
-        $replace_KEY = function ($key, $value, $returnarray, $keyarray, $array, $last, $counter) {
-            if (key_exists($key, $keyarray)) {
-                if ($keyarray[$key]) $returnarray[$key] = $value;
-            } else {
-                $returnarray[$key] = $value;
-            }
-            if ($last) {
-                $temparray = array();
-                $newarray = array();
-                foreach ($returnarray as $key => $value) {
-                    if (is_numeric($key) && is_array($value)) {
-                        $temparray[$key] = $value;
-                    } else {
-                        $newarray[$key] = $value;
-                    }
-                }
-                $temparray[$counter] = $newarray;
-                return $temparray;
-            } else {
-                return $returnarray;
-            }
-        };
-        $Char_Key_list = array(
-            "alliance_id" => "alliance_id",
-            "ancestry_id" => false,
-            "birthday" => "creationDate",
-            "bloodline_id" => false,
-            "corporation_id" => "corporation_id",
-            "description" => "description",
-            "gender" => false,
-            "name" => "name",
-            "race_id" => false,
-            "security_status" => "SecStatus"
-        );
-        $Corp_Key_list = array(
-            "alliance_id" => "alliance_id",
-            "ceo_id" => "ceo_id",
-            "creator_id" => "creator_id",
-            "date_founded" => "creationDate",
-            "description" => "description",
-            "home_station_id" => "home_station_id",
-            "member_count" => "member_count",
-            "name" => "name",
-            "shares" => "false",
-            "tax_rate" => "false",
-            "ticker" => "ticker",
-            "url" => "url"
-        );
-        $Ally_Key_list = array(
-            "creator_corporation_id" => "creator_id",
-            "creator_id" => "false",
-            "date_founded" => "date_founded",
-            "executor_corporation_id" => "corporation_id",
-            "name" => "name",
-            "ticker" => "ticker"
-        );
         $this->AccessToken = $accessToken;
         $Char_Func = function ($Char_Array) {
+            $Char_Key_list = array(
+                "id" => "ID",
+                "type" => "type",
+                "alliance_id" => "alliance_id",
+                "ancestry_id" => false,
+                "birthday" => "creationDate",
+                "bloodline_id" => false,
+                "corporation_id" => "corporation_id",
+                "description" => "description",
+                "gender" => false,
+                "name" => "name",
+                "race_id" => false,
+                "security_status" => "SecStatus"
+            );
             $return = array();
             foreach ($Char_Array as $key => $value) {
-                $return[] = $this->DATAPULLUNAUTH("characters/$key");
+                $return[$key] = $this->DATAPULLUNAUTH("characters/$key");
+                $return[$key]["type"] = "character";
+                $return[$key]["id"] = $key;
             }
-            return $return;
+
+            foreach ($return as $key => $value) {
+                foreach ($value as $key2 => $value2) {
+                    if ($Char_Key_list[$key2]) {
+                        $returns[$key][$Char_Key_list[$key2]] = $value2;
+                    } else {
+                        unset($return[$key][$key2]);
+                    }
+                }
+            }
+            return $returns;
         };
         $Corp_Func = function ($Corp_Array) {
+            $Corp_Key_list = array(
+                "id" => "ID",
+                "type" => "type",
+                "px64x64" => "px64x64",
+                "px128x128" => "px128x128",
+                "alliance_id" => "alliance_id",
+                "ceo_id" => "ceo_id",
+                "creator_id" => "creator_id",
+                "date_founded" => "creationDate",
+                "description" => "description",
+                "home_station_id" => "home_station_id",
+                "member_count" => "member_count",
+                "name" => "name",
+                "shares" => false,
+                "tax_rate" => false,
+                "ticker" => "ticker",
+                "url" => "url"
+            );
             $return = array();
             foreach ($Corp_Array as $key => $value) {
-                $return[] = $this->DATAPULLUNAUTH("corporations/$key");
+                $return[$key] = $this->DATAPULLUNAUTH("corporations/$key");
+                $return[$key]["id"] = $key;
+                $return[$key]["type"] = "corporation";
+                $return[$key]["px64x64"] = "http://image.eveonline.com/Corporation/" . $return[$key]["id"] . "_64.png";
+                $return[$key]["px128x128"] = "http://image.eveonline.com/Corporation/" . $return[$key]["id"] . "_128.png";
             }
-            return $return;
+            foreach ($return as $key => $value) {
+                foreach ($value as $key2 => $value2) {
+                    if ($Corp_Key_list[$key2]) {
+                        $returns[$key][$Corp_Key_list[$key2]] = $value2;
+                    } else {
+                        unset($return[$key][$key2]);
+                    }
+                }
+            }
+            return $returns;
         };
         $Ally_Func = function ($Ally_Array) {
+            $Ally_Key_list = array(
+                "id" => "ID",
+                "type" => "type",
+                "px64x64" => "px64x64",
+                "px128x128" => "px128x128",
+                "creator_corporation_id" => "creator_id",
+                "creator_id" => false,
+                "date_founded" => "date_founded",
+                "executor_corporation_id" => "corporation_id",
+                "name" => "name",
+                "ticker" => "ticker"
+            );
             $return = array();
             foreach ($Ally_Array as $key => $value) {
-                $return[] = $this->DATAPULLUNAUTH("alliances/$key");
+                $return[$key] = $this->DATAPULLUNAUTH("alliances/$key");
+                $return[$key]["id"] = $key;
+                $return[$key]["type"] = "alliance";
+                $return[$key]["px64x64"] = "http://image.eveonline.com/Alliance/" . $return[$key]["id"] . "_64.png";
+                $return[$key]["px128x128"] = "http://image.eveonline.com/Alliance/" . $return[$key]["id"] . "_128.png";
             }
-            return $return;
+            foreach ($return as $key => $value) {
+                foreach ($value as $key2 => $value2) {
+                    if ($Ally_Key_list[$key2]) {
+                        $returns[$key][$Ally_Key_list[$key2]] = $value2;
+                    } else {
+                        unset($return[$key][$key2]);
+                    }
+                }
+            }
+            return $returns;
         };
-        $Unknown_Func = function ($Unknown_Array) {
+        $Unknown_Func = function ($Unknown_Array, $Char_Func, $Corp_Func, $Ally_Func) {
+            $returnarray = array();
+            $knownarray = $this->DATAPOST("universe/names", $this->ArraytoString($Unknown_Array, "1"));
+            if ($knownarray["error"]) {
+                return "Contact a WebMaster";
+            }
+            foreach ($knownarray as $value) {
+                switch ($value["category"]) {
+                    case "character":
+                        $char[$value["id"]] = $value["id"];
+                        break;
+
+                    case "corporation":
+                        $corp[$value["id"]] = $value["id"];
+                        break;
+
+                    case "alliance":
+                        $ally[$value["id"]] = $value["id"];
+                        break;
+                }
+            }
+            $char = $Char_Func($char);
+            $corp = $Corp_Func($corp);
+            $ally = $Ally_Func($ally);
+            if ($char) {
+                $returnarray = $returnarray + $char;
+            }
+            if ($corp) {
+                $returnarray = $returnarray + $corp;
+            }
+            if ($ally) {
+                $returnarray = $returnarray + $ally;
+            }
+            return $returnarray;
         };
+
         $Struct_Func = function ($Struct_Array) {
-            return $this->AccessToken;
+
         };
 
         if ($reason) {

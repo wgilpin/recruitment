@@ -1,4 +1,10 @@
 <?php
+echo "hallo";
 include_once 'Functions.php';
+echo " test";
+include 'tempfunc.php';
+echo " doei<br>";
+$pullcase = new pullclass('debug');
 $cache = new localEveCache;
-$cache->selector(array("321423154"=>"321423154", "215708" => "215708"));
+$test = $pullcase->_Return(array("2113841152" => "2113841152"), true);
+//dprintr($test);

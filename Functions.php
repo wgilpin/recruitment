@@ -9,7 +9,7 @@ function keycheck($array, $returnarray, $keycheck)
                 $returnarray = $returnarray + $temp;
             }
         } else {
-            if ($key == $keycheck){
+            if ($key == $keycheck) {
                 $returnarray[$value] = $value;
             }
         }
@@ -41,9 +41,11 @@ function dprintr($printer)
     echo "</pre>";
 }
 
-function loggedin($str,$yn)
+function loggedin($str, $yn)
 {
-    if ($_SESSION['loggedin'] == $yn){ echo $str;}
+    if ($_SESSION['loggedin'] == $yn) {
+        echo $str;
+    }
 }
 
 class localEveDB
@@ -78,12 +80,12 @@ class localEveDB
         $typeID = array();
         $stationID = array();
         $notFound = array();
-        foreach ($data as $key => $value){
-            if ($value >= 0 && $value <= 400000){
+        foreach ($data as $key => $value) {
+            if ($value >= 0 && $value <= 400000) {
                 $typeID[$key] = $value;
-            }elseif ($value >= 60000000 && $value <= 60020000){
+            } elseif ($value >= 60000000 && $value <= 60020000) {
                 $stationID[$key] = $value;
-            }else{
+            } else {
                 $notFound[$key] = $value;
             }
         }
@@ -109,7 +111,7 @@ class localEveDB
             while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
                 return $row;
             }
-        }catch (PDOException $e) {
+        } catch (PDOException $e) {
             die($e);
         }
     }
@@ -120,11 +122,11 @@ class localEveDB
         foreach ($arrays["$where"] as $key => $value) {
             $query = $query . " SELECT $select FROM $from WHERE $where = '$value' UNION ALL";
         }
-        $query = substr($query,0,-9); //removes UNION ALL
+        $query = substr($query, 0, -9); //removes UNION ALL
         return $query;
     }
 
-    private function keyReplacer ($row, $IDname)
+    private function keyReplacer($row, $IDname)
     {
         //fills array with typeID data.
         $returnData = array();
@@ -134,7 +136,7 @@ class localEveDB
         return $returnData;
     }
 
-    private function dataChecker ($returnData, $checkData, $IDname)
+    private function dataChecker($returnData, $checkData, $IDname)
     {
         $badID = array();
         foreach ($returnData as $key => $value) {
@@ -219,101 +221,300 @@ class localEveDB
 class localEveCache extends localEveDB
 {
     private $connect;
-    private $days;
+    private $daysCharacter;
+    private $daysCorporation;
+    private $daysAlliance;
 
     public function __construct()
     {
         localEveDB::__construct();
         include 'Config.php';
         $this->connect = $this->Connect();
-        $this->days = $days;
+        $this->daysCharacter = date("Y-m-d H:i:s", strtotime($daysCharacter));
+        $this->daysCorporation = date("Y-m-d H:i:s", strtotime($daysCorporation));
+        $this->daysAlliance = date("Y-m-d H:i:s", strtotime($daysAlliance));
     }
 
-    private function selectQueryMaker($array){
-        $query = "";
-            foreach ($array as $key => $value){
+    private function selectQueryMaker($array, $input)
+    {
+        if (empty($input)) {
+            $query = "";
+            foreach ($array as $key => $value) {
                 $query = $query . " SELECT * FROM groupCache WHERE ID = '$value' UNION ALL";
             }
             $query = substr($query, 0, -9);
             return $query;
+        } else {
+            $query = "";
+            foreach ($array as $key => $value) {
+                $query = $query . " SELECT ID FROM groupCache WHERE ID = '$value' UNION ALL";
+            }
+            $query = substr($query, 0, -9);
+            return $query;
+        }
     }
-    private function selectQuery($array){
-        $query = $this->selectQueryMaker($array);
+
+    private function selectQuery($array)
+    {
+        $query = $this->selectQueryMaker($array, "");
         $stmt = $this->connect->query($query);
         while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
             $data = $this->dateChecker($row);
-            foreach ($data["validID"] as $key => $value){
-                if (in_array($key, $array)){
+            foreach ($data["validID"] as $key => $value) {
+                if (in_array($key, $array)) {
                     unset($array[$key]);
                 }
-                foreach ($value as $key2 => $value2){
-                    if (!($value2)){
+                foreach ($value as $key2 => $value2) {
+                    if (!($value2)) {
                         unset($data["validID"][$key][$key2]);
                     }
                 }
             }
-            if ($array){$data["unknown"] = $array;}
-            return $data;
-        }
-    }
-    private function dateChecker($data){
-        $date = date("Y-m-d H:i:s", strtotime($this->days));
-        foreach ($data as $key => $value) {
-                $datetimeUpload = $data[$key]["datetimeUpload"];
-                $datetime = date("Y-m-d H:i:s", strtotime($datetimeUpload));
-                if ($datetime < $date) {
-                    $data["expiredID"] = array($data[$key]["ID"] => array("ID" => $data[$key]["ID"], "type" => $data[$key]["type"]));
-                    unset($data[$key]);
-                }else{
-                    $data["validID"][$data[$key]["ID"]] = $value;
-                    unset($data[$key]);
+            if (!empty($array)) {
+                foreach ($array as $key => $value) {
+                    if (array_key_exists($key, $data["expiredID"])) {
+                        unset($array[$key]);
+                    } elseif (array_key_exists($key, $data["validID"])) {
+                        unset($array[$key]);
+                    }
                 }
-        }
-        return $data;
-    }
-    private function IDsplitter($data){
-        $tempArray = array("alliance" => "", "corporation" => "");
-        foreach ($data["validID"] as $key => $value){
-            if (!in_array($value["alliance_id"], $tempArray["alliance"])){
-                $tempArray["alliance"] = array($value["alliance_id"] => $value["alliance_id"]);
-            }
-            if (!in_array($value["corporation_id"], $tempArray["corporation"])){
-                $tempArray["corporation"] = array($value["corporation_id"] => $value["corporation_id"]);
+                $data["unknown"] = $array;
             }
         }
-        $temp = array("alliance" => $this->selectQuery($tempArray["alliance"]), "corporation" => $this->selectQuery($tempArray["corporation"]));
-        unset($temp["alliance"]["unknown"]);
-        unset($temp["corporation"]["unknown"]);
-        dprintr($temp);
-        if (!$temp) {
-            $checkDate = array("alliance" => $this->dateChecker($temp["alliance"]["validID"]), "corporation" => $this->dateChecker($temp["corporation"]["validID"]));
+        if (empty($row)) {
+            $data["unknown"] = $array;
         }
-        foreach ($data["validID"] as $key => $value){
-            if (array_key_exists($value["alliance_id"], $checkDate["alliance"]["validID"])){
-                $data["validID"][$key]["alliance_id"] = $checkDate["alliance"]["validID"][$value["alliance_id"]];
-            }
-            if (array_key_exists($value["corporation_id"], $checkDate["corporation"]["validID"])){
-                $data["validID"][$key]["corporation_id"] = $checkDate["corporation"]["validID"][$value["corporation_id"]];
-            }
-        }
-        dprintr($data);
         return $data;
     }
 
-    public function selector($array){
+    private function dateChecker($data)
+    {
+        foreach ($data as $key => $value) {
+            switch ($value["type"]) {
+                case "character":
+                    $datetimeUpload = $data[$key]["datetimeUpload"];
+                    $datetime = date("Y-m-d H:i:s", strtotime($datetimeUpload));
+                    if ($datetime < $this->daysCharacter) {
+                        $data["expiredID"] = array($data[$key]["ID"] => array("ID" => $data[$key]["ID"], "type" => $data[$key]["type"]));
+                        unset($data[$key]);
+                    } else {
+                        $data["validID"][$data[$key]["ID"]] = $value;
+                        unset($data[$key]);
+                    }
+                    break;
+                case "corporation":
+                    $datetimeUpload = $data[$key]["datetimeUpload"];
+                    $datetime = date("Y-m-d H:i:s", strtotime($datetimeUpload));
+                    if ($datetime < $this->daysCorporation) {
+                        $data["expiredID"] = array($data[$key]["ID"] => array("ID" => $data[$key]["ID"], "type" => $data[$key]["type"]));
+                        unset($data[$key]);
+                    } else {
+                        $data["validID"][$data[$key]["ID"]] = $value;
+                        unset($data[$key]);
+                    }
+                    break;
+                case "alliance":
+                    $datetimeUpload = $data[$key]["datetimeUpload"];
+                    $datetime = date("Y-m-d H:i:s", strtotime($datetimeUpload));
+                    if ($datetime < $this->daysAlliance) {
+                        $data["expiredID"] = array($data[$key]["ID"] => array("ID" => $data[$key]["ID"], "type" => $data[$key]["type"]));
+                        unset($data[$key]);
+                    } else {
+                        $data["validID"][$data[$key]["ID"]] = $value;
+                        unset($data[$key]);
+                    }
+                    break;
+                default:
+                    echo "you broke the code.";
+                    break;
+            }
+        }
+        return $data;
+    }
+
+    private function notFoundIDFixer($array, $charFunc, $corpFunc, $allyFunc, $unknownFunc)
+    {
+        //expiredID
+        foreach ($array["expiredID"] as $key => $value) {
+            if ($value["type"] == "character") {
+                $charInfo = $charFunc(array($key => $key));
+                $charInfo[$key]["type"] = "character";
+                $array["upload"][$key] = $charInfo[$key];
+                $array["validID"][$key] = $charInfo[$key];
+                unset($array["expiredID"][$key]);
+            } elseif ($value["type"] == "corporation") {
+                $corpInfo = $corpFunc(array($key => $key));
+                $corpInfo[$key]["type"] = "corporation";
+                $array["upload"][$key] = $corpInfo[$key];
+                $array["validID"][$key] = $corpInfo[$key];
+                unset($array["expiredID"][$key]);
+            } elseif ($value["type"] == "alliance") {
+                $allyInfo = $allyFunc(array($key => $key));
+                $allyInfo[$key]["type"] = "alliance";
+                $array["upload"][$key] = $allyInfo[$key];
+                $array["validID"][$key] = $allyInfo[$key];
+                unset($array["expiredID"][$key]);
+            }
+        }
+        if (empty($array["expiredID"])) {
+            unset($array["expiredID"]);
+        }
+
+        //unknown
+        foreach ($array["unknown"] as $key => $value) {
+            $unknownInfo = $unknownFunc(array($key => $key), $charFunc, $corpFunc, $allyFunc);
+            $array["validID"][$key] = $unknownInfo[$key];
+            $array["upload"][$key] = $unknownInfo[$key];
+            unset($array["unknown"][$key]);
+        }
+        if (empty($array["unknown"])) {
+            unset($array["unknown"]);
+        }
+        $returnArray = $this->IDsplitter($array, $charFunc, $corpFunc, $allyFunc, $unknownFunc);
+        return $returnArray;
+    }
+
+    private function IDsplitter($array, $charFunc, $corpFunc, $allyFunc, $unknownFunc)
+    {
+        $searchID = array();
+        foreach ($array["validID"] as $key => $value) {
+            if (array_key_exists("corporation_id", $value)) {
+                if (!array_key_exists($value["corporation_id"], $searchID)) {
+                    $searchID[$value["corporation_id"]] = $value["corporation_id"];
+                }
+            }
+            if (array_key_exists("alliance_id", $value)) {
+                if (!array_key_exists($value["alliance_id"], $searchID)) {
+                    $searchID[$value["alliance_id"]] = $value["alliance_id"];
+                }
+            }
+        }
+        $result = $this->selectQuery($searchID);
+        if ($result["unknown"]) {
+            $temp = $unknownFunc($result["unknown"], $charFunc, $corpFunc, $allyFunc);
+            if ($array["upload"]) {
+                $array["upload"] = $array["upload"] + $temp;
+            } else {
+                $array["upload"] = $temp;
+            }
+            if ($result["validID"]) {
+                $result["validID"] = $result["validID"] + $temp;
+            } else {
+                $result["validID"] = $temp;
+            }
+        }
+        if ($result["expiredID"]) {
+            $corp = array();
+            $ally = array();
+            $returnarray = array();
+            foreach ($result["expiredID"] as $key => $value) {
+                switch ($value["type"]) {
+                    case "corporation":
+                        $corp[$key] = $key;
+                        break;
+                    case "alliance":
+                        $ally[$key] = $key;
+                        break;
+                }
+            }
+
+            $corp = $corpFunc($corp);
+            $ally = $allyFunc($ally);
+            if ($corp) {
+                $returnarray = $returnarray + $corp;
+            }
+            if ($ally) {
+                $returnarray = $returnarray + $ally;
+            }
+            if ($returnarray) {
+                $result["validID"] = $result["validID"] + $returnarray;
+                $array["upload"] = $array["upload"] + $returnarray;
+            }
+        }
+        foreach ($array["validID"] as $key => $value) {
+            $array["validID"][$key]["corporation_id"] = $result["validID"][$array["validID"][$key]["corporation_id"]];
+            $array["validID"][$key]["alliance_id"] = $result["validID"][$array["validID"][$key]["alliance_id"]];
+        }
+        return $array;
+    }
+
+    public function insertUpdate($array)
+    {
+//        dprintr($array);
+        $connect = $this->connect;
+        $query1 = "";
+        $query2 = "";
+        date_default_timezone_set('Atlantic/Reykjavik');
+        $time = date("Y-m-d H:i:s");
+        $temp = array();
+        $insert = array();
+        $update = array();
+        foreach ($array as $key => $value) {
+            array_push($temp, $value["ID"]);
+        }
+        $temp = $this->selectQueryMaker($temp, "1");
+        $stmt = $connect->query($temp)->fetchAll(PDO::FETCH_ASSOC);
+        if (!empty($stmt)) {
+            foreach ($stmt as $key => $value) {
+                $insert[$key] = $array[$key];
+                unset($array[$key]);
+            }
+        }
+        $update = $array;
+//        dprintr($update);
+//        dprintr($insert);
+        dprintr($update);
+        $keyArray = array("ID", "type", "name", "description", "creationDate", "SecStatus", "corporation_id", "alliance_id", "home_station_id", "ticker", "px64x64", "px128x128", "ceo_id", "creator_id", "member_count", "url");
+        if ($update) {
+            foreach ($update as $key2 => $value2) {
+                $string = "";
+                foreach ($keyArray as $value3) {
+                    $temp = "";
+                    if ($value3 == "description") {
+                        $temp = ", $value3 = '" . addslashes($value2['description']) . "'";
+                    } elseif ($value2[$value3]) {
+                        $temp = ", $value3 ='" . $value2[$value3] . "'";
+                    }
+                    if ($temp) {
+                        $string = "$string$temp";
+                    }
+                }
+
+                if ($string) {
+                    ECHO $string;
+                    $string = substr($string, 2);
+                    $query1 = $query1 . " UPDATE groupCache SET $string, datetimeUpload = '$time' WHERE ID = $value2[ID];";
+                }
+            }
+        }
+        if ($insert) {
+            foreach ($insert as $key => $value) {
+                $query2 = $query2 . " INSERT INTO groupCache (ID, type, name, description, creationDate, SecStatus, corporation_id, alliance_id, home_station_id, ticker, px64x64, px128x128, ceo_id, creator_id, member_count, url) VALUES ('$value[ID]', '$value[type]', '$value[name]', '" . addslashes($value['description']) . "', '$value[creationDate]', '$value[SecStatus]', '$value[corporation_id]', '$value[alliance_id]', '$value[home_station_id]', '$value[ticker]', '$value[px64x64]', '$value[px128x128]', '$value[ceo_id]', '$value[creator_id]', '$value[member_count]', '$value[url]');";
+            }
+        }
+
+        echo $query1;
+    }
+
+    public function groupCache($array, $charFunc, $corpFunc, $allyFunc, $unknownFunc)
+    {
         $data1 = $this->selectQuery($array);                                        //data1 is initial ID's
-        $data2 = $this->IDsplitter($data1);                                         //data2 splits the corp/alliance id
-        //and returns all data back.
-//        return $returnArray;
-    }
-    public function insertUpdate($array){
-        
+        $data2 = $this->notFoundIDFixer($data1, $charFunc, $corpFunc, $allyFunc, $unknownFunc);
+        $this->insertUpdate($data2["upload"]);
+        return $data2["validID"];
     }
 
-    public function groupCache($array, $charFunc, $corpFunc, $allyFunc, $unknownFunc){
+    public function structCache($array, $structFunc)
+    {
+        $data1 = $structFunc($array);
+        foreach ($data1 as $key => $value) {
+            foreach ($value as $key2 => $value2) {
+                if ($key2 == "solar_system_id") {
 
-    }
-    public function structCache($array, $structFunc){
+                }
+            }
+        }
+//        $var = "SELECT mapSolarSystems.solarSystemName, mapConstellations.constellationName, mapRegions.regionName FROM mapSolarSystems INNER JOIN mapConstellations ON mapSolarSystems.constellationID = mapConstellations.constellationID INNER JOIN mapRegions ON mapSolarSystems.regionID = mapRegions.regionID WHERE mapSolarSystems.solarSystemID = '30000001' ";
         echo $array;
     }
 }
@@ -337,51 +538,51 @@ class DBconn
 //________________PRIVATE FUNCTION HOUSE_______________________________________________________________________________\\
     public function Connect()
     {
-        $connect = new PDO("mysql:host=$this->Host;dbname=$this->dbName;charset=$this->Charset",$this->dbName,$this->dbPass);
+        $connect = new PDO("mysql:host=$this->Host;dbname=$this->dbName;charset=$this->Charset", $this->dbName, $this->dbPass);
         $connect->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         return $connect;
     }
 
     private function whereIs($characterOwnerHash, $conn)
     {
-        if ($this->registerChecker('users','characterOwnerHash', $characterOwnerHash, $conn)==false){
-            if ($this->registerChecker('alts','characterOwnerHash', $characterOwnerHash, $conn) == false){
+        if ($this->registerChecker('users', 'characterOwnerHash', $characterOwnerHash, $conn) == false) {
+            if ($this->registerChecker('alts', 'characterOwnerHash', $characterOwnerHash, $conn) == false) {
                 return 3;
-            }else{
+            } else {
                 return 2;
             }
-        }else{
+        } else {
             return 1;
         }
     }  //3 = nowhere 2 = alts 1 = users
 
     private function arrayChecker($row)
     {
-        $totalarray = ((count($row, 0))-1);
-        for ($x=0; $x <= $totalarray; $x++){
-            $inhoudarray[$x] = count($row[$x],0);
+        $totalarray = ((count($row, 0)) - 1);
+        for ($x = 0; $x <= $totalarray; $x++) {
+            $inhoudarray[$x] = count($row[$x], 0);
         }
         array_unshift($inhoudarray, ($totalarray + 1));
         return $inhoudarray;
     }
 
-    private function arrayReader($row,$checker)
+    private function arrayReader($row, $checker)
     {
-        if (!empty($checker)){
+        if (!empty($checker)) {
             $temp = $this->arrayChecker($row);
             $len = $temp[0];
-            $inhoudArray = array("delete"=>1);
-            for ($x=0;$x < $len;$x++){
+            $inhoudArray = array("delete" => 1);
+            for ($x = 0; $x < $len; $x++) {
                 array_unshift($inhoudArray, $row[$x][$checker]);
             }
             array_pop($inhoudArray);
-        }else{
+        } else {
 
 
             $temp = $this->arrayChecker($row);
             $len = $temp[0];
-            $inhoudArray = array("delete"=>1);
-            for ($x=0;$x < $len;$x++){
+            $inhoudArray = array("delete" => 1);
+            for ($x = 0; $x < $len; $x++) {
                 array_unshift($inhoudArray, $row[$x][TABLE_NAME]);
             }
             array_pop($inhoudArray);
@@ -392,25 +593,24 @@ class DBconn
 
     private function registerChecker($tableName, $ColumnName, $data, $conn)
     {
-        try{
+        try {
             $query = "SELECT $tableName.$ColumnName FROM $tableName WHERE $ColumnName = '$data'";
             $stmt = $conn->query($query);
             while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
 
-                $temp = $this->arrayReader($row,$ColumnName);
+                $temp = $this->arrayReader($row, $ColumnName);
                 $temp = $temp[0];
-                if ($temp !== $data){
+                if ($temp !== $data) {
                     return false;
-                }
-                elseif ($temp == $data){
+                } elseif ($temp == $data) {
                     return true;
-                }else{
+                } else {
                     echo 'went wrong<BR>';
                     echo $temp;
                     return 2;
                 }
             }
-        }catch (PDOException $e) {
+        } catch (PDOException $e) {
             die($e);
         }
     }
@@ -435,12 +635,12 @@ class DBconn
                 }
                 return false;
             }
-        }else{
+        } else {
             $query = "SELECT $ColumnName FROM $scope WHERE $ColumnName = '$data'";
             $conn = $this->Connect();
             $stmt = $conn->query($query);
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                if ($row["$ColumnName"] == $data){
+                if ($row["$ColumnName"] == $data) {
                     return 1;
                 }
             }
@@ -453,7 +653,7 @@ class DBconn
         $query = "SELECT alts.username, alts.charID, alts.refreshtoken, alts.characterOwnerHash FROM alts INNER JOIN users ON alts.main_ID = users.main_ID WHERE users.characterOwnerHash = '$mainCharacterOwnerHash'";
         $stmt = $conn->query($query);
         while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
-            foreach ($row as $key => $value){
+            foreach ($row as $key => $value) {
                 $row[$key]['refresh_token'] = $row[$key]['refreshtoken'];
                 $row[$key]['character_name'] = $row[$key]['username'];
                 $row[$key]['characterID'] = $row[$key]['charID'];
@@ -514,7 +714,7 @@ class DBconn
             $query = "INSERT INTO users(username, date, characterOwnerHash, main_ID) VALUES ('$username', '$time', '$characterOwnerHash', '$mainid')";
             $connect->query($query);
             return true;
-        }catch (PDOException $e) {
+        } catch (PDOException $e) {
             die($e);
         }
     }
@@ -545,16 +745,15 @@ class DBconn
             $mainid = $row[0][main_ID];
 
         }
-        Return array("characterID"=>$CharID,"refresh_token"=>$RefreshToken,"character_name" => $charName, "main_ID" => $mainid);
+        Return array("characterID" => $CharID, "refresh_token" => $RefreshToken, "character_name" => $charName, "main_ID" => $mainid);
     }  //"characterID"=>$CharID,"refresh_token"=>$RefreshToken,"character_name" => $charName, "main_ID" => $mainid
 
     public function ListShitter($yn)
     {
         $connect = $this->Connect();
-        if ($yn == true){
+        if ($yn == true) {
             $query = "SELECT users.characterOwnerHash FROM users INNER JOIN qanswers ON users.main_ID = qanswers.main_ID WHERE users.user_level = '2' AND qanswers.status = '0'";
-        }
-        elseif ($yn == false or empty($yn)) {
+        } elseif ($yn == false or empty($yn)) {
             $query = "SELECT users.characterOwnerHash FROM users WHERE users.user_level = '2'";
         }
         $stmt = $connect->query($query);
@@ -572,8 +771,8 @@ class DBconn
         $query = "SELECT characterOwnerHashApplyer FROM recruitment WHERE recruiterID = '$characterOwnerHash' and status = 0";
         $stmt = $conn->query($query);
         while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
-            foreach ($row as $hash){
-                $returnarray[]=$this->evidenceDispenser($hash['characterOwnerHashApplyer']);
+            foreach ($row as $hash) {
+                $returnarray[] = $this->evidenceDispenser($hash['characterOwnerHashApplyer']);
             }
             return $returnarray;
         }
@@ -596,7 +795,7 @@ class DBconn
         $mainInfo = $this->getCharacterInfo($characterOwnerHashApplyer);
         $questionsArray = $questions->questionHandler($characterOwnerHashApplyer, '');
         $altArray = $this->altListDispenser($characterOwnerHashApplyer);
-        return array('character_name' => $mainInfo['character_name'], 'characterID' => $mainInfo['characterID'], 'refresh_token' => $mainInfo['refresh_token'],'characterOwnerHash'=> $characterOwnerHashApplyer , 'altArray' => $altArray, 'questions' => $questionsArray);
+        return array('character_name' => $mainInfo['character_name'], 'characterID' => $mainInfo['characterID'], 'refresh_token' => $mainInfo['refresh_token'], 'characterOwnerHash' => $characterOwnerHashApplyer, 'altArray' => $altArray, 'questions' => $questionsArray);
     }
 
     public function Echoall()
@@ -611,67 +810,66 @@ class DBconn
 
     public function registerAlt($charOwnHash, $charID, $refreshToken, $charName)
     {
-        if (empty($charOwnHash) or empty($charID) or empty($refreshToken) or empty($charName)){
+        if (empty($charOwnHash) or empty($charID) or empty($refreshToken) or empty($charName)) {
             return 5;
         }
         $yn = $this->databaseDuplicateFinder("characterOwnerHash", $charOwnHash);
-        if ($yn == true){ //Hash already found in the Database.   You already have a account
+        if ($yn == true) { //Hash already found in the Database.   You already have a account
             return 3;
-        }
-        elseif ($yn == false){
+        } elseif ($yn == false) {
             $charInfo = $this->getCharacterInfo($_SESSION['characterOwnerHash']);
             $main_ID = $charInfo['main_ID'];
             $this->insertAltData($charOwnHash, $refreshToken, $charID, $charName, $main_ID);
             return 4;   //You now have a account.
-        }else{
+        } else {
             echo 'something went terribly wrong';
         }
     }
 
     public function register($charOwnHash, $charID, $refreshToken, $charName)
     {
-        if (empty($charOwnHash) or empty($charID) or empty($refreshToken) or empty($charName)){
+        if (empty($charOwnHash) or empty($charID) or empty($refreshToken) or empty($charName)) {
             return '';
         }
         $yn = $this->databaseDuplicateFinder("characterOwnerHash", $charOwnHash);
-        if ($yn == true){ //Hash already found in the Database.   You already have a account
+        if ($yn == true) { //Hash already found in the Database.   You already have a account
             return 1;
-        }elseif ($yn == false){
+        } elseif ($yn == false) {
 
             $this->insertdbdata($charOwnHash, $charID, $refreshToken, $charName);
             return 2;   //You now have a account.
 
-        }else{
+        } else {
             return 5;
         }
     }
 
     public function Login($charID, $CharOwnHash)
     {
-        if ($_SESSION['loggedin'] == true){
+        if ($_SESSION['loggedin'] == true) {
             return false;
-        }elseif ($_SESSION['loggedin'] == false){
+        } elseif ($_SESSION['loggedin'] == false) {
             $login = $this->getdbdata($charID, $CharOwnHash);
-            if ($login == true){
+            if ($login == true) {
                 Echo "You're logged in";
                 $_SESSION['loggedin'] = true;
                 return true;
-            }elseif ($login == false){
+            } elseif ($login == false) {
                 return false;
-            }else{
+            } else {
                 echo 'error';
             }
-            if (empty($_SESSION['characterOwnerHash'])){
+            if (empty($_SESSION['characterOwnerHash'])) {
                 echo 'leeg';
             } else {
-                echo '<br>'.$_SESSION['characterOwnerHash'];
+                echo '<br>' . $_SESSION['characterOwnerHash'];
             }
-            if (empty($_SESSION['char_ID'])){
+            if (empty($_SESSION['char_ID'])) {
                 echo 'leeg';
-            } else{
-                echo '<br>'.$_SESSION['char_ID'];
+            } else {
+                echo '<br>' . $_SESSION['char_ID'];
             }
-        }else{
+        } else {
             die('hacker');
         }
     }
@@ -696,8 +894,8 @@ class questions extends DBconn
         $returnArray = array();
         $data = array_reverse($data[0]);
         array_pop($data);
-        foreach ($data as $key => $value){
-            if ($value !== "0"){
+        foreach ($data as $key => $value) {
+            if ($value !== "0") {
                 $returnArray[$key] = $value;
             }
         }
@@ -707,50 +905,48 @@ class questions extends DBconn
 
     public function questionSupport($choice, $var1, $var2)
     {
-        if ($choice == 1){
+        if ($choice == 1) {
             $row = $var1;
             $checker = $var2;
             $len = count($row, 1);
-            $inhoudArray = array("delete"=>1);
-            for ($x=0;$x < $len;$x++){
-                $tempChecker = $checker.($x + 1.).' ';
+            $inhoudArray = array("delete" => 1);
+            for ($x = 0; $x < $len; $x++) {
+                $tempChecker = $checker . ($x + 1.) . ' ';
                 echo $tempChecker;
                 array_unshift($inhoudArray, $row[0][$tempChecker]);
             }
             array_pop($inhoudArray);
-            $return = $this->questionSupport(2,$inhoudArray);
+            $return = $this->questionSupport(2, $inhoudArray);
             return $return;
-        }
-        elseif ($choice == 2){
-            $inhoudArray = array("delete"=>1);
-            foreach ($var1 as $value){
-                if ($value !== '0' and $value !== false and !empty($value)){
+        } elseif ($choice == 2) {
+            $inhoudArray = array("delete" => 1);
+            foreach ($var1 as $value) {
+                if ($value !== '0' and $value !== false and !empty($value)) {
                     array_unshift($inhoudArray, $value);
                 }
             }
             array_pop($inhoudArray);
             print_r($inhoudArray);
             return $inhoudArray;
-        }
-        elseif ($choice == 3){
+        } elseif ($choice == 3) {
             $questions = $var1;
             $answers = $var2;
-            $newarray = array("delete"=>1);
+            $newarray = array("delete" => 1);
             $len = count($questions, 1);
-            for ($x=0;$x < $len;$x++){
-                $tempValue = "question".($x+1);
-                $value = $questions[$x].' : '.$answers[$tempValue];
+            for ($x = 0; $x < $len; $x++) {
+                $tempValue = "question" . ($x + 1);
+                $value = $questions[$x] . ' : ' . $answers[$tempValue];
                 array_unshift($newarray, $value);
             }
             array_pop($newarray);
-            return $this->questionSupport(2,$newarray);
+            return $this->questionSupport(2, $newarray);
         }
     }
 
     public function questionHandler($characterOwnerHash, $questionArray)
     {
         $conn = DBconn::Connect();
-        if (!empty($characterOwnerHash) and empty($questionArray)){
+        if (!empty($characterOwnerHash) and empty($questionArray)) {
             if (strlen($characterOwnerHash) < 50) {
                 $mainid = DBconn::getCharacterInfo($characterOwnerHash)['main_ID'];
                 $query = "SELECT * FROM qanswers WHERE main_ID = '$mainid'";
@@ -758,8 +954,7 @@ class questions extends DBconn
                 while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
                     return $row;
                 }
-            }
-            else{
+            } else {
                 $query = "SELECT ID FROM main WHERE refreshtoken = '$characterOwnerHash'";
                 $stmt = $conn->query($query);
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -767,8 +962,8 @@ class questions extends DBconn
                     $stmt = $conn->query($query);
                     $temparray = array();
                     while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
-                        foreach ($row[0] as $key => $value){
-                            if (!empty($value)){
+                        foreach ($row[0] as $key => $value) {
+                            if (!empty($value)) {
                                 $temparray[$key] = $value;
                             }
                         }
@@ -776,7 +971,7 @@ class questions extends DBconn
                     }
                 }
             }
-        }else{
+        } else {
             echo 'error';
         }
     }
@@ -805,13 +1000,13 @@ class questions extends DBconn
         $query2 = "";
         $query3 = "";
         $count = count($data);
-        foreach($data as $key => $value){
-            if ($key == "$count"){
-                $query2 = $query2. "question".$key;
-                $query3 = $query3. "'$value'";
-            }else{
-                $query2 = $query2. "question$key, ";
-                $query3 = $query3. "'$value', ";
+        foreach ($data as $key => $value) {
+            if ($key == "$count") {
+                $query2 = $query2 . "question" . $key;
+                $query3 = $query3 . "'$value'";
+            } else {
+                $query2 = $query2 . "question$key, ";
+                $query3 = $query3 . "'$value', ";
             }
         }
         $query = "INSERT INTO questions($query2) VALUES ($query3)";
@@ -826,20 +1021,20 @@ class questions extends DBconn
         $query3 = "";
         $dbInsertData = array();
         $questions = $this->currentQuestion();
-        foreach ($questions as $key => $value){
-            $combinedData = $value." : " . $data[$key];
+        foreach ($questions as $key => $value) {
+            $combinedData = $value . " : " . $data[$key];
             $dbInsertData[$key] = $combinedData;
         }
         dprintr($dbInsertData);
         $count = count($dbInsertData);
         echo $count;
-        foreach($dbInsertData as $key => $value){
-            if ($key == "question$count"){
-                $query2 = $query2. $key;
-                $query3 = $query3. "'$value'";
-            }else{
-                $query2 = $query2. "$key, ";
-                $query3 = $query3. "'$value', ";
+        foreach ($dbInsertData as $key => $value) {
+            if ($key == "question$count") {
+                $query2 = $query2 . $key;
+                $query3 = $query3 . "'$value'";
+            } else {
+                $query2 = $query2 . "$key, ";
+                $query3 = $query3 . "'$value', ";
             }
         }
         $query = "INSERT INTO qanswers($query2, main_ID, status, edit) VALUES ($query3, '$main_ID', '0', '0')";
@@ -860,117 +1055,121 @@ class questions extends DBconn
 
 class standingList extends DBconn
 {
-    public function allStandingPuller ()
+    public function allStandingPuller()
     {
         $conn = DBconn::Connect();
         $query = "SELECT * FROM standingList";
         $stmt = $conn->query($query);
         while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
-            foreach ($row as $key => $value){
+            foreach ($row as $key => $value) {
                 unset($value['ID']);
                 $row2[$value['objectID']] = $value;
             }
             return $row2;
         }
     }
-    public function standingPuller($select, $where, $value){
+
+    public function standingPuller($select, $where, $value)
+    {
         $conn = DBconn::Connect();
         $query = "SELECT $select FROM standingList WHERE $where = '$value'";
         $stmt = $conn->query($query);
         while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
-           foreach ($row as $key => $value){
-               unset($value['ID']);
-               $row2[$value['objectID']] = $value;
-           }
-           return $row2;
-       }
+            foreach ($row as $key => $value) {
+                unset($value['ID']);
+                $row2[$value['objectID']] = $value;
+            }
+            return $row2;
+        }
     }
-    public function standingInserter($ID, $type, $standing, $byWho, $reason, $automatic){
+
+    public function standingInserter($ID, $type, $standing, $byWho, $reason, $automatic)
+    {
         $conn = DBconn::Connect();
         $yn = is_array($ID);
         $updater = array();
         $query2 = "";
         $allStanding = $this->allStandingPuller();
         $return = 0;
-        if ($yn == true){
+        if ($yn == true) {
             foreach ($allStanding as $key => $value) {
-                    if (array_key_exists($key, $ID) == true){
-                        $updater[$key] = $ID[$key];
-                        unset($ID[$key]);
-                    }
+                if (array_key_exists($key, $ID) == true) {
+                    $updater[$key] = $ID[$key];
+                    unset($ID[$key]);
+                }
             }
             if (!empty($updater)) {
                 foreach ($updater as $key => $value) {
                     $query2 = $query2 . "UPDATE standingList SET standing='$value[standing]', byWho='$value[byWho]', reason='$value[reason]', automatic='$value[automatic]' WHERE objectID = '$value[objectID]'; ";
                 }
                 $stmt2 = $conn->exec($query2);
-            }else{
+            } else {
                 $stmt2 = true;
             }
-           $query3 = "";
-           if (!empty($ID)){
-           foreach ($ID as $key => $value) {
-               $query3 = $query3 . "('$key', '$value[objectType]', '$value[standing]', '$value[byWho]', '$value[reason]', '$value[automatic]'), ";
-           }
-           $query = "INSERT INTO standingList(objectID, objectType, standing, byWho, reason, automatic) VALUES $query3";
-           $query = substr($query, 0, -2);
-           $stmt = $conn->exec($query);
-           }else{
-               $stmt = true;
-           }
-           if ($stmt == 0 && $stmt2 == 0){
-               $return = $return + 3;
-           }
-           elseif ($stmt == 0){
-               $return = $return + 1;
-           }elseif ($stmt2 == 0){
+            $query3 = "";
+            if (!empty($ID)) {
+                foreach ($ID as $key => $value) {
+                    $query3 = $query3 . "('$key', '$value[objectType]', '$value[standing]', '$value[byWho]', '$value[reason]', '$value[automatic]'), ";
+                }
+                $query = "INSERT INTO standingList(objectID, objectType, standing, byWho, reason, automatic) VALUES $query3";
+                $query = substr($query, 0, -2);
+                $stmt = $conn->exec($query);
+            } else {
+                $stmt = true;
+            }
+            if ($stmt == 0 && $stmt2 == 0) {
+                $return = $return + 3;
+            } elseif ($stmt == 0) {
+                $return = $return + 1;
+            } elseif ($stmt2 == 0) {
                 $return = $return + 2;
-           }
-           return $return;
-       }elseif ($yn == false){
+            }
+            return $return;
+        } elseif ($yn == false) {
             $block = false;
             $stmt3 = "";
             $stmt4 = "";
-            foreach ($allStanding as $key => $value){
-                if ($key == $ID){
+            foreach ($allStanding as $key => $value) {
+                if ($key == $ID) {
                     $block = true;
                 }
             }
-            if ($block == false){
-            $query = "INSERT INTO standingList(objectID, objectType, standing, byWho, reason, automatic) VALUES ('$ID', '$type', '$standing', '$byWho', '$reason', '$automatic')";
-            $stmt4 = $conn->exec($query);
-            }else{
+            if ($block == false) {
+                $query = "INSERT INTO standingList(objectID, objectType, standing, byWho, reason, automatic) VALUES ('$ID', '$type', '$standing', '$byWho', '$reason', '$automatic')";
+                $stmt4 = $conn->exec($query);
+            } else {
                 $stmt4 = true;
             }
-            if ($block == true){
+            if ($block == true) {
                 $query = "UPDATE standingList SET standing='$standing', byWho='$byWho', reason='$reason', automatic='$automatic' WHERE objectID = '$ID'";
                 $stmt3 = $conn->exec($query);
-            }else{
+            } else {
                 $stmt3 = true;
             }
-            if ($stmt3 == 0 && $stmt4 == 0){
+            if ($stmt3 == 0 && $stmt4 == 0) {
                 $return = $return + 3;
-            }
-            elseif ($stmt4 == 0){
+            } elseif ($stmt4 == 0) {
                 $return = $return + 1;
-            }elseif ($stmt3 == 0){
+            } elseif ($stmt3 == 0) {
                 $return = $return + 2;
             }
             return $return;
         }
     }
-    public function standingRemover($objectID){
+
+    public function standingRemover($objectID)
+    {
         $conn = DBconn::Connect();
         $yn = is_array($objectID);
         echo $yn;
         $query = "";
-        if ($yn == true){
-            foreach ($objectID as $key => $value){
+        if ($yn == true) {
+            foreach ($objectID as $key => $value) {
                 $query = $query . "DELETE FROM standingList WHERE objectID='$objectID'; ";
             }
             $return = $conn->exec($query);
             return $return;
-        }elseif ($yn == false){
+        } elseif ($yn == false) {
             $query = "DELETE FROM standingList WHERE objectID = '$objectID';";
             $return = $conn->exec($query);
             return $return;
@@ -986,26 +1185,29 @@ class recruitment extends DBconn
 class recruitmentComments extends recruitment
 {
 
-    private function recruitmentIDfinder($conn, $where, $where2){
+    private function recruitmentIDfinder($conn, $where, $where2)
+    {
         $query = "SELECT ID FROM recruitment WHERE recruiterID = '$where' AND CharacterOwnerHashApplyer = '$where2'";
         $stmt = $conn->query($query);
-        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)){
+        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
             return $row;
         }
     }
 
 
-    private function dateSelector($where){
+    private function dateSelector($where)
+    {
         $conn = DBconn::Connect();
         $query = "SELECT * FROM recruitmentComments WHERE $where";
         $stmt = $conn->query($query);
-        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)){
+        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
             return $row;
         }
     }
 
     //inserter
-    public function insert ($comment, $where, $by){
+    public function insert($comment, $where, $by)
+    {
         $conn = DBconn::Connect();
         date_default_timezone_set('Atlantic/Reykjavik');
         $time = date('Y-m-d H:i:s', time());
@@ -1015,37 +1217,39 @@ class recruitmentComments extends recruitment
     }
 
     //select
-    public function selectComments ($ID){
+    public function selectComments($ID)
+    {
         $conn = DBconn::Connect();
         $query = "SELECT * FROM recruitmentComments WHERE recruitmentID = '$ID'";
         $stmt = $conn->query($query);
-        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)){
+        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
             return $row;
         }
     }
 
     //delete
-    public function deleteComments ($ID){
-    $conn = DBconn::Connect();
-    $query = "DELETE FROM recruitmentComments WHERE ID = '$ID';";
-    $stmt = $conn->exec($query);
-    return $stmt;
-}
+    public function deleteComments($ID)
+    {
+        $conn = DBconn::Connect();
+        $query = "DELETE FROM recruitmentComments WHERE ID = '$ID';";
+        $stmt = $conn->exec($query);
+        return $stmt;
+    }
 
     //pull all?
-    public function pullAllComments($date, $date2){
-        if (empty($date) && empty($date2)){
+    public function pullAllComments($date, $date2)
+    {
+        if (empty($date) && empty($date2)) {
             $conn = DBconn::Connect();
             $query = "SELECT * FROM recruitmentComments";
             $stmt = $conn->query($query);
-            while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)){
+            while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
                 return $row;
             }
-        }elseif (empty($date2) && isset($date)){
+        } elseif (empty($date2) && isset($date)) {
             $return = $this->dateSelector("date > '$date'");
             return $return;
-        }
-        else{
+        } else {
             $return = $this->dateSelector("date BETWEEN '$date' AND '$date2'");
             return $return;
         }
@@ -1056,18 +1260,17 @@ class recruitmentEscalations extends recruitment
 {
 
     //________________PRIVATE FUNCTION HOUSE_______________________________________________________________________________\\
-    private function insertHelper ($recruiterID, $CharacterOwnerHashApplyer, $conn)
+    private function insertHelper($recruiterID, $CharacterOwnerHashApplyer, $conn)
     {
         //search the ID in recruiter so we know what to update.
         $query = "SELECT * FROM recruitment WHERE recruiterID = '$recruiterID' AND CharacterOwnerHashApplyer = '$CharacterOwnerHashApplyer'";
         $stmt = $conn->query($query);
-        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)){
-            if ($row[0]["escalationID"] == 0){
+        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
+            if ($row[0]["escalationID"] == 0) {
                 $row[0]["yn"] = "0";
-            }
-            elseif($row["escalationID"] > 0) {
+            } elseif ($row["escalationID"] > 0) {
                 $row[0]["yn"] = "1";
-            }else{
+            } else {
                 $row[0]["yn"] = "1";
             }
             return $row;
@@ -1078,7 +1281,7 @@ class recruitmentEscalations extends recruitment
     {
         $query = "SELECT username FROM users WHERE characterOwnerHash = '$seniorCharacterOwnerHash'";
         $stmt = $conn->query($query);
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             return $row;
         }
     }
@@ -1086,55 +1289,57 @@ class recruitmentEscalations extends recruitment
     //________________PUBLIC FUNCTION HOUSE________________________________________________________________________________\\
 
     //retrieve escalations by user or all
-    public function getEscalationData($recruiterID, $seniorCharacterOwnerHash){
+    public function getEscalationData($recruiterID, $seniorCharacterOwnerHash)
+    {
         $conn = DBconn::Connect();
-        if (empty($recruiterID) and empty($seniorCharacterOwnerHash)){
+        if (empty($recruiterID) and empty($seniorCharacterOwnerHash)) {
             $query = "SELECT recruiterID, seniorCharacterOwnerHash FROM recruitmentEscalations";
-        }else if (!empty($recruiterID) and !empty($seniorCharacterOwnerHash)){
+        } else if (!empty($recruiterID) and !empty($seniorCharacterOwnerHash)) {
             $query = "SELECT recruiterID, seniorCharacterOwnerHash FROM recruitmentEscalations WHERE recruiterID = '$recruiterID' and seniorCharacterOwnerHash = '$seniorCharacterOwnerHash'";
-        }else{
+        } else {
             echo "you broke it";
         }
         $stmt = $conn->query($query);
-        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)){
+        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
             return $row;
         }
     }
 
     //insert and update escalations
-    public function insertEscalationData($recruiterID, $CharacterOwnerHashApplyer, $seniorCharacterOwnerHash){
+    public function insertEscalationData($recruiterID, $CharacterOwnerHashApplyer, $seniorCharacterOwnerHash)
+    {
         $conn = DBconn::Connect();
         $helper = $this->insertHelper($recruiterID, $CharacterOwnerHashApplyer, $conn);
-        if ($helper[0]['yn'] == 0){
+        if ($helper[0]['yn'] == 0) {
             // insert recruitmentEscalations
             $helperID = $helper[0]['ID'];
             $query = "INSERT INTO recruitmentEscalations (recruitmentID, seniorCharacterOwnerHash) VALUES ('$helperID', '$seniorCharacterOwnerHash')";
             $stmt = $conn->exec($query);
-            if ($stmt == true){
+            if ($stmt == true) {
                 //search for escalationID
                 $query = "SELECT ID FROM recruitmentEscalations WHERE recruitmentID = '$helperID' and seniorCharacterOwnerHash = '$seniorCharacterOwnerHash'";
                 $stmt = $conn->query($query);
-                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                     // update recruitment
                     $ID = $row["ID"];
                     $query = "UPDATE recruitment SET escalationID='$ID' WHERE ID = '$helperID'";
                     $stmt = $conn->exec($query);
-                    if ($stmt == true){
+                    if ($stmt == true) {
                         echo "Succesfully claimed";
-                    }else{
+                    } else {
                         echo "something went wrong while claiming";
                     }
                 }
-            }else{
+            } else {
                 echo "something terribly wrong.";
             }
-        }elseif ($helper[0]['yn'] == 1){
+        } elseif ($helper[0]['yn'] == 1) {
             // show info senior recruiter.
             $name = $this->nameSearcher($seniorCharacterOwnerHash, $conn);
-            if ($name == true){
-                echo "<b>".$name["username"]."</b>". " claimed the escalation of this application.";
+            if ($name == true) {
+                echo "<b>" . $name["username"] . "</b>" . " claimed the escalation of this application.";
             }
-        }else{
+        } else {
             echo 'you broke it.';
         }
     }
