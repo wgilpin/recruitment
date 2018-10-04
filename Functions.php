@@ -473,7 +473,7 @@ class localEveCache extends localEveDB
                     if ($value3 == "description") {
                         $temp = ", $value3 = '" . addslashes($value2['description']) . "'";
                     } elseif ($value2[$value3]) {
-                        $temp = ", $value3 ='" . $value2[$value3] . "'";
+                        $temp = ", $value3 = '" . addslashes($value2[$value3]) . "'";
                     }
                     if ($temp) {
                         $string = "$string$temp";
@@ -481,22 +481,37 @@ class localEveCache extends localEveDB
                 }
 
                 if ($string) {
-                    ECHO $string;
                     $string = substr($string, 2);
-                    $query1 = $query1 . " UPDATE groupCache SET $string, datetimeUpload = '$time' WHERE ID = $value2[ID];";
+                    $query1 .= " UPDATE groupCache SET $string, datetimeUpload = '$time' WHERE ID = $value2[ID];";
                 }
             }
         }
         if ($insert) {
             foreach ($insert as $key => $value) {
-                $query2 = $query2 . " INSERT INTO groupCache (ID, type, name, description, creationDate, SecStatus, corporation_id, alliance_id, home_station_id, ticker, px64x64, px128x128, ceo_id, creator_id, member_count, url) VALUES ('$value[ID]', '$value[type]', '$value[name]', '" . addslashes($value['description']) . "', '$value[creationDate]', '$value[SecStatus]', '$value[corporation_id]', '$value[alliance_id]', '$value[home_station_id]', '$value[ticker]', '$value[px64x64]', '$value[px128x128]', '$value[ceo_id]', '$value[creator_id]', '$value[member_count]', '$value[url]');";
-            }
-        }
+                $string['keys'] = $string['values'] = "";
+                foreach ($keyArray as $keys) {
+                    $temp = "";
+                    if ($value[$keys]) {
+                        $string['keys'] = "$string[keys], $keys";
+                        $string['values'] = "$string[values], '" . addslashes($value[$keys]) . "'";
+                    } elseif ($keys == "description") {
+                        $string['keys'] = "$string[keys], $keys";
+                        $string['values'] = "$string[values], ''";
+                    }
+                }
 
+            }
+            $string['keys'] = substr($string['keys'], 2);
+            $string['values'] = substr($string['values'], 2);
+            $query2 = $query2 . " INSERT INTO groupCache (" . $string['keys'] . ") VALUES (" . $string['values'] . ");";
+
+        }
+        echo $query2;
         echo $query1;
     }
 
-    public function groupCache($array, $charFunc, $corpFunc, $allyFunc, $unknownFunc)
+    public
+    function groupCache($array, $charFunc, $corpFunc, $allyFunc, $unknownFunc)
     {
         $data1 = $this->selectQuery($array);                                        //data1 is initial ID's
         $data2 = $this->notFoundIDFixer($data1, $charFunc, $corpFunc, $allyFunc, $unknownFunc);
@@ -504,7 +519,8 @@ class localEveCache extends localEveDB
         return $data2["validID"];
     }
 
-    public function structCache($array, $structFunc)
+    public
+    function structCache($array, $structFunc)
     {
         $data1 = $structFunc($array);
         foreach ($data1 as $key => $value) {

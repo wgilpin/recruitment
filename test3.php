@@ -6,5 +6,5 @@ include 'tempfunc.php';
 echo " doei<br>";
 $pullcase = new pullclass('debug');
 $cache = new localEveCache;
-$test = $pullcase->_Return(array("2113841152" => "2113841152"), true);
+$test = $pullcase->_Return(array("2113841152" => "2113841152", "1354830081" => "1354830081"), true);
 //dprintr($test);
