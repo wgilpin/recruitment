@@ -440,12 +440,11 @@ class localEveCache extends localEveDB
 
     public function insertUpdate($array)
     {
-//        dprintr($array);
-        $connect = $this->connect;
         $query1 = "";
         $query2 = "";
         date_default_timezone_set('Atlantic/Reykjavik');
         $time = date("Y-m-d H:i:s");
+
         $temp = array();
         $insert = array();
         $update = array();
@@ -453,17 +452,19 @@ class localEveCache extends localEveDB
             array_push($temp, $value["ID"]);
         }
         $temp = $this->selectQueryMaker($temp, "1");
-        $stmt = $connect->query($temp)->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $this->connect()->query($temp)->fetchAll(PDO::FETCH_ASSOC);
         if (!empty($stmt)) {
-            foreach ($stmt as $key => $value) {
-                $insert[$key] = $array[$key];
-                unset($array[$key]);
+
+            foreach ($stmt as $value) {
+                if ($array[$value["ID"]]) {
+                    $update[$value["ID"]] = $array[$value["ID"]];
+                    unset($array[$value["ID"]]);
+                }
             }
         }
-        $update = $array;
-//        dprintr($update);
-//        dprintr($insert);
-        dprintr($update);
+        if ($array) {
+            $insert = $array;
+        }
         $keyArray = array("ID", "type", "name", "description", "creationDate", "SecStatus", "corporation_id", "alliance_id", "home_station_id", "ticker", "px64x64", "px128x128", "ceo_id", "creator_id", "member_count", "url");
         if ($update) {
             foreach ($update as $key2 => $value2) {
@@ -479,7 +480,6 @@ class localEveCache extends localEveDB
                         $string = "$string$temp";
                     }
                 }
-
                 if ($string) {
                     $string = substr($string, 2);
                     $query1 .= " UPDATE groupCache SET $string, datetimeUpload = '$time' WHERE ID = $value2[ID];";
@@ -488,9 +488,8 @@ class localEveCache extends localEveDB
         }
         if ($insert) {
             foreach ($insert as $key => $value) {
-                $string['keys'] = $string['values'] = "";
+                $string = array();
                 foreach ($keyArray as $keys) {
-                    $temp = "";
                     if ($value[$keys]) {
                         $string['keys'] = "$string[keys], $keys";
                         $string['values'] = "$string[values], '" . addslashes($value[$keys]) . "'";
@@ -500,39 +499,46 @@ class localEveCache extends localEveDB
                     }
                 }
 
+                $string['keys'] = substr($string['keys'], 2);
+                $string['values'] = substr($string['values'], 2);
+                $query2 = $query2 . " INSERT INTO groupCache (" . $string['keys'] . ", datetimeUpload) VALUES (" . $string['values'] . ", '$time');";
             }
-            $string['keys'] = substr($string['keys'], 2);
-            $string['values'] = substr($string['values'], 2);
-            $query2 = $query2 . " INSERT INTO groupCache (" . $string['keys'] . ") VALUES (" . $string['values'] . ");";
-
         }
-        echo $query2;
-        echo $query1;
+        $totalQuery = $query1 . $query2;
+        $stmt = $this->connect()->query($totalQuery);
+        if ($stmt && $totalQuery) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public
-    function groupCache($array, $charFunc, $corpFunc, $allyFunc, $unknownFunc)
+    public function groupCache($array, $charFunc, $corpFunc, $allyFunc, $unknownFunc)
     {
         $data1 = $this->selectQuery($array);                                        //data1 is initial ID's
         $data2 = $this->notFoundIDFixer($data1, $charFunc, $corpFunc, $allyFunc, $unknownFunc);
-        $this->insertUpdate($data2["upload"]);
+        if ($data2["upload"]) {
+            $data3 = $this->insertUpdate($data2["upload"]);
+        }
         return $data2["validID"];
     }
 
-    public
-    function structCache($array, $structFunc)
+    public function structCache($array, $structFunc)
     {
+        dprintr($array);
         $data1 = $structFunc($array);
-        foreach ($data1 as $key => $value) {
-            foreach ($value as $key2 => $value2) {
-                if ($key2 == "solar_system_id") {
-
-                }
-            }
-        }
+        dprintr($data1);
+//        foreach ($data1 as $key => $value) {
+//            foreach ($value as $key2 => $value2) {
+//                if ($key2 == "solar_system_id") {
+//
+//                }
+//            }
+//        }
 //        $var = "SELECT mapSolarSystems.solarSystemName, mapConstellations.constellationName, mapRegions.regionName FROM mapSolarSystems INNER JOIN mapConstellations ON mapSolarSystems.constellationID = mapConstellations.constellationID INNER JOIN mapRegions ON mapSolarSystems.regionID = mapRegions.regionID WHERE mapSolarSystems.solarSystemID = '30000001' ";
-        echo $array;
+//        echo $array;
     }
+
 }
 
 class DBconn

@@ -224,7 +224,6 @@ class ESI
     //__All_the_ESI_Pulls__\\
     protected function AccesTokenDispencer($refresh_token)
     {
-
         $ch = curl_init();
 
         curl_setopt($ch, CURLOPT_URL, "https://login.eveonline.com/oauth/token");                                           //Host Site
@@ -420,9 +419,8 @@ class ESI
     }
 
     //Database_Cache_and_EveDump_\\
-    protected function Cachepull($accessToken, $array, $reason)
+    protected function Cachepull($array, $reason)
     {
-        $this->AccessToken = $accessToken;
         $Char_Func = function ($Char_Array) {
             $Char_Key_list = array(
                 "id" => "ID",
@@ -563,7 +561,30 @@ class ESI
         };
 
         $Struct_Func = function ($Struct_Array) {
+            $Struct_Key_list = array(
+                "id" => "StructureID",
+                "name" => "StructureName",
+                "solar_system_id" => "solarSystemID",
+                "owner_id" => "corporation_id",
+                "type_id" => "type_id"
+            );
+            $return = array();
 
+            foreach ($Struct_Array as $key => $value) {
+                $return[$key] = $this->DATAPULLAUTH($this->AccessToken, "universe/structures/$key");
+                $return[$key]["id"] = $key;
+            }
+
+            foreach ($return as $key => $value) {
+                foreach ($value as $key2 => $value2) {
+                    if ($Struct_Key_list[$key2]) {
+                        $returns[$key][$Struct_Key_list[$key2]] = $value2;
+                    } else {
+                        unset($return[$key][$key2]);
+                    }
+                }
+            }
+            return $returns;
         };
 
         if ($reason) {
@@ -703,7 +724,7 @@ class Wallet extends ESI
         $returnarray = array();
         $returnarray["blacklist"] = $this->Blacklist($idArray);
         $returnarray["info"] = $FinalArray;
-        $returnarray["list"] = $idArray;
+        $returnarray["list"] = $this->Cachepull($idArray);
         return $returnarray;
     }
 
@@ -730,7 +751,7 @@ class Mail extends ESI
         array_shift($FinalArray);
         $returnarray["blacklist"] = $this->Blacklist($idArray);
         $returnarray["info"] = $FinalArray;
-        $returnarray["list"] = $idArray;
+        $returnarray["list"] = $this->Cachepull($idArray);
         return $returnarray;
     }
 
@@ -816,6 +837,7 @@ class Assets extends ESI
         $Datacheck = $Hangar + $typeArray;
         $DataOutput = $this->Datacall->data($Datacheck);
         foreach ($DataOutput[2] as $key => $value) {
+            echo "<br>ID:  $value    || Structure ID, Token: $this->AccessToken    || AccessToken";
             $info = $this->DATAPULLAUTH($this->AccessToken, "universe/structures/$value");
             if ($info["error"]) {
                 $error[$value] = $value;
@@ -829,7 +851,6 @@ class Assets extends ESI
         $Solar_ID = $this->_Foreach($DataOutput[2], $returnarray, $this->Pull_Func, array("solar_system_id"));
         $this->dprintr($Solar_ID);
     }
-
 }
 
 class Login extends ESI
@@ -845,16 +866,16 @@ class Login extends ESI
 
 class Debug extends ESI
 {
-
-    public function Run($array)
+    public function Run($refresh, $array, $reason)
     {
-        echo "This is the test";
-        return $this->Cachepull("1", $array, "lol");
+        $this->AccessToken = $this->AccesTokenDispencer($refresh);
+        return $this->Cachepull($array, $reason);
     }
 }
 
 class pullclass
 {
+
     private $Obj;
 
     public function __construct($scope)
