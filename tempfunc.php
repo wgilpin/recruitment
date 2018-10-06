@@ -590,7 +590,7 @@ class ESI
         if ($reason) {
             return $this->Cachecall->groupCache($array, $Char_Func, $Corp_Func, $Ally_Func, $Unknown_Func);
         } else {
-            return $this->Cachecall->structCache($array, $Struct_Func);
+            return $this->Cachecall->structCache($array, $Struct_Func, $Corp_Func, $Ally_Func);
         }
     }
 
@@ -818,6 +818,7 @@ class Assets extends ESI
         Echo $CharID . "  REE  " . $this->AccessToken . "  REE  ";
         $this->Scope = $this->Scopemaker("characters", $CharID, "assets");
         $array = $this->DATAPULLAUTH($this->AccessToken, $this->Scope);
+        $this->dprintr($array);
         $ItemArray = $this->_Foreach($array, $returnarray, $this->Pull_Func, $Itemarray);
 //        $this->dprintr($ItemArray);
         $typeArray = $this->_Foreach($array, $returnarray, $this->Pull_Func, $TypeArray);
@@ -848,8 +849,7 @@ class Assets extends ESI
             }
         }
         $DataOutput[2] = $DataOutput[2] + $anotherarray;
-        $Solar_ID = $this->_Foreach($DataOutput[2], $returnarray, $this->Pull_Func, array("solar_system_id"));
-        $this->dprintr($Solar_ID);
+
     }
 }
 

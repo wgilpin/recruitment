@@ -43,8 +43,9 @@ $EVEDBinventoryType = "invTypes";
 $EVEDBstations = "staStations";
 //amount of days for expired data in localEveCache
 $Days_Character = "7";  //Characters
-$Days_Corporation = "2";  //Corporation
+$Days_Corporation = "10";  //Corporation
 $Days_Alliance = "9";  //Alliances
+$Days_Structure = "14";  //Alliances
 
 
 
@@ -58,7 +59,7 @@ $Client_BasicLogin =  base64_encode(($Client_IDLogin . ":" . $Client_PassLogin))
 $daysCharacter = "-$Days_Character days";
 $daysCorporation = "-$Days_Corporation days";
 $daysAlliance = "-$Days_Alliance days";
-
+$daysStructure = "-$Days_Structure days";
 
 
 //        allrequired scopes
