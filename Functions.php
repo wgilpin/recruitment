@@ -250,22 +250,22 @@ class localEveCache extends localEveDB
             }
             $query = substr($query, 0, -9);
             return $query;
-        }elseif ($input == "1"){
+        } elseif ($input == "1") {
             $query = "";
             foreach ($array as $key => $value) {
                 $query = $query . " SELECT ID FROM groupCache WHERE ID = '$value' UNION ALL";
             }
             $query = substr($query, 0, -9);
             return $query;
-        }elseif ($input == "3"){
+        } elseif ($input == "3") {
             foreach ($array as $key => $value) {
                 $query = $query . " SELECT * FROM structureCache WHERE structureID = '$value' UNION ALL";
             }
             $query = substr($query, 0, -9);
             return $query;
-        }elseif ($input == "4"){
+        } elseif ($input == "4") {
             foreach ($array as $key => $value) {
-                $query = $query . " SELECT ".$this->keyArrayStruct[1]." FROM structureCache WHERE structureID = '$value' UNION ALL";
+                $query = $query . " SELECT " . $this->keyArrayStruct[1] . " FROM structureCache WHERE structureID = '$value' UNION ALL";
             }
             $query = substr($query, 0, -9);
             return $query;
@@ -302,13 +302,14 @@ class localEveCache extends localEveDB
         if (empty($row)) {
             $data["unknown"] = $array;
         }
-        if (empty($data["unknown"])){
+        if (empty($data["unknown"])) {
             unset($data["unknown"]);
         }
         return $data;
     }
 
-    private function solarsystemSearcher($array){
+    private function solarsystemSearcher($array)
+    {
         $query = "";
         $tempArray = array();
         foreach ($array as $key => $value) {
@@ -317,12 +318,11 @@ class localEveCache extends localEveDB
         $query = substr($query, 0, -9);
         $stmt = $this->connect->query($query);
         while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
-            foreach ($row as $value){
+            foreach ($row as $value) {
                 $tempArray[$value["solarSystemID"]] = $value;
             }
             return $tempArray;
         }
-
     }
 
     private function dateChecker($data, $input)
@@ -368,7 +368,7 @@ class localEveCache extends localEveDB
                         break;
                 }
             }
-        }elseif ($input == "3"){
+        } elseif ($input == "3") {
             foreach ($data as $key => $value) {
                 $datetimeUpload = $data[$key]["datetimeUpload"];
                 $datetime = date("Y-m-d H:i:s", strtotime($datetimeUpload));
@@ -376,7 +376,6 @@ class localEveCache extends localEveDB
                     $data["expiredID"] = array($data[$key]["StructureID"] => $data[$key]["StructureID"]);
                     unset($data[$key]);
                 } else {
-                    echo "hoi";
                     $data["validID"][$data[$key]["StructureID"]] = $value;
                     unset($data[$key]);
                 }
@@ -388,7 +387,6 @@ class localEveCache extends localEveDB
     private function notFoundIDFixer($array, $charFunc, $corpFunc, $allyFunc, $unknownFunc)
     {
         //expiredID
-
         foreach ($array["expiredID"] as $key => $value) {
             if ($value["type"] == "character") {
                 $charInfo = $charFunc(array($key => $key));
@@ -428,60 +426,70 @@ class localEveCache extends localEveDB
         return $returnArray;
     }
 
-    private function structNotFoundFixer($array, $structFunc, $corpFunc, $allyFunc)
+    private function structNotFoundFixer($array, $structFunc, $corpFunc, $allyFunc, $unknownFunc)
     {
         $temp2 = array();
         $temp = "";
-        if ($array["expiredID"] && $array["unknown"]){
+        if ($array["expiredID"] && $array["unknown"]) {
             $array["expiredID"] += $array["unknown"];
             unset($array["unknown"]);
-        }elseif (!$array["expiredID"] && $array["unknown"]){
+        } elseif (!$array["expiredID"] && $array["unknown"]) {
             $array["expiredID"] = $array["unknown"];
             unset($array["unknown"]);
         }
 
         if (!empty($array["expiredID"])) {
             $temp = $structFunc($array["expiredID"]);
+            if ($temp["error"]) {
+                $error = $temp["error"];
+                echo "<br> neusbeertje <br>";
+                dprintr($error);
+                echo "<br> neusbeertje <br>";
+                unset($temp["error"]);
+            }
             $array["upload"] = $temp;
             unset($array["expiredID"]);
         }
 
-            if ($temp && $array["validID"]){
-                $temp += $array["validID"];
-            }elseif (!$temp && $array["validID"]){
-                $temp = $array["validID"];
+        if ($temp && $array["validID"]) {
+            $temp += $array["validID"];
+        } elseif (!$temp && $array["validID"]) {
+            $temp = $array["validID"];
+        }
+        if ($temp) {
+            foreach ($temp as $key => $value) {
+                $temp2[$value["corporation_id"]] = $value["corporation_id"];
             }
-            if ($temp) {
-                foreach ($temp as $key => $value) {
-                    $temp2[$value["corporation_id"]] = $value["corporation_id"];
+            $selectquery = $this->selectQuery($temp2);
+            if ($selectquery["unknown"]) {
+                foreach ($selectquery["unknown"] as $value) {
+                    $selectquery["expiredID"][$value] = array("type" => "corporation", "ID" => $value);
                 }
-                $selectquery = $this->selectQuery($temp2);
-                if ($selectquery["unknown"]) {
-                    foreach ($selectquery["unknown"] as $value) {
-                        $selectquery["expiredID"][$value] = array("type" => "corporation", "ID" => $value);
-                    }
-                    unset($selectquery["unknown"]);
-                }
-                $allarray = $this->notFoundIDFixer($selectquery, "", $corpFunc, $allyFunc, "");
-                if ($allarray["upload"]) {
-                    $this->insertUpdate($allarray["upload"], $this->keyArrayGroup);
-                    unset($allarray["upload"]);
-                }
-                $corpID = $allarray["validID"];
-                foreach ($temp as $key => $value) {
-                    $temp[$key]["corporation_id"] = $corpID[$temp[$key]["corporation_id"]];
-                    $temp[$key]["alliance_id"] = $temp[$key]["corporation_id"]["alliance_id"];
-                    if (key_exists($key, $array["upload"])){
-                        $array["upload"][$key]["alliance_id"] = $temp[$key]["corporation_id"]["alliance_id"]["ID"];
-                    }
-                    unset($corpID[$temp[$key]["corporation_id"]]);
-                    unset($temp[$key]["corporation_id"]["alliance_id"]);
-                    if (!$temp[$key]["alliance_id"]) {
-                        unset($temp[$key]["alliance_id"]);
-                    }
-                }
-                $array["validID"] = $temp;
+                unset($selectquery["unknown"]);
             }
+            $allarray = $this->notFoundIDFixer($selectquery, "", $corpFunc, $allyFunc, $unknownFunc);
+            if ($allarray["upload"]) {
+                $this->insertUpdate($allarray["upload"], $this->keyArrayGroup);
+                unset($allarray["upload"]);
+            }
+            $corpID = $allarray["validID"];
+            foreach ($temp as $key => $value) {
+                $temp[$key]["corporation_id"] = $corpID[$temp[$key]["corporation_id"]];
+                $temp[$key]["alliance_id"] = $temp[$key]["corporation_id"]["alliance_id"];
+                if (key_exists($key, $array["upload"])) {
+                    $array["upload"][$key]["alliance_id"] = $temp[$key]["corporation_id"]["alliance_id"]["ID"];
+                }
+                unset($corpID[$temp[$key]["corporation_id"]]);
+                unset($temp[$key]["corporation_id"]["alliance_id"]);
+                if (!$temp[$key]["alliance_id"]) {
+                    unset($temp[$key]["alliance_id"]);
+                }
+            }
+            $array["validID"] = $temp;
+            if ($error) {
+                $array["error"] = $error;
+            }
+        }
         return $array;
     }
 
@@ -515,10 +523,10 @@ class localEveCache extends localEveDB
             }
         }
         if ($result["expiredID"]) {
-            if (!$result["validID"]){
+            if (!$result["validID"]) {
                 $result["validID"] = array();
             }
-            if (!$array["upload"]){
+            if (!$array["upload"]) {
                 $array["upload"] = array();
             }
             $corp = array();
@@ -536,10 +544,11 @@ class localEveCache extends localEveDB
             }
             $corp = $corpFunc($corp);
             $ally = $allyFunc($ally);
+
             if ($corp) {
                 $returnarray = $returnarray + $corp;
             }
-            
+
             if ($ally) {
                 $returnarray = $returnarray + $ally;
             }
@@ -547,7 +556,7 @@ class localEveCache extends localEveDB
                 $result["validID"] = $result["validID"] + $returnarray;
                 $array["upload"] = $array["upload"] + $returnarray;
             }
-            
+
         }
         foreach ($array["validID"] as $key => $value) {
             $array["validID"][$key]["corporation_id"] = $result["validID"][$array["validID"][$key]["corporation_id"]];
@@ -570,7 +579,7 @@ class localEveCache extends localEveDB
         foreach ($array as $key => $value) {
             array_push($temp, $value[$keyArray[0]]);
         }
-        switch ($place){
+        switch ($place) {
             case "groupCache":
                 $temp = $this->selectQueryMaker($temp, "1");
                 break;
@@ -609,7 +618,7 @@ class localEveCache extends localEveDB
                 }
                 if ($string) {
                     $string = substr($string, 2);
-                    $query1 .= " UPDATE $place SET $string, datetimeUpload = '$time' WHERE ".$keyArray[0]." = ". $value2[$keyArray[0]].";";
+                    $query1 .= " UPDATE $place SET $string, datetimeUpload = '$time' WHERE " . $keyArray[0] . " = " . $value2[$keyArray[0]] . ";";
                 }
             }
         }
@@ -639,16 +648,17 @@ class localEveCache extends localEveDB
         }
     }
 
-    private function IDreplacer($array){
+    private function IDreplacer($array)
+    {
         $typeArray = array();
         $solarArray = array();
-        foreach ($array as $key => $value){
+        foreach ($array as $key => $value) {
             $typeArray[$value["type_id"]] = $value["type_id"];
             $solarArray[$value["solarSystemID"]] = $value["solarSystemID"];
         }
         $solarArray = $this->solarsystemSearcher($solarArray);
         $typeArray = $this->data($typeArray);
-        foreach ($array as $key => $value){
+        foreach ($array as $key => $value) {
             $array[$key]["type_id"] = $typeArray["1"][$value["type_id"]];
             $array[$key]["solarSystemID"] = $solarArray[$value["solarSystemID"]];
         }
@@ -666,15 +676,16 @@ class localEveCache extends localEveDB
         return $data2["validID"];
     }
 
-    public function structCache($array, $structFunc, $corpFunc, $allyFunc)
+    public function structCache($array, $structFunc, $corpFunc, $allyFunc, $unknownFunc)
     {
         $data = $this->selectQuery($array, "3");
-        $data2 = $this->structNotFoundFixer($data, $structFunc, $corpFunc, $allyFunc);
+        $data2 = $this->structNotFoundFixer($data, $structFunc, $corpFunc, $allyFunc, $unknownFunc);
         if ($data2["upload"]) {
-            $data3 = $this->insertUpdate($data2["upload"], $this->keyArrayStruct);
+            $this->insertUpdate($data2["upload"], $this->keyArrayStruct);
         }
-
-        return $this->IDreplacer($data2["validID"]);
+        $data3 = $this->IDreplacer($data2["validID"]);
+        $data3["error"] = $data2["error"];
+        return $data3;
     }
 }
 

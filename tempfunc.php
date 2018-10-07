@@ -545,17 +545,15 @@ class ESI
                         break;
                 }
             }
-            $char = $Char_Func($char);
-            $corp = $Corp_Func($corp);
-            $ally = $Ally_Func($ally);
+
             if ($char) {
-                $returnarray = $returnarray + $char;
+                $returnarray = $returnarray +  $Char_Func($char);
             }
             if ($corp) {
-                $returnarray = $returnarray + $corp;
+                $returnarray = $returnarray + $Corp_Func($corp);
             }
             if ($ally) {
-                $returnarray = $returnarray + $ally;
+                $returnarray = $returnarray + $Ally_Func($ally);
             }
             return $returnarray;
         };
@@ -572,9 +570,14 @@ class ESI
 
             foreach ($Struct_Array as $key => $value) {
                 $return[$key] = $this->DATAPULLAUTH($this->AccessToken, "universe/structures/$key");
-                $return[$key]["id"] = $key;
-            }
+                if ($return[$key]["error"]) {
+                    $returns["error"][$key]["id"] = $key;
+                    $returns["error"][$key] = $value;
+                } else {
+                    $return[$key]["id"] = $key;
+                }
 
+            }
             foreach ($return as $key => $value) {
                 foreach ($value as $key2 => $value2) {
                     if ($Struct_Key_list[$key2]) {
@@ -584,14 +587,15 @@ class ESI
                     }
                 }
             }
+
             return $returns;
         };
 
         if ($reason) {
             return $this->Cachecall->groupCache($array, $Char_Func, $Corp_Func, $Ally_Func, $Unknown_Func);
         } else {
-            return $this->Cachecall->structCache($array, $Struct_Func, $Corp_Func, $Ally_Func);
-        }
+            return $this->Cachecall->structCache($array, $Struct_Func, $Corp_Func, $Ally_Func, $Unknown_Func);
+        }  // If reason == True, Group   ||    If reason == False, Structure
     }
 
     //__Support_for_ESI__\
@@ -818,7 +822,6 @@ class Assets extends ESI
         Echo $CharID . "  REE  " . $this->AccessToken . "  REE  ";
         $this->Scope = $this->Scopemaker("characters", $CharID, "assets");
         $array = $this->DATAPULLAUTH($this->AccessToken, $this->Scope);
-        $this->dprintr($array);
         $ItemArray = $this->_Foreach($array, $returnarray, $this->Pull_Func, $Itemarray);
 //        $this->dprintr($ItemArray);
         $typeArray = $this->_Foreach($array, $returnarray, $this->Pull_Func, $TypeArray);
@@ -827,28 +830,21 @@ class Assets extends ESI
         $ReplaceItemarray = $this->NameArray($ReplaceItemarray);
         $test = $this->_Foreach($array, $returnarray, $this->Pull_Redirect_Func, $Keyarray);
         $Hangar = array_keys($test, "Hangar");
-//        $this->dprintr($Hangar);
         foreach ($Hangar as $key => $value) {
             if (in_array($value, $ItemArray)) {
                 $test[$value] = "ItemLocation";
                 unset($Hangar[$key]);
             }
         }
-//        $this->dprintr($test);
         $Datacheck = $Hangar + $typeArray;
         $DataOutput = $this->Datacall->data($Datacheck);
         foreach ($DataOutput[2] as $key => $value) {
             echo "<br>ID:  $value    || Structure ID, Token: $this->AccessToken    || AccessToken";
-            $info = $this->DATAPULLAUTH($this->AccessToken, "universe/structures/$value");
-            if ($info["error"]) {
-                $error[$value] = $value;
-                unset($DataOutput[2][$key]);
-            } else {
-                $anotherarray[$value] = $info;
-                unset($DataOutput[2][$key]);
-            }
+            $DataOutput[2][$value] = $value;
+            unset ($DataOutput[2][$key]);
         }
-        $DataOutput[2] = $DataOutput[2] + $anotherarray;
+
+        $this->dprintr($this->Cachepull($DataOutput[2]));
 
     }
 }
