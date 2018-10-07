@@ -71,6 +71,85 @@ class localEveDB
 
 //________________PRIVATE FUNCTION HOUSE_______________________________________________________________________________\\
 
+    private function getScoop($data)
+    {
+        //creates a array where
+        // array 0: all id's of typeID
+        // array 1: all id's of stations
+        // array 2: all id's which are not found between the range's of id's
+        $typeID = array();
+        $stationID = array();
+        $notFound = array();
+        foreach ($data as $key => $value) {
+            if ($value >= 0 && $value <= 400000) {
+                $typeID[$key] = $value;
+            } elseif ($value >= 60000000 && $value <= 60020000) {
+                $stationID[$key] = $value;
+            } else {
+                $notFound[$key] = $value;
+            }
+        }
+        $returnArray = array('type_id' => $typeID, 'stationID' => $stationID, 'bad' => $notFound);
+        return $returnArray;
+    }
+
+    protected function Connect()
+    {
+        $connect = new PDO("mysql:host=$this->Host;dbname=$this->dbName;charset=$this->Charset", $this->dbName, $this->dbPass);
+        $connect->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        return $connect;
+    }
+
+    private function queryHandler($query)
+    {
+        try {
+            $conn = $this->Connect();
+            $stmt = $conn->query($query);
+            if ($stmt == false) {
+                return false;
+            }
+            while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
+                return $row;
+            }
+        } catch (PDOException $e) {
+            die($e);
+        }
+    }
+
+    private function queryWriter($arrays, $select, $from, $where)
+    {
+        $query = '';
+        foreach ($arrays["$where"] as $key => $value) {
+            $query = $query . " SELECT $select FROM $from WHERE $where = '$value' UNION ALL";
+        }
+        $query = substr($query, 0, -9); //removes UNION ALL
+        return $query;
+    }
+
+    private function keyReplacer($row, $IDname)
+    {
+        //fills array with typeID data.
+        $returnData = array();
+        foreach ($row as $key => $value) {
+            $returnData[$value[$IDname]] = $row[$key];
+        }
+        return $returnData;
+    }
+
+    private function dataChecker($returnData, $checkData, $IDname)
+    {
+        $badID = array();
+        foreach ($returnData as $key => $value) {
+            $data5 = $checkData[$value][$IDname];
+            if (empty($data5)) {
+                array_push($badID, $value);
+            }
+        }
+        return $badID;
+    }
+
+//________________PUBLIC FUNCTION HOUSE________________________________________________________________________________\\
+
     public function data($data)
         //input is a array with array(0=>"2314", 1=>"2345",...etc
     {
@@ -136,85 +215,6 @@ class localEveDB
         // array '2' contains all ID's which were not inside the scope and not found in the database.
     }
 
-    private function getScoop($data)
-    {
-        //creates a array where
-        // array 0: all id's of typeID
-        // array 1: all id's of stations
-        // array 2: all id's which are not found between the range's of id's
-        $typeID = array();
-        $stationID = array();
-        $notFound = array();
-        foreach ($data as $key => $value) {
-            if ($value >= 0 && $value <= 400000) {
-                $typeID[$key] = $value;
-            } elseif ($value >= 60000000 && $value <= 60020000) {
-                $stationID[$key] = $value;
-            } else {
-                $notFound[$key] = $value;
-            }
-        }
-        $returnArray = array('type_id' => $typeID, 'stationID' => $stationID, 'bad' => $notFound);
-        return $returnArray;
-    }
-
-    private function queryWriter($arrays, $select, $from, $where)
-    {
-        $query = '';
-        foreach ($arrays["$where"] as $key => $value) {
-            $query = $query . " SELECT $select FROM $from WHERE $where = '$value' UNION ALL";
-        }
-        $query = substr($query, 0, -9); //removes UNION ALL
-        return $query;
-    }
-
-    private function queryHandler($query)
-    {
-        try {
-            $conn = $this->Connect();
-            $stmt = $conn->query($query);
-            if ($stmt == false) {
-                return false;
-            }
-            while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
-                return $row;
-            }
-        } catch (PDOException $e) {
-            die($e);
-        }
-    }
-
-    protected function Connect()
-    {
-        $connect = new PDO("mysql:host=$this->Host;dbname=$this->dbName;charset=$this->Charset", $this->dbName, $this->dbPass);
-        $connect->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        return $connect;
-    }
-
-    private function keyReplacer($row, $IDname)
-    {
-        //fills array with typeID data.
-        $returnData = array();
-        foreach ($row as $key => $value) {
-            $returnData[$value[$IDname]] = $row[$key];
-        }
-        return $returnData;
-    }
-
-//________________PUBLIC FUNCTION HOUSE________________________________________________________________________________\\
-
-    private function dataChecker($returnData, $checkData, $IDname)
-    {
-        $badID = array();
-        foreach ($returnData as $key => $value) {
-            $data5 = $checkData[$value][$IDname];
-            if (empty($data5)) {
-                array_push($badID, $value);
-            }
-        }
-        return $badID;
-    }
-
 //_____________________________________________________________________________________________________________________\\
 }
 
@@ -224,6 +224,7 @@ class localEveCache extends localEveDB
     private $daysCharacter;
     private $daysCorporation;
     private $daysAlliance;
+    private $daysStructure;
 
     public function __construct()
     {
@@ -237,29 +238,35 @@ class localEveCache extends localEveDB
 
     private function selectQueryMaker($array, $input)
     {
+        $query = "";
         if (empty($input)) {
-            $query = "";
             foreach ($array as $key => $value) {
                 $query = $query . " SELECT * FROM groupCache WHERE ID = '$value' UNION ALL";
             }
             $query = substr($query, 0, -9);
             return $query;
-        } else {
+        } elseif ($input == "1") {
             $query = "";
             foreach ($array as $key => $value) {
                 $query = $query . " SELECT ID FROM groupCache WHERE ID = '$value' UNION ALL";
             }
             $query = substr($query, 0, -9);
             return $query;
+        } elseif ($input == "3") {
+            foreach ($array as $key => $value) {
+                $query = $query . " SELECT * FROM structureCache WHERE structureID = '$value' UNION ALL";
+            }
+            $query = substr($query, 0, -9);
+            return $query;
         }
     }
 
-    private function selectQuery($array)
+    private function selectQuery($array, $input)
     {
-        $query = $this->selectQueryMaker($array, "");
+        $query = $this->selectQueryMaker($array, $input);
         $stmt = $this->connect->query($query);
         while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
-            $data = $this->dateChecker($row);
+            $data = $this->dateChecker($row, $input);
             foreach ($data["validID"] as $key => $value) {
                 if (in_array($key, $array)) {
                     unset($array[$key]);
@@ -284,49 +291,80 @@ class localEveCache extends localEveDB
         if (empty($row)) {
             $data["unknown"] = $array;
         }
+        if (empty($data["unknown"])) {
+            unset($data["unknown"]);
+        }
         return $data;
     }
 
-    private function dateChecker($data)
+    private function solarsystemSearcher($array)
     {
-        foreach ($data as $key => $value) {
-            switch ($value["type"]) {
-                case "character":
-                    $datetimeUpload = $data[$key]["datetimeUpload"];
-                    $datetime = date("Y-m-d H:i:s", strtotime($datetimeUpload));
-                    if ($datetime < $this->daysCharacter) {
-                        $data["expiredID"] = array($data[$key]["ID"] => array("ID" => $data[$key]["ID"], "type" => $data[$key]["type"]));
-                        unset($data[$key]);
-                    } else {
-                        $data["validID"][$data[$key]["ID"]] = $value;
-                        unset($data[$key]);
-                    }
-                    break;
-                case "corporation":
-                    $datetimeUpload = $data[$key]["datetimeUpload"];
-                    $datetime = date("Y-m-d H:i:s", strtotime($datetimeUpload));
-                    if ($datetime < $this->daysCorporation) {
-                        $data["expiredID"] = array($data[$key]["ID"] => array("ID" => $data[$key]["ID"], "type" => $data[$key]["type"]));
-                        unset($data[$key]);
-                    } else {
-                        $data["validID"][$data[$key]["ID"]] = $value;
-                        unset($data[$key]);
-                    }
-                    break;
-                case "alliance":
-                    $datetimeUpload = $data[$key]["datetimeUpload"];
-                    $datetime = date("Y-m-d H:i:s", strtotime($datetimeUpload));
-                    if ($datetime < $this->daysAlliance) {
-                        $data["expiredID"] = array($data[$key]["ID"] => array("ID" => $data[$key]["ID"], "type" => $data[$key]["type"]));
-                        unset($data[$key]);
-                    } else {
-                        $data["validID"][$data[$key]["ID"]] = $value;
-                        unset($data[$key]);
-                    }
-                    break;
-                default:
-                    echo "you broke the code.";
-                    break;
+        $query = "";
+        foreach ($array as $key => $value) {
+            $query = $query . " SELECT mapSolarSystems.solarSystemName, mapConstellations.constellationName, mapRegions.regionName FROM mapSolarSystems INNER JOIN mapConstellations ON mapSolarSystems.constellationID = mapConstellations.constellationID INNER JOIN mapRegions ON mapSolarSystems.regionID = mapRegions.regionID WHERE mapSolarSystems.solarSystemID = '30004759' UNION ALL";
+        }
+        $query = substr($query, 0, -9);
+        $stmt = $this->connect->query($query);
+        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
+            return $row;
+        }
+    }
+
+    private function dateChecker($data, $input)
+    {
+        if (empty($input)) {
+            foreach ($data as $key => $value) {
+                switch ($value["type"]) {
+                    case "character":
+                        $datetimeUpload = $data[$key]["datetimeUpload"];
+                        $datetime = date("Y-m-d H:i:s", strtotime($datetimeUpload));
+                        if ($datetime < $this->daysCharacter) {
+                            $data["expiredID"] = array($data[$key]["ID"] => array("ID" => $data[$key]["ID"], "type" => $data[$key]["type"]));
+                            unset($data[$key]);
+                        } else {
+                            $data["validID"][$data[$key]["ID"]] = $value;
+                            unset($data[$key]);
+                        }
+                        break;
+                    case "corporation":
+                        $datetimeUpload = $data[$key]["datetimeUpload"];
+                        $datetime = date("Y-m-d H:i:s", strtotime($datetimeUpload));
+                        if ($datetime < $this->daysCorporation) {
+                            $data["expiredID"] = array($data[$key]["ID"] => array("ID" => $data[$key]["ID"], "type" => $data[$key]["type"]));
+                            unset($data[$key]);
+                        } else {
+                            $data["validID"][$data[$key]["ID"]] = $value;
+                            unset($data[$key]);
+                        }
+                        break;
+                    case "alliance":
+                        $datetimeUpload = $data[$key]["datetimeUpload"];
+                        $datetime = date("Y-m-d H:i:s", strtotime($datetimeUpload));
+                        if ($datetime < $this->daysAlliance) {
+                            $data["expiredID"] = array($data[$key]["ID"] => array("ID" => $data[$key]["ID"], "type" => $data[$key]["type"]));
+                            unset($data[$key]);
+                        } else {
+                            $data["validID"][$data[$key]["ID"]] = $value;
+                            unset($data[$key]);
+                        }
+                        break;
+                    default:
+                        echo "you broke the code.";
+                        break;
+                }
+            }
+        } elseif ($input == "3") {
+            foreach ($data as $key => $value) {
+                $datetimeUpload = $data[$key]["datetimeUpload"];
+                $datetime = date("Y-m-d H:i:s", strtotime($datetimeUpload));
+                if ($datetime < $this->daysStructure) {
+                    $data["expiredID"] = array($data[$key]["StructureID"] => $data[$key]["StructureID"]);
+                    unset($data[$key]);
+                } else {
+                    echo "hoi";
+                    $data["validID"][$data[$key]["StructureID"]] = $value;
+                    unset($data[$key]);
+                }
             }
         }
         return $data;
@@ -372,6 +410,29 @@ class localEveCache extends localEveDB
         }
         $returnArray = $this->IDsplitter($array, $charFunc, $corpFunc, $allyFunc, $unknownFunc);
         return $returnArray;
+    }
+
+    private function structNotFoundFixer($array, $structFunc)
+    {
+        $temp2 = array();
+        if (!empty($array["expiredID"])) {
+            $temp = $structFunc($array["expiredID"]);
+            foreach ($temp as $key => $value) {
+                $temp2[$value["corporation_id"]] = $value["corporation_id"];
+            }
+            $alliance_id = $this->groupCache($temp2);
+            dprintr($temp2);
+        }
+
+        //            foreach ($temp as $key => $value){
+//                $temp2[$key] = $value["solarSystemID"];
+//            }
+//            $solarSystemNames = $this->solarsystemSearcher(array("30004759"));
+//            dprintr($solarSystemNames);
+//            $temp[$key]["solarSystemName"] = ;
+//            $temp[$key]["constellationName"] = ;
+//            $temp[$key]["regionName"] = ;
+//            dprintr($temp2);
     }
 
     private function IDsplitter($array, $charFunc, $corpFunc, $allyFunc, $unknownFunc)
@@ -444,7 +505,6 @@ class localEveCache extends localEveDB
         $query2 = "";
         date_default_timezone_set('Atlantic/Reykjavik');
         $time = date("Y-m-d H:i:s");
-
         $temp = array();
         $insert = array();
         $update = array();
