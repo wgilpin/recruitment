@@ -1,4 +1,4 @@
--<?php
+<?php
 
 function keycheck($array, $returnarray, $keycheck)
 {
@@ -234,6 +234,7 @@ class localEveCache extends localEveDB
         $this->daysCharacter = date("Y-m-d H:i:s", strtotime($daysCharacter));
         $this->daysCorporation = date("Y-m-d H:i:s", strtotime($daysCorporation));
         $this->daysAlliance = date("Y-m-d H:i:s", strtotime($daysAlliance));
+        $this->daysStructure = date("Y-m-d H:i:s", strtotime($daysStructure));
     }
 
     private function selectQueryMaker($array, $input)
@@ -245,14 +246,14 @@ class localEveCache extends localEveDB
             }
             $query = substr($query, 0, -9);
             return $query;
-        } elseif ($input == "1") {
+        }elseif ($input == "1"){
             $query = "";
             foreach ($array as $key => $value) {
                 $query = $query . " SELECT ID FROM groupCache WHERE ID = '$value' UNION ALL";
             }
             $query = substr($query, 0, -9);
             return $query;
-        } elseif ($input == "3") {
+        }elseif ($input == "3"){
             foreach ($array as $key => $value) {
                 $query = $query . " SELECT * FROM structureCache WHERE structureID = '$value' UNION ALL";
             }
@@ -291,14 +292,13 @@ class localEveCache extends localEveDB
         if (empty($row)) {
             $data["unknown"] = $array;
         }
-        if (empty($data["unknown"])) {
+        if (empty($data["unknown"])){
             unset($data["unknown"]);
         }
         return $data;
     }
 
-    private function solarsystemSearcher($array)
-    {
+    private function solarsystemSearcher($array){
         $query = "";
         foreach ($array as $key => $value) {
             $query = $query . " SELECT mapSolarSystems.solarSystemName, mapConstellations.constellationName, mapRegions.regionName FROM mapSolarSystems INNER JOIN mapConstellations ON mapSolarSystems.constellationID = mapConstellations.constellationID INNER JOIN mapRegions ON mapSolarSystems.regionID = mapRegions.regionID WHERE mapSolarSystems.solarSystemID = '30004759' UNION ALL";
@@ -353,7 +353,7 @@ class localEveCache extends localEveDB
                         break;
                 }
             }
-        } elseif ($input == "3") {
+        }elseif ($input == "3"){
             foreach ($data as $key => $value) {
                 $datetimeUpload = $data[$key]["datetimeUpload"];
                 $datetime = date("Y-m-d H:i:s", strtotime($datetimeUpload));
@@ -412,15 +412,15 @@ class localEveCache extends localEveDB
         return $returnArray;
     }
 
-    private function structNotFoundFixer($array, $structFunc)
+    private function structNotFoundFixer($array, $structFunc, $corpFunc, $allyFunc)
     {
         $temp2 = array();
-        if (!empty($array["expiredID"])) {
+        if (!empty($array["expiredID"])){
             $temp = $structFunc($array["expiredID"]);
-            foreach ($temp as $key => $value) {
+            foreach ($temp as $key => $value){
                 $temp2[$value["corporation_id"]] = $value["corporation_id"];
             }
-            $alliance_id = $this->groupCache($temp2);
+//            $alliance_id = ;
             dprintr($temp2);
         }
 
@@ -575,19 +575,21 @@ class localEveCache extends localEveDB
 
     public function groupCache($array, $charFunc, $corpFunc, $allyFunc, $unknownFunc)
     {
-        $data1 = $this->selectQuery($array);                                        //data1 is initial ID's
+        $data1 = $this->selectQuery($array, "");                                        //data1 is initial ID's
         $data2 = $this->notFoundIDFixer($data1, $charFunc, $corpFunc, $allyFunc, $unknownFunc);
+
         if ($data2["upload"]) {
             $data3 = $this->insertUpdate($data2["upload"]);
         }
         return $data2["validID"];
     }
 
-    public function structCache($array, $structFunc)
+    public function structCache($array, $structFunc, $corpFunc, $allyFunc)
     {
-        dprintr($array);
-        $data1 = $structFunc($array);
-        dprintr($data1);
+        $data = $this->selectQuery($array, "3");
+        $data2 = $this->structNotFoundFixer($data, $structFunc, $corpFunc, $allyFunc);
+        dprintr($data2);
+        dprintr($this->solarsystemSearcher($array[""]));
 //        foreach ($data1 as $key => $value) {
 //            foreach ($value as $key2 => $value2) {
 //                if ($key2 == "solar_system_id") {
@@ -595,8 +597,7 @@ class localEveCache extends localEveDB
 //                }
 //            }
 //        }
-//        $var = "SELECT mapSolarSystems.solarSystemName, mapConstellations.constellationName, mapRegions.regionName FROM mapSolarSystems INNER JOIN mapConstellations ON mapSolarSystems.constellationID = mapConstellations.constellationID INNER JOIN mapRegions ON mapSolarSystems.regionID = mapRegions.regionID WHERE mapSolarSystems.solarSystemID = '30000001' ";
-//        echo $array;
+        return $data2;
     }
 
 }
@@ -618,21 +619,34 @@ class DBconn
     }
 
 //________________PRIVATE FUNCTION HOUSE_______________________________________________________________________________\\
-
-    public function ListShitter($yn)
+    public function Connect()
     {
-        $connect = $this->Connect();
-        if ($yn == true) {
-            $query = "SELECT users.characterOwnerHash FROM users INNER JOIN qanswers ON users.main_ID = qanswers.main_ID WHERE users.user_level = '2' AND qanswers.status = '0'";
-        } elseif ($yn == false or empty($yn)) {
-            $query = "SELECT users.characterOwnerHash FROM users WHERE users.user_level = '2'";
-        }
-        $stmt = $connect->query($query);
-        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
-            $temparray = $this->arrayReader($row, 'characterOwnerHash');
-        }
-        return $temparray;
+        $connect = new PDO("mysql:host=$this->Host;dbname=$this->dbName;charset=$this->Charset", $this->dbName, $this->dbPass);
+        $connect->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        return $connect;
+    }
 
+    private function whereIs($characterOwnerHash, $conn)
+    {
+        if ($this->registerChecker('users', 'characterOwnerHash', $characterOwnerHash, $conn) == false) {
+            if ($this->registerChecker('alts', 'characterOwnerHash', $characterOwnerHash, $conn) == false) {
+                return 3;
+            } else {
+                return 2;
+            }
+        } else {
+            return 1;
+        }
+    }  //3 = nowhere 2 = alts 1 = users
+
+    private function arrayChecker($row)
+    {
+        $totalarray = ((count($row, 0)) - 1);
+        for ($x = 0; $x <= $totalarray; $x++) {
+            $inhoudarray[$x] = count($row[$x], 0);
+        }
+        array_unshift($inhoudarray, ($totalarray + 1));
+        return $inhoudarray;
     }
 
     private function arrayReader($row, $checker)
@@ -658,80 +672,6 @@ class DBconn
             array_unshift($inhoudArray, $len);
         }
         return $inhoudArray;
-    }  //3 = nowhere 2 = alts 1 = users
-
-    private function arrayChecker($row)
-    {
-        $totalarray = ((count($row, 0)) - 1);
-        for ($x = 0; $x <= $totalarray; $x++) {
-            $inhoudarray[$x] = count($row[$x], 0);
-        }
-        array_unshift($inhoudarray, ($totalarray + 1));
-        return $inhoudarray;
-    }
-
-    public function advancedListDispenser($characterOwnerHash)
-    {
-        $returnarray = array();
-        $conn = $this->Connect();
-        $query = "SELECT characterOwnerHashApplyer FROM recruitment WHERE recruiterID = '$characterOwnerHash' and status = 0";
-        $stmt = $conn->query($query);
-        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
-            foreach ($row as $hash) {
-                $returnarray[] = $this->evidenceDispenser($hash['characterOwnerHashApplyer']);
-            }
-            return $returnarray;
-        }
-    }
-
-    public function evidenceDispenser($characterOwnerHashApplyer) //return array(array('character_name' => $mainInfo['character_name'], 'characterID' => $mainInfo['characterID'], 'refresh_token' => $mainInfo['refresh_token'], 'altArray' => array('username' =>, 'charID' =>, 'refreshtoken' =>, 'characterOwnerHash' =>), 'questions =>' array('0' =>, '1' =>...)
-    {
-        $questions = new questions();
-        $mainInfo = $this->getCharacterInfo($characterOwnerHashApplyer);
-        $questionsArray = $questions->questionHandler($characterOwnerHashApplyer, '');
-        $altArray = $this->altListDispenser($characterOwnerHashApplyer);
-        return array('character_name' => $mainInfo['character_name'], 'characterID' => $mainInfo['characterID'], 'refresh_token' => $mainInfo['refresh_token'], 'characterOwnerHash' => $characterOwnerHashApplyer, 'altArray' => $altArray, 'questions' => $questionsArray);
-    }
-
-    public function getCharacterInfo($characterOwnerHash)
-    {
-        $conn = $this->Connect();
-        switch ($this->whereIs($characterOwnerHash, $conn)) {
-            case 1:  //users
-                $query = "SELECT users.username, users.main_ID, main.charID, main.refreshtoken FROM users INNER JOIN main ON users.main_ID = main.ID WHERE users.characterOwnerHash = '$characterOwnerHash'";
-                break;
-            case 2:  //alts
-                $query = "SELECT alts.charID, alts.refreshtoken, alts.username, alts.main_ID FROM alts WHERE alts.characterOwnerHash = '$characterOwnerHash'";
-                break;
-            case 3:
-                return false;
-                echo 'error';
-                break;
-        }
-//        echo $query;
-        $stmt = $conn->query($query);
-        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
-// Array ( [0] => Array ( [username] => test [main_ID] => 91 [charID] => 123 [refreshtoken] => ) )
-            $CharID = $row[0][charID];
-            $RefreshToken = $row[0][refreshtoken];
-            $charName = $row[0][username];
-            $mainid = $row[0][main_ID];
-
-        }
-        Return array("characterID" => $CharID, "refresh_token" => $RefreshToken, "character_name" => $charName, "main_ID" => $mainid);
-    }
-
-    private function whereIs($characterOwnerHash, $conn)
-    {
-        if ($this->registerChecker('users', 'characterOwnerHash', $characterOwnerHash, $conn) == false) {
-            if ($this->registerChecker('alts', 'characterOwnerHash', $characterOwnerHash, $conn) == false) {
-                return 3;
-            } else {
-                return 2;
-            }
-        } else {
-            return 1;
-        }
     }
 
     private function registerChecker($tableName, $ColumnName, $data, $conn)
@@ -755,72 +695,6 @@ class DBconn
             }
         } catch (PDOException $e) {
             die($e);
-        }
-    }
-
-    public function altListDispenser($mainCharacterOwnerHash)
-    {
-        $conn = $this->Connect();
-        $query = "SELECT alts.username, alts.charID, alts.refreshtoken, alts.characterOwnerHash FROM alts INNER JOIN users ON alts.main_ID = users.main_ID WHERE users.characterOwnerHash = '$mainCharacterOwnerHash'";
-        $stmt = $conn->query($query);
-        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
-            foreach ($row as $key => $value) {
-                $row[$key]['refresh_token'] = $row[$key]['refreshtoken'];
-                $row[$key]['character_name'] = $row[$key]['username'];
-                $row[$key]['characterID'] = $row[$key]['charID'];
-                unset($row[$key]['refreshtoken']);
-                unset($row[$key]['username']);
-                unset($row[$key]['charID']);
-            }
-            return $row;
-        }
-    }
-
-    public function Connect()
-    {
-        $connect = new PDO("mysql:host=$this->Host;dbname=$this->dbName;charset=$this->Charset", $this->dbName, $this->dbPass);
-        $connect->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        return $connect;
-    }
-
-//________________PUBLIC FUNCTION HOUSE________________________________________________________________________________\\
-
-    public function userLevelDispenser($characterOwnerHash)
-    {
-        $connect = $this->Connect();
-        $query = "SELECT users.user_level FROM users WHERE characterOwnerHash = '$characterOwnerHash'";
-        $stmt = $connect->query($query);
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $user_level = $row['user_level'];
-        }
-        return $user_level;
-    }  //"characterID"=>$CharID,"refresh_token"=>$RefreshToken,"character_name" => $charName, "main_ID" => $mainid
-
-    public function Echoall()
-    {
-        echo "<pre>";
-        echo "$this->Host <Br>";
-        echo "$this->dbName <Br>";
-        echo "$this->dbPass<br>";
-        echo "$this->Charset<br>";
-        echo "</pre>";
-    }
-
-    public function registerAlt($charOwnHash, $charID, $refreshToken, $charName)
-    {
-        if (empty($charOwnHash) or empty($charID) or empty($refreshToken) or empty($charName)) {
-            return 5;
-        }
-        $yn = $this->databaseDuplicateFinder("characterOwnerHash", $charOwnHash);
-        if ($yn == true) { //Hash already found in the Database.   You already have a account
-            return 3;
-        } elseif ($yn == false) {
-            $charInfo = $this->getCharacterInfo($_SESSION['characterOwnerHash']);
-            $main_ID = $charInfo['main_ID'];
-            $this->insertAltData($charOwnHash, $refreshToken, $charID, $charName, $main_ID);
-            return 4;   //You now have a account.
-        } else {
-            echo 'something went terribly wrong';
         }
     }
 
@@ -856,29 +730,55 @@ class DBconn
         }
     }
 
+    public function altListDispenser($mainCharacterOwnerHash)
+    {
+        $conn = $this->Connect();
+        $query = "SELECT alts.username, alts.charID, alts.refreshtoken, alts.characterOwnerHash FROM alts INNER JOIN users ON alts.main_ID = users.main_ID WHERE users.characterOwnerHash = '$mainCharacterOwnerHash'";
+        $stmt = $conn->query($query);
+        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
+            foreach ($row as $key => $value) {
+                $row[$key]['refresh_token'] = $row[$key]['refreshtoken'];
+                $row[$key]['character_name'] = $row[$key]['username'];
+                $row[$key]['characterID'] = $row[$key]['charID'];
+                unset($row[$key]['refreshtoken']);
+                unset($row[$key]['username']);
+                unset($row[$key]['charID']);
+            }
+            return $row;
+        }
+    }
+
+    private function getdbdata($charID, $characterOwnerHash)
+    {
+        try {
+            $_SESSION['characterOwnerHash'] = '';
+            $_SESSION['char_ID'] = '';
+            $connect = $this->connect();
+            $query = "SELECT users.characterOwnerHash, main.charID, main.refreshtoken FROM users INNER JOIN main ON users.main_ID = main.ID where users.characterOwnerHash = '$characterOwnerHash' AND main.charID = '$charID'";
+            $stmt = $connect->query($query);
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $hash = $row['characterOwnerHash'];
+                $char_id = $row['charID'];
+                $_SESSION['characterOwnerHash'] = $hash;
+                $_SESSION['char_ID'] = $char_id;
+                $_SESSION['refresh_token'] = $row["refreshtoken"];
+                if ($_SESSION['characterOwnerHash'] == $hash && $_SESSION['char_ID'] == $char_id) {
+                    return true;
+                }
+            }
+            if ($_SESSION['characterOwnerHash'] == '' && $_SESSION['char_ID'] == '') {
+                return false;
+            }
+        } catch (PDOException $e) {
+            die($e);
+        }
+    }
+
     private function insertAltData($characterOwnerHash, $refreshtoken, $charID, $username, $main_ID)
     {
         $conn = $this->Connect();
         $query = "INSERT INTO alts(main_ID, username, charID, refreshtoken, characterOwnerHash) VALUES ('$main_ID', '$username', '$charID', '$refreshtoken' , '$characterOwnerHash')";
         $conn->query($query);
-    }
-
-    public function register($charOwnHash, $charID, $refreshToken, $charName)
-    {
-        if (empty($charOwnHash) or empty($charID) or empty($refreshToken) or empty($charName)) {
-            return '';
-        }
-        $yn = $this->databaseDuplicateFinder("characterOwnerHash", $charOwnHash);
-        if ($yn == true) { //Hash already found in the Database.   You already have a account
-            return 1;
-        } elseif ($yn == false) {
-
-            $this->insertdbdata($charOwnHash, $charID, $refreshToken, $charName);
-            return 2;   //You now have a account.
-
-        } else {
-            return 5;
-        }
     }
 
     private function insertdbdata($characterOwnerHash, $charID, $refreshToken, $username, $mainid)
@@ -899,6 +799,131 @@ class DBconn
             return true;
         } catch (PDOException $e) {
             die($e);
+        }
+    }
+
+//________________PUBLIC FUNCTION HOUSE________________________________________________________________________________\\
+    public function getCharacterInfo($characterOwnerHash)
+    {
+        $conn = $this->Connect();
+        switch ($this->whereIs($characterOwnerHash, $conn)) {
+            case 1:  //users
+                $query = "SELECT users.username, users.main_ID, main.charID, main.refreshtoken FROM users INNER JOIN main ON users.main_ID = main.ID WHERE users.characterOwnerHash = '$characterOwnerHash'";
+                break;
+            case 2:  //alts
+                $query = "SELECT alts.charID, alts.refreshtoken, alts.username, alts.main_ID FROM alts WHERE alts.characterOwnerHash = '$characterOwnerHash'";
+                break;
+            case 3:
+                return false;
+                echo 'error';
+                break;
+        }
+//        echo $query;
+        $stmt = $conn->query($query);
+        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
+// Array ( [0] => Array ( [username] => test [main_ID] => 91 [charID] => 123 [refreshtoken] => ) )
+            $CharID = $row[0][charID];
+            $RefreshToken = $row[0][refreshtoken];
+            $charName = $row[0][username];
+            $mainid = $row[0][main_ID];
+
+        }
+        Return array("characterID" => $CharID, "refresh_token" => $RefreshToken, "character_name" => $charName, "main_ID" => $mainid);
+    }  //"characterID"=>$CharID,"refresh_token"=>$RefreshToken,"character_name" => $charName, "main_ID" => $mainid
+
+    public function ListShitter($yn)
+    {
+        $connect = $this->Connect();
+        if ($yn == true) {
+            $query = "SELECT users.characterOwnerHash FROM users INNER JOIN qanswers ON users.main_ID = qanswers.main_ID WHERE users.user_level = '2' AND qanswers.status = '0'";
+        } elseif ($yn == false or empty($yn)) {
+            $query = "SELECT users.characterOwnerHash FROM users WHERE users.user_level = '2'";
+        }
+        $stmt = $connect->query($query);
+        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
+            $temparray = $this->arrayReader($row, 'characterOwnerHash');
+        }
+        return $temparray;
+
+    }
+
+    public function advancedListDispenser($characterOwnerHash)
+    {
+        $returnarray = array();
+        $conn = $this->Connect();
+        $query = "SELECT characterOwnerHashApplyer FROM recruitment WHERE recruiterID = '$characterOwnerHash' and status = 0";
+        $stmt = $conn->query($query);
+        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
+            foreach ($row as $hash) {
+                $returnarray[] = $this->evidenceDispenser($hash['characterOwnerHashApplyer']);
+            }
+            return $returnarray;
+        }
+    }
+
+    public function userLevelDispenser($characterOwnerHash)
+    {
+        $connect = $this->Connect();
+        $query = "SELECT users.user_level FROM users WHERE characterOwnerHash = '$characterOwnerHash'";
+        $stmt = $connect->query($query);
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $user_level = $row['user_level'];
+        }
+        return $user_level;
+    }
+
+    public function evidenceDispenser($characterOwnerHashApplyer) //return array(array('character_name' => $mainInfo['character_name'], 'characterID' => $mainInfo['characterID'], 'refresh_token' => $mainInfo['refresh_token'], 'altArray' => array('username' =>, 'charID' =>, 'refreshtoken' =>, 'characterOwnerHash' =>), 'questions =>' array('0' =>, '1' =>...)
+    {
+        $questions = new questions();
+        $mainInfo = $this->getCharacterInfo($characterOwnerHashApplyer);
+        $questionsArray = $questions->questionHandler($characterOwnerHashApplyer, '');
+        $altArray = $this->altListDispenser($characterOwnerHashApplyer);
+        return array('character_name' => $mainInfo['character_name'], 'characterID' => $mainInfo['characterID'], 'refresh_token' => $mainInfo['refresh_token'], 'characterOwnerHash' => $characterOwnerHashApplyer, 'altArray' => $altArray, 'questions' => $questionsArray);
+    }
+
+    public function Echoall()
+    {
+        echo "<pre>";
+        echo "$this->Host <Br>";
+        echo "$this->dbName <Br>";
+        echo "$this->dbPass<br>";
+        echo "$this->Charset<br>";
+        echo "</pre>";
+    }
+
+    public function registerAlt($charOwnHash, $charID, $refreshToken, $charName)
+    {
+        if (empty($charOwnHash) or empty($charID) or empty($refreshToken) or empty($charName)) {
+            return 5;
+        }
+        $yn = $this->databaseDuplicateFinder("characterOwnerHash", $charOwnHash);
+        if ($yn == true) { //Hash already found in the Database.   You already have a account
+            return 3;
+        } elseif ($yn == false) {
+            $charInfo = $this->getCharacterInfo($_SESSION['characterOwnerHash']);
+            $main_ID = $charInfo['main_ID'];
+            $this->insertAltData($charOwnHash, $refreshToken, $charID, $charName, $main_ID);
+            return 4;   //You now have a account.
+        } else {
+            echo 'something went terribly wrong';
+        }
+    }
+
+    public function register($charOwnHash, $charID, $refreshToken, $charName)
+    {
+        if (empty($charOwnHash) or empty($charID) or empty($refreshToken) or empty($charName)) {
+            return '';
+        }
+        $yn = $this->databaseDuplicateFinder("characterOwnerHash", $charOwnHash);
+        if ($yn == true) { //Hash already found in the Database.   You already have a account
+            return 1;
+        } elseif ($yn == false) {
+
+            $this->insertdbdata($charOwnHash, $charID, $refreshToken, $charName);
+            return 2;   //You now have a account.
+
+        } else {
+            return 5;
         }
     }
 
@@ -932,32 +957,6 @@ class DBconn
         }
     }
 
-    private function getdbdata($charID, $characterOwnerHash)
-    {
-        try {
-            $_SESSION['characterOwnerHash'] = '';
-            $_SESSION['char_ID'] = '';
-            $connect = $this->connect();
-            $query = "SELECT users.characterOwnerHash, main.charID, main.refreshtoken FROM users INNER JOIN main ON users.main_ID = main.ID where users.characterOwnerHash = '$characterOwnerHash' AND main.charID = '$charID'";
-            $stmt = $connect->query($query);
-            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $hash = $row['characterOwnerHash'];
-                $char_id = $row['charID'];
-                $_SESSION['characterOwnerHash'] = $hash;
-                $_SESSION['char_ID'] = $char_id;
-                $_SESSION['refresh_token'] = $row["refreshtoken"];
-                if ($_SESSION['characterOwnerHash'] == $hash && $_SESSION['char_ID'] == $char_id) {
-                    return true;
-                }
-            }
-            if ($_SESSION['characterOwnerHash'] == '' && $_SESSION['char_ID'] == '') {
-                return false;
-            }
-        } catch (PDOException $e) {
-            die($e);
-        }
-    }
-
     public function arrayKeyChanger($array)
     {
         $returnArray = array();
@@ -973,6 +972,20 @@ class DBconn
 
 class questions extends DBconn
 {
+    private function currentQuestionSupport($data)
+    {
+        $returnArray = array();
+        $data = array_reverse($data[0]);
+        array_pop($data);
+        foreach ($data as $key => $value) {
+            if ($value !== "0") {
+                $returnArray[$key] = $value;
+            }
+        }
+        $returnArray = array_reverse($returnArray);
+        return $returnArray;
+    }
+
     public function questionSupport($choice, $var1, $var2)
     {
         if ($choice == 1) {
@@ -1046,6 +1059,24 @@ class questions extends DBconn
         }
     }
 
+    public function currentQuestion()
+    {
+        $max = "";
+        $conn = DBconn::Connect();
+        $query = "SELECT ID FROM questions";
+        $stmt = $conn->query($query);
+        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
+            $max = max($row);
+            $max = $max['ID'];
+        }
+        $query = "SELECT * FROM questions WHERE questions.ID = '$max'";
+        $stmt = $conn->query($query);
+        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
+            $returnData = $this->currentQuestionSupport($row);
+            return $returnData;
+        }
+    }
+
     public function questionInserter($data)
     {
         $conn = DBconn::Connect();
@@ -1094,38 +1125,6 @@ class questions extends DBconn
         return $stmt;
     }
 
-    public function currentQuestion()
-    {
-        $max = "";
-        $conn = DBconn::Connect();
-        $query = "SELECT ID FROM questions";
-        $stmt = $conn->query($query);
-        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
-            $max = max($row);
-            $max = $max['ID'];
-        }
-        $query = "SELECT * FROM questions WHERE questions.ID = '$max'";
-        $stmt = $conn->query($query);
-        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
-            $returnData = $this->currentQuestionSupport($row);
-            return $returnData;
-        }
-    }
-
-    private function currentQuestionSupport($data)
-    {
-        $returnArray = array();
-        $data = array_reverse($data[0]);
-        array_pop($data);
-        foreach ($data as $key => $value) {
-            if ($value !== "0") {
-                $returnArray[$key] = $value;
-            }
-        }
-        $returnArray = array_reverse($returnArray);
-        return $returnArray;
-    }
-
     public function questionPuller($refreshToken)
     {
         $conn = DBconn::Connect();
@@ -1139,6 +1138,20 @@ class questions extends DBconn
 
 class standingList extends DBconn
 {
+    public function allStandingPuller()
+    {
+        $conn = DBconn::Connect();
+        $query = "SELECT * FROM standingList";
+        $stmt = $conn->query($query);
+        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
+            foreach ($row as $key => $value) {
+                unset($value['ID']);
+                $row2[$value['objectID']] = $value;
+            }
+            return $row2;
+        }
+    }
+
     public function standingPuller($select, $where, $value)
     {
         $conn = DBconn::Connect();
@@ -1227,20 +1240,6 @@ class standingList extends DBconn
         }
     }
 
-    public function allStandingPuller()
-    {
-        $conn = DBconn::Connect();
-        $query = "SELECT * FROM standingList";
-        $stmt = $conn->query($query);
-        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
-            foreach ($row as $key => $value) {
-                unset($value['ID']);
-                $row2[$value['objectID']] = $value;
-            }
-            return $row2;
-        }
-    }
-
     public function standingRemover($objectID)
     {
         $conn = DBconn::Connect();
@@ -1269,6 +1268,27 @@ class recruitment extends DBconn
 class recruitmentComments extends recruitment
 {
 
+    private function recruitmentIDfinder($conn, $where, $where2)
+    {
+        $query = "SELECT ID FROM recruitment WHERE recruiterID = '$where' AND CharacterOwnerHashApplyer = '$where2'";
+        $stmt = $conn->query($query);
+        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
+            return $row;
+        }
+    }
+
+
+    private function dateSelector($where)
+    {
+        $conn = DBconn::Connect();
+        $query = "SELECT * FROM recruitmentComments WHERE $where";
+        $stmt = $conn->query($query);
+        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
+            return $row;
+        }
+    }
+
+    //inserter
     public function insert($comment, $where, $by)
     {
         $conn = DBconn::Connect();
@@ -1279,6 +1299,7 @@ class recruitmentComments extends recruitment
         return $stmt;
     }
 
+    //select
     public function selectComments($ID)
     {
         $conn = DBconn::Connect();
@@ -1289,8 +1310,7 @@ class recruitmentComments extends recruitment
         }
     }
 
-    //inserter
-
+    //delete
     public function deleteComments($ID)
     {
         $conn = DBconn::Connect();
@@ -1299,8 +1319,7 @@ class recruitmentComments extends recruitment
         return $stmt;
     }
 
-    //select
-
+    //pull all?
     public function pullAllComments($date, $date2)
     {
         if (empty($date) && empty($date2)) {
@@ -1318,35 +1337,41 @@ class recruitmentComments extends recruitment
             return $return;
         }
     }
-
-    //delete
-
-    private function dateSelector($where)
-    {
-        $conn = DBconn::Connect();
-        $query = "SELECT * FROM recruitmentComments WHERE $where";
-        $stmt = $conn->query($query);
-        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
-            return $row;
-        }
-    }
-
-    //pull all?
-
-    private function recruitmentIDfinder($conn, $where, $where2)
-    {
-        $query = "SELECT ID FROM recruitment WHERE recruiterID = '$where' AND CharacterOwnerHashApplyer = '$where2'";
-        $stmt = $conn->query($query);
-        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
-            return $row;
-        }
-    }
 }
 
 class recruitmentEscalations extends recruitment
 {
 
     //________________PRIVATE FUNCTION HOUSE_______________________________________________________________________________\\
+    private function insertHelper($recruiterID, $CharacterOwnerHashApplyer, $conn)
+    {
+        //search the ID in recruiter so we know what to update.
+        $query = "SELECT * FROM recruitment WHERE recruiterID = '$recruiterID' AND CharacterOwnerHashApplyer = '$CharacterOwnerHashApplyer'";
+        $stmt = $conn->query($query);
+        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
+            if ($row[0]["escalationID"] == 0) {
+                $row[0]["yn"] = "0";
+            } elseif ($row["escalationID"] > 0) {
+                $row[0]["yn"] = "1";
+            } else {
+                $row[0]["yn"] = "1";
+            }
+            return $row;
+        }
+    }
+
+    private function nameSearcher($seniorCharacterOwnerHash, $conn)
+    {
+        $query = "SELECT username FROM users WHERE characterOwnerHash = '$seniorCharacterOwnerHash'";
+        $stmt = $conn->query($query);
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            return $row;
+        }
+    }
+
+    //________________PUBLIC FUNCTION HOUSE________________________________________________________________________________\\
+
+    //retrieve escalations by user or all
     public function getEscalationData($recruiterID, $seniorCharacterOwnerHash)
     {
         $conn = DBconn::Connect();
@@ -1363,6 +1388,7 @@ class recruitmentEscalations extends recruitment
         }
     }
 
+    //insert and update escalations
     public function insertEscalationData($recruiterID, $CharacterOwnerHashApplyer, $seniorCharacterOwnerHash)
     {
         $conn = DBconn::Connect();
@@ -1398,38 +1424,6 @@ class recruitmentEscalations extends recruitment
             }
         } else {
             echo 'you broke it.';
-        }
-    }
-
-    //________________PUBLIC FUNCTION HOUSE________________________________________________________________________________\\
-
-    //retrieve escalations by user or all
-
-    private function insertHelper($recruiterID, $CharacterOwnerHashApplyer, $conn)
-    {
-        //search the ID in recruiter so we know what to update.
-        $query = "SELECT * FROM recruitment WHERE recruiterID = '$recruiterID' AND CharacterOwnerHashApplyer = '$CharacterOwnerHashApplyer'";
-        $stmt = $conn->query($query);
-        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
-            if ($row[0]["escalationID"] == 0) {
-                $row[0]["yn"] = "0";
-            } elseif ($row["escalationID"] > 0) {
-                $row[0]["yn"] = "1";
-            } else {
-                $row[0]["yn"] = "1";
-            }
-            return $row;
-        }
-    }
-
-    //insert and update escalations
-
-    private function nameSearcher($seniorCharacterOwnerHash, $conn)
-    {
-        $query = "SELECT username FROM users WHERE characterOwnerHash = '$seniorCharacterOwnerHash'";
-        $stmt = $conn->query($query);
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            return $row;
         }
     }
 
