@@ -442,9 +442,6 @@ class localEveCache extends localEveDB
             $temp = $structFunc($array["expiredID"]);
             if ($temp["error"]) {
                 $error = $temp["error"];
-                echo "<br> neusbeertje <br>";
-                dprintr($error);
-                echo "<br> neusbeertje <br>";
                 unset($temp["error"]);
             }
             $array["upload"] = $temp;
@@ -671,7 +668,7 @@ class localEveCache extends localEveDB
         $data2 = $this->notFoundIDFixer($data1, $charFunc, $corpFunc, $allyFunc, $unknownFunc);
 
         if ($data2["upload"]) {
-            $data3 = $this->insertUpdate($data2["upload"], $this->keyArrayGroup);
+            $this->insertUpdate($data2["upload"], $this->keyArrayGroup);
         }
         return $data2["validID"];
     }
