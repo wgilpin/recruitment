@@ -232,6 +232,7 @@ class localEveCache extends localEveDB
     {
         localEveDB::__construct();
         include 'Config.php';
+
         $this->connect = $this->Connect();
         $this->daysCharacter = date("Y-m-d H:i:s", strtotime($daysCharacter));
         $this->daysCorporation = date("Y-m-d H:i:s", strtotime($daysCorporation));
@@ -563,8 +564,9 @@ class localEveCache extends localEveDB
         return $array;
     }
 
-    private function insertUpdate($array, $keyArray)
+    public function insertUpdate($array, $keyArray)
     {
+
         $place = array_shift($keyArray);
         $query1 = "";
         $query2 = "";
@@ -583,8 +585,6 @@ class localEveCache extends localEveDB
             case "structureCache":
                 $temp = $this->selectQueryMaker($temp, "4");
                 break;
-            default:
-                return false;
         }
         $stmt = $this->connect()->query($temp)->fetchAll(PDO::FETCH_ASSOC);
         if (!empty($stmt)) {
@@ -636,6 +636,7 @@ class localEveCache extends localEveDB
                 $query2 .= " INSERT INTO $place (" . $string['keys'] . ", datetimeUpload) VALUES (" . $string['values'] . ", '$time');";
             }
         }
+
         $totalQuery = $query1 . $query2;
         $stmt = $this->connect()->query($totalQuery);
         if ($stmt && $totalQuery) {
@@ -664,6 +665,7 @@ class localEveCache extends localEveDB
 
     public function groupCache($array, $charFunc, $corpFunc, $allyFunc, $unknownFunc)
     {
+
         $data1 = $this->selectQuery($array, "");                                        //data1 is initial ID's
         $data2 = $this->notFoundIDFixer($data1, $charFunc, $corpFunc, $allyFunc, $unknownFunc);
 
@@ -683,6 +685,36 @@ class localEveCache extends localEveDB
         $data3 = $this->IDreplacer($data2["validID"]);
         $data3["error"] = $data2["error"];
         return $data3;
+    }
+}
+
+class skills extends localEveDB
+{
+    private $connect;
+
+    public function __construct()
+    {
+        localEveDB::__construct();
+        $this->connect = $this->Connect();
+    }
+
+    private function skillsSelectQueryMaker($array){
+        $query = "";
+        foreach ($array as $key => $value) {
+            $query = $query . " SELECT type_id, name, description, multiplier, invGroups.groupName FROM skills INNER JOIN invGroups ON skills.group_id = invGroups.groupID WHERE type_id = '$key' UNION ALL";
+        }
+        $query = substr($query, 0, -9);
+        return $query;
+    }
+
+    public function skillsSelectQuery($array)
+    {
+        $query = $this->skillsSelectQueryMaker($array);
+        echo $query;
+        $stmt = $this->connect()->query($query);
+        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
+            return $row;
+        }
     }
 }
 
@@ -750,7 +782,7 @@ class DBconn
             $len = $temp[0];
             $inhoudArray = array("delete" => 1);
             for ($x = 0; $x < $len; $x++) {
-                array_unshift($inhoudArray, $row[$x][TABLE_NAME]);
+                array_unshift($inhoudArray, $row[$x]['TABLE_NAME']);
             }
             array_pop($inhoudArray);
             array_unshift($inhoudArray, $len);

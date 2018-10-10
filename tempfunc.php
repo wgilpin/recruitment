@@ -176,6 +176,13 @@ class ESI
     }
 
 //  __Suppport_functions_\\
+    protected function debug($refresh_token)
+    {
+        $this->AccessToken = $this->AccesTokenDispencer($refresh_token);
+        $CharID = $this->verify($this->AccessToken)["CharacterID"];
+        Echo "<br>$CharID  REE  " . $this->AccessToken . "  REE  <br>";
+    }
+
     protected function dprintr($printer)
     {
         echo "<pre>";
@@ -547,7 +554,7 @@ class ESI
             }
 
             if ($char) {
-                $returnarray = $returnarray +  $Char_Func($char);
+                $returnarray = $returnarray + $Char_Func($char);
             }
             if ($corp) {
                 $returnarray = $returnarray + $Corp_Func($corp);
@@ -590,7 +597,6 @@ class ESI
 
             return $returns;
         };
-
         if ($reason) {
             return $this->Cachecall->groupCache($array, $Char_Func, $Corp_Func, $Ally_Func, $Unknown_Func);
         } else {
@@ -726,9 +732,12 @@ class Wallet extends ESI
         $idArray = $this->_Foreach($Replacearray, array(), $this->idArray_Changer);
         $FinalArray = $this->_Foreach($array, $returnarray, $this->Write_standing_Func, $idArray);
         $returnarray = array();
+
         $returnarray["blacklist"] = $this->Blacklist($idArray);
-        $returnarray["info"] = $FinalArray;
-        $returnarray["list"] = $this->Cachepull($idArray);
+        $returnarray["info"] = $FinalArray;;
+
+        $returnarray["list"] = $this->Cachepull($idArray, true);
+        echo "WORKS!";
         return $returnarray;
     }
 
@@ -755,7 +764,7 @@ class Mail extends ESI
         array_shift($FinalArray);
         $returnarray["blacklist"] = $this->Blacklist($idArray);
         $returnarray["info"] = $FinalArray;
-        $returnarray["list"] = $this->Cachepull($idArray);
+        $returnarray["list"] = $this->Cachepull($idArray, true);
         return $returnarray;
     }
 
@@ -792,6 +801,15 @@ class Assets extends ESI
         };
     }
 
+    private function Item_id($array)
+    {
+        $return = array();
+        foreach ($array as $key => $value) {
+            $return[$value['item_id']] = $value;
+        }
+        return $return;
+    }
+
     private function NameArray($array)
     {
         $output = array();
@@ -807,44 +825,50 @@ class Assets extends ESI
 
     public function Run($refresh_token)
     {
-
+        //_Make_Key_Arrays_\\
         $Keyarray = array("location_flag" => array("Hangar", "location_id", "ItemLocation"));
         $Itemarray = array("item_id");
         $TypeArray = array("type_id");
         $returnarray = array();
 
-//        $this->dprintr($Keyarray);
-//
-//        $this->dprintr($this->_Foreach($testarray,$returnarray,$this->Pull_Redirect_Func,$Keyarray));
 
+        //_Getting_the_Token_and_ID_\\
         $this->AccessToken = $this->AccesTokenDispencer($refresh_token);
         $CharID = $this->verify($this->AccessToken)["CharacterID"];
-        Echo $CharID . "  REE  " . $this->AccessToken . "  REE  ";
-        $this->Scope = $this->Scopemaker("characters", $CharID, "assets");
-        $array = $this->DATAPULLAUTH($this->AccessToken, $this->Scope);
+
+        //_printing_usefull_information_\\
+        $this->debug($refresh_token);
+        //_Pulling_THE_asset_List_\\
+        $array = $this->DATAPULLAUTH($this->AccessToken, $this->Scopemaker("characters", $CharID, "assets"));
+
+        $return = $this->Item_id($array);
+
+        //_getting_the_names_of_the_Items_\\
         $ItemArray = $this->_Foreach($array, $returnarray, $this->Pull_Func, $Itemarray);
-//        $this->dprintr($ItemArray);
-        $typeArray = $this->_Foreach($array, $returnarray, $this->Pull_Func, $TypeArray);
         $itemString = $this->ArraytoString($ItemArray);
         $ReplaceItemarray = $this->DATAPOST("characters/$CharID/assets/names", $itemString, $this->AccessToken);
         $ReplaceItemarray = $this->NameArray($ReplaceItemarray);
-        $test = $this->_Foreach($array, $returnarray, $this->Pull_Redirect_Func, $Keyarray);
-        $Hangar = array_keys($test, "Hangar");
+
+        //_Separating_the_Types_\\
+        $typeArray = $this->_Foreach($array, $returnarray, $this->Pull_Func, $TypeArray);
+
+
+        $placearray = $this->_Foreach($array, $returnarray, $this->Pull_Redirect_Func, $Keyarray);
+        $this->dprintr($placearray);
+        $Hangar = array_keys($placearray, "Hangar");
+        $this->dprintr($Hangar);
         foreach ($Hangar as $key => $value) {
             if (in_array($value, $ItemArray)) {
                 $test[$value] = "ItemLocation";
                 unset($Hangar[$key]);
             }
         }
+        $this->dprintr($test);
+
         $Datacheck = $Hangar + $typeArray;
         $DataOutput = $this->Datacall->data($Datacheck);
-        foreach ($DataOutput[2] as $key => $value) {
-            echo "<br>ID:  $value    || Structure ID, Token: $this->AccessToken    || AccessToken";
-            $DataOutput[2][$value] = $value;
-            unset ($DataOutput[2][$key]);
-        }
 
-        $this->dprintr($this->Cachepull($DataOutput[2]));
+        $this->dprintr($return);
 
     }
 }
@@ -864,14 +888,44 @@ class Debug extends ESI
 {
     public function Run($refresh, $array, $reason)
     {
-        $this->AccessToken = $this->AccesTokenDispencer($refresh);
-        return $this->Cachepull($array, $reason);
+        $Skillreturn = array();
+        $groups = $this->DATAPULLUNAUTH("universe/categories/16");
+        foreach ($groups['groups'] as $value) {
+            $temp = $this->DATAPULLUNAUTH("universe/groups/$value");
+            $Skill[$temp['name']] = $temp['types'];
+        }
+        foreach ($Skill as $key => $value) {
+            foreach ($value as $key2 => $skillId) {
+                $Skill[$key][$key2] = $this->DATAPULLUNAUTH("universe/types/$skillId");
+            }
+        }
+        $change = array("164" => "Charisma", "165"=>"Intelligence", "166"=>"Memory", "167"=>"Perception", "168"=>"Willpower");
+        foreach ($Skill as $value1) {
+            foreach ($value1 as $key => $value) {
+                $Skillreturn[$value['name']]['name'] = $value['name'];
+                $Skillreturn[$value['name']]['description'] = $value['description'];
+                $Skillreturn[$value['name']]['type_id'] = $value['type_id'];
+                $Skillreturn[$value['name']]['group_id'] = $value['group_id'];
+                foreach ($value['dogma_attributes'] as $value2) {
+                    if ($value2['attribute_id'] == 275) {
+                        $Skillreturn[$value['name']]['multiplier'] = $value2['value'];
+                    }
+                    if ($value2['attribute_id'] == 180) {
+                        $Skillreturn[$value['name']]['primaryAttribute'] = $change[$value2['value']];
+                    }
+                    if ($value2['attribute_id'] == 181) {
+                        $Skillreturn[$value['name']]['secondaryAttribute'] = $change[$value2['value']];
+                    }
+                }
+            }
+        }
+        $this->dprintr($Skillreturn);
+        return $Skillreturn;
     }
 }
 
 class pullclass
 {
-
     private $Obj;
 
     public function __construct($scope)
