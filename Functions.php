@@ -59,8 +59,8 @@ class localEveDB
 
     public function __construct()
     {
-        include 'Config.php';
 
+        include 'Config.php';
         $this->Host = $EVEDBHost;
         $this->dbName = $EVEDBdbName;
         $this->dbPass = $EVEDBdbPass;
@@ -275,6 +275,7 @@ class localEveCache extends localEveDB
 
     private function selectQuery($array, $input)
     {
+
         $query = $this->selectQueryMaker($array, $input);
         $stmt = $this->connect->query($query);
         while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
@@ -665,7 +666,9 @@ class localEveCache extends localEveDB
 
     public function groupCache($array, $charFunc, $corpFunc, $allyFunc, $unknownFunc)
     {
-
+        if (!$array){
+            return array();
+        }
         $data1 = $this->selectQuery($array, "");                                        //data1 is initial ID's
         $data2 = $this->notFoundIDFixer($data1, $charFunc, $corpFunc, $allyFunc, $unknownFunc);
 
@@ -677,6 +680,9 @@ class localEveCache extends localEveDB
 
     public function structCache($array, $structFunc, $corpFunc, $allyFunc, $unknownFunc)
     {
+        if (!$array){
+            return array();
+        }
         $data = $this->selectQuery($array, "3");
         $data2 = $this->structNotFoundFixer($data, $structFunc, $corpFunc, $allyFunc, $unknownFunc);
         if ($data2["upload"]) {
@@ -688,31 +694,27 @@ class localEveCache extends localEveDB
     }
 }
 
-class skills extends localEveDB
+class skillDB extends localEveDB
 {
-    private $connect;
-
-    public function __construct()
-    {
-        localEveDB::__construct();
-        $this->connect = $this->Connect();
-    }
-
     private function skillsSelectQueryMaker($array){
         $query = "";
         foreach ($array as $key => $value) {
-            $query = $query . " SELECT type_id, name, description, multiplier, invGroups.groupName FROM skills INNER JOIN invGroups ON skills.group_id = invGroups.groupID WHERE type_id = '$key' UNION ALL";
+            $query = $query . " SELECT type_id, name, description, multiplier, invGroups.groupName, primaryAttribute, secondaryAttribute FROM skills INNER JOIN invGroups ON skills.group_id = invGroups.groupID WHERE type_id = '$key' UNION ALL";
         }
         $query = substr($query, 0, -9);
         return $query;
     }
 
-    public function skillsSelectQuery($array)
+    public function skillRun($array)
     {
+        
         $query = $this->skillsSelectQueryMaker($array);
-        echo $query;
-        $stmt = $this->connect()->query($query);
+        $stmt = $this->Connect()->query($query);
         while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
+            foreach ($row as $key=> $value){
+                $row[$value['type_id']] = $value;
+                unset($row[$key]);
+            }
             return $row;
         }
     }
@@ -1193,24 +1195,25 @@ class questions extends DBconn
         }
     }
 
-    public function questionInserter($data)
+    public function questionInserter($question, $questionValue)
     {
-        $conn = DBconn::Connect();
-        $query2 = "";
-        $query3 = "";
-        $count = count($data);
-        foreach ($data as $key => $value) {
-            if ($key == "$count") {
-                $query2 = $query2 . "question" . $key;
-                $query3 = $query3 . "'$value'";
-            } else {
-                $query2 = $query2 . "question$key, ";
-                $query3 = $query3 . "'$value', ";
+        echo "hoi";
+        $query = array();
+        $keyArray = array("question1", "question2", "question3", "question4", "question5", "question6", "question7", "question8", "question9", "question10", "question11", "question12", "question13", "question14", "question15", "question16", "question17", "question18", "question19", "question20", "question21", "question22", "question23", "question24", "question25", "question26", "question27", "question28", "question29", "question30", "question31", "question32");
+        foreach ($keyArray as $value){
+            $query["col"] .= ", $value";
+            if ($question == $value){
+                $query["val"] .= ", '$questionValue'";
+            }else{
+                $query["val"] .= ", $value";
             }
         }
-        $query = "INSERT INTO questions($query2) VALUES ($query3)";
-        $stmt = $conn->query($query);
-        return $stmt;
+        $query["val"] = substr($query["val"], 2);
+        $query["col"] = substr($query["col"], 2);
+        $query = "INSERT INTO questions($query[col]) SELECT $query[val] FROM questions WHERE ID = (SELECT MAX(ID) FROM questions)";
+        echo $query;
+//        $stmt = $this->Connect()->query($query);
+//        return $stmt;
     }
 
     public function qanswerInserter($data, $main_ID)

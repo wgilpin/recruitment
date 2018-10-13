@@ -140,7 +140,7 @@ class ESI
                 }
             } else {
                 if ($last) {
-                    if ($key != "second_party_id" && $key != "tax_receiver_id" && $key != "timestamp") {
+                    if ($key != "second_party_id" && $key != "tax_receiver_id" && $key != "timestamp" && $key != "unallocated_sp") {
                         $returnarray[$key] = $value;
                         return $returnarray;
                     }
@@ -276,16 +276,16 @@ class ESI
         curl_close($ch);
         return $array;
     }
-
     protected function DATAPOST($place, $scope, $token)
     {
-        if (!empty($token)) {
+        if ($token) {
             $token = "&token=" . $token;
         }
+
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, "https://esi.evetech.net/latest/$place/?datasource=tranquility$token");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, "[$scope]");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, "$scope");
         curl_setopt($ch, CURLOPT_POST, 1);
 
         $headers = array();
@@ -428,6 +428,9 @@ class ESI
     //Database_Cache_and_EveDump_\\
     protected function Cachepull($array, $reason)
     {
+        foreach ($array as $key=>$value){
+            $array[$key] = $key;
+        }
         $Char_Func = function ($Char_Array) {
             $Char_Key_list = array(
                 "id" => "ID",
@@ -532,8 +535,9 @@ class ESI
             return $returns;
         };
         $Unknown_Func = function ($Unknown_Array, $Char_Func, $Corp_Func, $Ally_Func) {
+
             $returnarray = array();
-            $knownarray = $this->DATAPOST("universe/names", $this->ArraytoString($Unknown_Array, "1"));
+            $knownarray = $this->DATAPOST("universe/names", "[".$this->ArraytoString($Unknown_Array, '1')."]");
             if ($knownarray["error"]) {
                 return "Contact a WebMaster";
             }
@@ -564,7 +568,6 @@ class ESI
             }
             return $returnarray;
         };
-
         $Struct_Func = function ($Struct_Array) {
             $Struct_Key_list = array(
                 "id" => "StructureID",
@@ -597,6 +600,7 @@ class ESI
 
             return $returns;
         };
+
         if ($reason) {
             return $this->Cachecall->groupCache($array, $Char_Func, $Corp_Func, $Ally_Func, $Unknown_Func);
         } else {
@@ -728,16 +732,14 @@ class Wallet extends ESI
         $this->Scope = $this->Scopemaker("characters", $CharID, "wallet", "journal");
         $array = $this->DATAPULLAUTH($this->AccessToken, $this->Scope);
         $idArray = $this->_Foreach($array, $returnarray, $this->Pull_Func, $keyarray);
-        $Replacearray = $this->DATAPOST("universe/names", $this->ArraytoString($idArray));
+        $Tempstring = $this->ArraytoString($idArray);
+        $Replacearray = $this->DATAPOST("universe/names", "[$Tempstring]");
         $idArray = $this->_Foreach($Replacearray, array(), $this->idArray_Changer);
         $FinalArray = $this->_Foreach($array, $returnarray, $this->Write_standing_Func, $idArray);
         $returnarray = array();
-
         $returnarray["blacklist"] = $this->Blacklist($idArray);
-        $returnarray["info"] = $FinalArray;;
-
+        $returnarray["info"] = $FinalArray;
         $returnarray["list"] = $this->Cachepull($idArray, true);
-        echo "WORKS!";
         return $returnarray;
     }
 
@@ -745,12 +747,21 @@ class Wallet extends ESI
 
 class Mail extends ESI
 {
+    private function SendMail($refresh_token, $From, $mail)
+    {
+        $this->debug($From);
+        $FromAccessToken = $this->AccesTokenDispencer($From);
+        $fromCharID = $this->verify($FromAccessToken)["CharacterID"];
+        $this->AccessToken = $this->AccesTokenDispencer($refresh_token);
+        $CharID = $this->verify($this->AccessToken)["CharacterID"];
+        $mail =  "{ \"approved_cost\": 0, \"body\": \"$mail[1]\", \"recipients\": [ { \"recipient_id\": $CharID, \"recipient_type\": \"character\" } ], \"subject\": \"$mail[0]\"}";
+        $this->DATAPOST("characters/$fromCharID/mail",$mail,$FromAccessToken);
+    }
 
     private function Maillist($refresh_token)
     {
         $keyarray = array("from", "recipient_id");
         $returnarray = array();
-
 
         $this->AccessToken = $this->AccesTokenDispencer($refresh_token);
         $CharID = $this->verify($this->AccessToken)["CharacterID"];
@@ -758,7 +769,7 @@ class Mail extends ESI
         $array = $this->DATAPULLAUTH($this->AccessToken, $this->Scope);
 
         $idArray = $this->_Foreach($array, $returnarray, $this->Pull_Func, $keyarray);
-        $Replacearray = $this->DATAPOST("universe/names", $this->ArraytoString($idArray));
+        $Replacearray = $this->DATAPOST("universe/names", "[".$this->ArraytoString($idArray)."]");
         $idArray = $this->_Foreach($Replacearray, array(), $this->idArray_Changer);
         $FinalArray = $this->_Foreach($array, $returnarray, $this->Write_standing_Func, $idArray);
         array_shift($FinalArray);
@@ -777,10 +788,14 @@ class Mail extends ESI
         return $array["body"];
     }
 
-    public function run($refresh_token, $MailID)
+    public function run($refresh_token, $MailID, $mail)
     {
         if ($MailID) {
-            Return $this->MailID($refresh_token, $MailID);
+            if ($mail) {
+                Return $this->SendMail($refresh_token, $MailID, $mail);
+            } else {
+                Return $this->MailID($refresh_token, $MailID);
+            }
         } Else {
             Return $this->Maillist($refresh_token);
         }
@@ -846,7 +861,7 @@ class Assets extends ESI
         //_getting_the_names_of_the_Items_\\
         $ItemArray = $this->_Foreach($array, $returnarray, $this->Pull_Func, $Itemarray);
         $itemString = $this->ArraytoString($ItemArray);
-        $ReplaceItemarray = $this->DATAPOST("characters/$CharID/assets/names", $itemString, $this->AccessToken);
+        $ReplaceItemarray = $this->DATAPOST("characters/$CharID/assets/names", "[$itemString]", $this->AccessToken);
         $ReplaceItemarray = $this->NameArray($ReplaceItemarray);
 
         //_Separating_the_Types_\\
@@ -870,6 +885,81 @@ class Assets extends ESI
 
         $this->dprintr($return);
 
+    }
+
+}
+
+class Skills extends ESI
+{
+    private $skillDB;
+    private function Skillplace($MainArray,$SetArray){
+        $temp = array();
+        foreach ($MainArray as $value){
+            $key = $value["skill_id"];
+            $temp[$key] = $value;
+            if (array_key_exists($temp[$key]["skill_id"], $this->Standinglist)) {
+                $temp[$key]["skill_id"] = array("standing" => $this->Standinglist[$value]["standing"], "id" => $temp[$key]["skill_id"])+$SetArray[$temp[$key]["skill_id"]];
+                if($this->Standinglist[$value]["standing"]<0){$temp["Blacklist"][$key]= $temp[$key];}
+            } else {
+                $temp[$key]["skill_id"] =  array("standing" => "0", "id" => $temp[$key]["skill_id"])+$SetArray[$temp[$key]["skill_id"]];
+        }
+    }
+    return $temp;
+    }
+    private function Queplace($MainArray,$SetArray){
+        $temp = array();
+        foreach ($MainArray as $key => $value){
+            $temp[$key] = $value;
+            if (array_key_exists($temp[$key]["skill_id"], $this->Standinglist)) {
+                $temp[$key]["skill_id"] = array("standing" => $this->Standinglist[$value]["standing"], "id" => $temp[$key]["skill_id"])+$SetArray[$temp[$key]["skill_id"]];
+                if($this->Standinglist[$value]["standing"]<0){$temp["Blacklist"][$key]= $temp[$key];}
+            } else {
+                $temp[$key]["skill_id"] =  array("standing" => "0", "id" => $temp[$key]["skill_id"])+$SetArray[$temp[$key]["skill_id"]];
+            }
+        }
+        return $temp;
+    }
+
+    public function __construct()
+    {
+        ESI::__construct();                                 // call Grandpa's constructor
+        $this->skillDB = new skillDB();
+    }
+
+    public function run($refresh_token)
+    {
+        $returnarray = array();
+        $this->AccessToken = $this->AccesTokenDispencer($refresh_token);
+        $CharID = $this->verify($this->AccessToken)["CharacterID"];
+
+        //_Skills_\\
+        $skillarray = $this->DATAPULLAUTH($this->AccessToken, "characters/$CharID/skills");
+        $skillID = $this->_Foreach($skillarray, $returnarray, $this->Pull_Func, array("skill_id"));
+        $replacearrayskill = $this->skillDB->skillrun($skillID);
+        $finalskillarray = $this->Skillplace($skillarray["skills"],$replacearrayskill);
+        if($finalskillarray["Blacklist"]){$blacklist = $finalskillarray["Blacklist"];unset($finalskillarray["Blacklist"]);}
+
+
+        //_Skill_Queue_\\
+        $Queuearray = $this->DATAPULLAUTH($this->AccessToken, "characters/$CharID/skillqueue");
+        $skillIDQue = $this->_Foreach($Queuearray, $returnarray, $this->Pull_Func, array("skill_id"));
+        $replacearrayqueue = $this->skillDB->skillrun($skillIDQue);
+        $finalQuearray = $this->Queplace($Queuearray,$replacearrayqueue);
+        if($finalQuearray["Blacklist"]){if($blacklist){$blacklist += $finalskillarray["Blacklist"];}else {$blacklist = $finalQuearray["Blacklist"];}unset($finalQuearray["Blacklist"]);}
+
+
+        //_Attributes_\\
+        $Attributearray = $this->DATAPULLAUTH($this->AccessToken, "characters/$CharID/attributes");
+
+        unset($skillarray['skills']);
+
+        $returnarray["blacklist"] = $blacklist ?: array();
+        $returnarray["queue"] = $finalQuearray;
+        $returnarray["skills"] = $finalskillarray;
+        $returnarray["attributes"] = $Attributearray;
+
+        $returnarray += $skillarray;
+        return $returnarray;
     }
 }
 
@@ -899,7 +989,7 @@ class Debug extends ESI
                 $Skill[$key][$key2] = $this->DATAPULLUNAUTH("universe/types/$skillId");
             }
         }
-        $change = array("164" => "Charisma", "165"=>"Intelligence", "166"=>"Memory", "167"=>"Perception", "168"=>"Willpower");
+        $change = array("164" => "Charisma", "165" => "Intelligence", "166" => "Memory", "167" => "Perception", "168" => "Willpower");
         foreach ($Skill as $value1) {
             foreach ($value1 as $key => $value) {
                 $Skillreturn[$value['name']]['name'] = $value['name'];
@@ -931,7 +1021,7 @@ class pullclass
     public function __construct($scope)
     {
         switch ($scope) {
-
+            //_Extra_\\
             case "titles":
                 $value = $this->Puller("characters", '', "titles");
                 break;
@@ -956,7 +1046,6 @@ class pullclass
                 break;
 
             //_ON_THE_PULL_PAGE__\\
-
             case "wallet":
 
                 $this->Obj = new Wallet();
@@ -965,6 +1054,10 @@ class pullclass
             case "mail":
                 $this->Obj = new Mail();
                 break;              //| Input: refresh_token              |Output:      Array
+
+            case "skills":
+                $this->Obj = new Skills();
+                break;
 
             case "assets":
                 $this->Obj = new Assets();

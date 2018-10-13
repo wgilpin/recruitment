@@ -1,6 +1,6 @@
 <?php
-include "tempfunc.php";
-include "Functions.php";
+include "../tempfunc.php";
+include "../Functions.php";
 session_start();
 $Obj = new pullclass("skills");
 $testa = "cZgp4KhLrKyH8Cy5UCZxsTexVOwftjmKaQY3EbYooemBbIaGA7W-yDi41oA-4_clvmmkhrlovGHOQdG4KbzuYLKnB9_UVFP0xOuXCs4Um1Sf0HOzNXw8z65NOkryYs5HNyU9F8MbudBIKvNI0VrFxWrCbblJPgeHmPINrsYcjcqnJ5ITqPT4xHyyFiGpy-duhS5__rHIIlx96qa1wqTE_diT7d20NLiBKUTKahDPXHyJMUxa_bTtEWxIFtYQkybYs1tcrnoI5gZP1y2HGVl9gNFf7K6FuRTXX8JEof7zLX7W6MXUpmMlrulKCiblOr9nbHSFTfRrEo0587ZtwNKjCQ_pp7pyiO0NTp6b1HL1GZNKUbEMmQCLl1sph2QZUZzf_pKidWxFTALi-KLG_nh4Pg2";
@@ -12,7 +12,3 @@ $test5 = "CGh3SakAASfDU7yiweDbOGCv_LehJB22dFIrwNgweglnABGBu2pslXB163YSotpiRKDci2
 $mail = "vQBfWb847kAkvDFQ5grN76eWs8kRM9AQHNT9R4zpr99X4DKAdNvy3v67N_sQYK9FrP-iaUAu-4grzf7JqxdpoX1KnIAofi996IvAgNgRTcJupc3bw0Rfwxi-5LlQ9eQZPq5OaeEXTmpW0kmVO1LWZP9RBRK0Ef-1gyBfzci9BjK1LBsc9MuJRGC1KdaBd4d8dnz8ACiO-5kfhxgJKjLa5fMHrdstcKHt8PbhXbnVKCGRp902QlIK4pi-AQj7IpEQTI2AyRsO-3K32AhCnG3MyiLpn0ONV-MiWHx8rlLrsmF0imWn2AJ1pS0lBwQ8CX8SxVnV9a0cdNeiURQELqKcrO8s7FjfMuobBNc3Pg0o-8lMr1QkQwyRhbBH1Psv98sqyYaNcI9HedM8YrpepwyVXg2";
 echo "<pre>";
 print_r($Obj->_Return($test2));
-
-
-
-

@@ -72,8 +72,6 @@ switch ($level) {
         //list approved
 
         //list denied
-
-        //change user roles
         break;
     default:                            //Does not belong here
         header("Refresh:0; url=index2.php");
