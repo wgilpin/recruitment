@@ -36,7 +36,7 @@ class Debug extends ESI
             }
         }
         $this->dprintr($Skillreturn);
-        return $Skillreturn;\
+        return $Skillreturn;
     }
 }
     ?>

@@ -310,23 +310,6 @@ class localEveCache extends localEveDB
         return $data;
     }
 
-    private function solarsystemSearcher($array)
-    {
-        $query = "";
-        $tempArray = array();
-        foreach ($array as $key => $value) {
-            $query = $query . " SELECT mapSolarSystems.solarSystemID, mapSolarSystems.solarSystemName, mapConstellations.constellationName, mapRegions.regionName FROM mapSolarSystems INNER JOIN mapConstellations ON mapSolarSystems.constellationID = mapConstellations.constellationID INNER JOIN mapRegions ON mapSolarSystems.regionID = mapRegions.regionID WHERE mapSolarSystems.solarSystemID = '$value' UNION ALL";
-        }
-        $query = substr($query, 0, -9);
-        $stmt = $this->connect->query($query);
-        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
-            foreach ($row as $value) {
-                $tempArray[$value["solarSystemID"]] = $value;
-            }
-            return $tempArray;
-        }
-    }
-
     private function dateChecker($data, $input)
     {
         if (empty($input)) {
@@ -565,7 +548,7 @@ class localEveCache extends localEveDB
         return $array;
     }
 
-    public function insertUpdate($array, $keyArray)
+    private function insertUpdate($array, $keyArray)
     {
 
         $place = array_shift($keyArray);
@@ -662,6 +645,23 @@ class localEveCache extends localEveDB
             $array[$key]["solarSystemID"] = $solarArray[$value["solarSystemID"]];
         }
         return $array;
+    }
+
+    public function solarsystemSearcher($array)
+    {
+        $query = "";
+        $tempArray = array();
+        foreach ($array as $key => $value) {
+            $query = $query . " SELECT mapSolarSystems.solarSystemID, mapSolarSystems.solarSystemName, mapConstellations.constellationName, mapRegions.regionName FROM mapSolarSystems INNER JOIN mapConstellations ON mapSolarSystems.constellationID = mapConstellations.constellationID INNER JOIN mapRegions ON mapSolarSystems.regionID = mapRegions.regionID WHERE mapSolarSystems.solarSystemID = '$value' UNION ALL";
+        }
+        $query = substr($query, 0, -9);
+        $stmt = $this->connect->query($query);
+        while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
+            foreach ($row as $value) {
+                $tempArray[$value["solarSystemID"]] = $value;
+            }
+            return $tempArray;
+        }
     }
 
     public function groupCache($array, $charFunc, $corpFunc, $allyFunc, $unknownFunc)
