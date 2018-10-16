@@ -1085,6 +1085,16 @@ class DBconn
         return $returnArray;
     }
 
+    public function changeRanks($charName, $role){
+        $query = "UPDATE users SET user_level = $role WHERE username = '$charName'";
+        $stmt = $this->Connect()->exec($query);
+        if ($stmt == true){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
 //_____________________________________________________________________________________________________________________\\
 }
 

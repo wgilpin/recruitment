@@ -1135,7 +1135,7 @@ class pullclass
 
             case "bookmarks":
                 $this->Obj = new Bookmarks();
-                break;                 //| Input: refresh_token              |Output:      Array
+                break;             //| Input: refresh_token              |Output:      Array
 
             case "assets":
                 $this->Obj = new Assets();

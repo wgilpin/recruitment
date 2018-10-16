@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="55942164-864a-4914-a8fe-19e1eab5b72a" name="Ascee" url="http://sftp.droeftoeters.com">
+        <fileTransfer host="sftp.droeftoeters.com" port="22" rootFolder="/public/sites/ascee.droeftoeters.com" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" shareSSLContext="true" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

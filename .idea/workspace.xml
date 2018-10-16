@@ -1,0 +1,744 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="71410a27-b67c-49c7-bf0b-018288042687" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/Functions.php" beforeDir="false" afterPath="$PROJECT_DIR$/Functions.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/adminPanel/adminPanel.php" beforeDir="false" afterPath="$PROJECT_DIR$/adminPanel/adminPanel.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tempfunc.php" beforeDir="false" afterPath="$PROJECT_DIR$/tempfunc.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testfiles/Pullpage.php" beforeDir="false" afterPath="$PROJECT_DIR$/testfiles/Pullpage.php" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DatabaseView">
+    <option name="SHOW_INTERMEDIATE" value="true" />
+    <option name="GROUP_DATA_SOURCES" value="true" />
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
+    <option name="HIDDEN_KINDS">
+      <set />
+    </option>
+    <expand />
+    <select />
+  </component>
+  <component name="FUSProjectUsageTrigger">
+    <session id="1474214364">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.closed" value="35" />
+          <entry key="project.open.time.1" value="1" />
+          <entry key="project.open.time.2" value="5" />
+          <entry key="project.open.time.3" value="24" />
+          <entry key="project.open.time.4" value="10" />
+          <entry key="project.open.time.5" value="5" />
+          <entry key="project.open.time.6" value="1" />
+          <entry key="project.opened" value="46" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.open">
+        <counts>
+          <entry key="css" value="2" />
+          <entry key="hbs" value="6" />
+          <entry key="htaccess" value="1" />
+          <entry key="js" value="32" />
+          <entry key="json" value="3" />
+          <entry key="php" value="271" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.open">
+        <counts>
+          <entry key="CSS" value="2" />
+          <entry key="JSON" value="3" />
+          <entry key="JavaScript" value="32" />
+          <entry key="PHP" value="271" />
+          <entry key="PLAIN_TEXT" value="6" />
+          <entry key="htaccess" value="1" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.edit">
+        <counts>
+          <entry key="dummy" value="10" />
+          <entry key="hbs" value="10" />
+          <entry key="htaccess" value="71" />
+          <entry key="js" value="88" />
+          <entry key="php" value="19347" />
+          <entry key="txt" value="559" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.edit">
+        <counts>
+          <entry key="JavaScript" value="88" />
+          <entry key="PHP" value="19347" />
+          <entry key="PLAIN_TEXT" value="579" />
+          <entry key="htaccess" value="71" />
+        </counts>
+      </usages-collector>
+    </session>
+  </component>
+  <component name="FavoritesManager">
+    <favorites_list name="ASCEE_PROGRAMMING" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="true" current-in-tab="false">
+        <entry file="remoteDeploymentFS://&lt;55942164-864a-4914-a8fe-19e1eab5b72a&gt;/testfiles/Pullpage.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="374">
+              <caret line="22" column="37" selection-start-line="22" selection-start-column="37" selection-end-line="22" selection-end-column="37" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="true" current-in-tab="false">
+        <entry file="remoteDeploymentFS://&lt;55942164-864a-4914-a8fe-19e1eab5b72a&gt;/tempfunc.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="794">
+              <caret line="1152" column="17" lean-forward="true" selection-start-line="1152" selection-start-column="17" selection-end-line="1152" selection-end-column="27" />
+              <folding>
+                <element signature="n#__construct#0;n#ESI#0;n#!!top" />
+                <element signature="e#1244#1570#1#PHP" />
+                <element signature="e#1332#1560#0#PHP" />
+                <element signature="e#1510#1560#0#PHP" />
+                <element signature="e#1608#2171#1#PHP" />
+                <element signature="e#1696#2160#0#PHP" />
+                <element signature="e#1769#2095#0#PHP" />
+                <element signature="e#1947#2095#0#PHP" />
+                <element signature="e#2110#2160#0#PHP" />
+                <element signature="e#2201#4280#1#PHP" />
+                <element signature="e#2289#4270#0#PHP" />
+                <element signature="e#2393#2585#0#PHP" />
+                <element signature="e#2602#3217#0#PHP" />
+                <element signature="e#2767#3047#0#PHP" />
+                <element signature="e#2834#3025#0#PHP" />
+                <element signature="e#2939#3025#0#PHP" />
+                <element signature="e#3151#3217#0#PHP" />
+                <element signature="e#3232#4270#0#PHP" />
+                <element signature="e#3255#4256#0#PHP" />
+                <element signature="e#3288#3492#0#PHP" />
+                <element signature="e#3645#4030#0#PHP" />
+                <element signature="e#3796#4008#0#PHP" />
+                <element signature="e#3922#4008#0#PHP" />
+                <element signature="e#4142#4256#0#PHP" />
+                <element signature="e#4319#6731#1#PHP" />
+                <element signature="e#4407#6721#0#PHP" />
+                <element signature="e#4466#4797#0#PHP" />
+                <element signature="e#4673#4797#0#PHP" />
+                <element signature="e#4814#5006#0#PHP" />
+                <element signature="e#5023#5640#0#PHP" />
+                <element signature="e#5188#5470#0#PHP" />
+                <element signature="e#5256#5448#0#PHP" />
+                <element signature="e#5362#5448#0#PHP" />
+                <element signature="e#5574#5640#0#PHP" />
+                <element signature="e#5655#6721#0#PHP" />
+                <element signature="e#5678#6707#0#PHP" />
+                <element signature="e#5711#5943#0#PHP" />
+                <element signature="e#6096#6481#0#PHP" />
+                <element signature="e#6247#6459#0#PHP" />
+                <element signature="e#6373#6459#0#PHP" />
+                <element signature="e#6593#6707#0#PHP" />
+                <element signature="e#6766#7070#1#PHP" />
+                <element signature="e#6854#7060#0#PHP" />
+                <element signature="e#7010#7060#0#PHP" />
+                <element signature="n#debug#0;n#ESI#0;n#!!top" />
+                <element signature="n#dprintr#0;n#ESI#0;n#!!top" />
+                <element signature="n#_Foreach#0;n#ESI#0;n#!!top" />
+                <element signature="e#7697#8428#0#PHP" />
+                <element signature="e#7746#8418#0#PHP" />
+                <element signature="e#7909#7996#0#PHP" />
+                <element signature="e#8012#8418#0#PHP" />
+                <element signature="e#8064#8203#0#PHP" />
+                <element signature="e#8144#8203#0#PHP" />
+                <element signature="e#8320#8404#0#PHP" />
+                <element signature="n#Blacklist#0;n#ESI#0;n#!!top" />
+                <element signature="e#8555#8837#0#PHP" />
+                <element signature="e#8604#8827#0#PHP" />
+                <element signature="n#AccesTokenDispencer#0;n#ESI#0;n#!!top" />
+                <element signature="e#10146#10223#0#PHP" />
+                <element signature="n#Verify#0;n#ESI#0;n#!!top" />
+                <element signature="e#10933#11010#0#PHP" />
+                <element signature="n#DATAPOST#0;n#ESI#0;n#!!top" />
+                <element signature="e#11136#11200#0#PHP" />
+                <element signature="e#11723#11800#0#PHP" />
+                <element signature="n#DATAPULLPAGE#0;n#ESI#0;n#!!top" />
+                <element signature="e#11956#12066#0#PHP" />
+                <element signature="e#12026#12066#0#PHP" />
+                <element signature="e#12103#12225#0#PHP" />
+                <element signature="e#12165#12225#0#PHP" />
+                <element signature="n#DATAPULLUNAUTH#0;n#ESI#0;n#!!top" />
+                <element signature="e#13106#13694#0#PHP" />
+                <element signature="e#13159#13684#1#PHP" />
+                <element signature="e#14029#14431#0#PHP" />
+                <element signature="e#14086#14394#0#PHP" />
+                <element signature="e#14164#14394#0#PHP" />
+                <element signature="e#14187#14380#0#PHP" />
+                <element signature="n#DATAPULLAUTH#0;n#ESI#0;n#!!top" />
+                <element signature="e#14953#15541#0#PHP" />
+                <element signature="e#15006#15531#1#PHP" />
+                <element signature="e#15876#16288#0#PHP" />
+                <element signature="e#15933#16251#0#PHP" />
+                <element signature="e#16011#16251#0#PHP" />
+                <element signature="e#16034#16237#0#PHP" />
+                <element signature="n#Cachepull#0;n#ESI#0;n#!!top" />
+                <element signature="e#16418#16497#0#PHP" />
+                <element signature="e#16519#17762#1#PHP" />
+                <element signature="e#16573#17088#0#PHP" />
+                <element signature="e#17133#17359#0#PHP" />
+                <element signature="e#17373#17723#0#PHP" />
+                <element signature="e#17427#17709#0#PHP" />
+                <element signature="e#17486#17691#0#PHP" />
+                <element signature="e#17610#17691#0#PHP" />
+                <element signature="e#17785#19438#1#PHP" />
+                <element signature="e#17839#18518#0#PHP" />
+                <element signature="e#18563#19036#0#PHP" />
+                <element signature="e#19049#19399#0#PHP" />
+                <element signature="e#19103#19385#0#PHP" />
+                <element signature="e#19162#19367#0#PHP" />
+                <element signature="e#19286#19367#0#PHP" />
+                <element signature="e#19461#20872#1#PHP" />
+                <element signature="e#19515#19964#0#PHP" />
+                <element signature="e#20009#20470#0#PHP" />
+                <element signature="e#20483#20833#0#PHP" />
+                <element signature="e#20537#20819#0#PHP" />
+                <element signature="e#20596#20801#0#PHP" />
+                <element signature="e#20720#20801#0#PHP" />
+                <element signature="e#20898#22084#1#PHP" />
+                <element signature="e#21127#21214#0#PHP" />
+                <element signature="e#21227#21728#0#PHP" />
+                <element signature="e#21277#21714#0#PHP" />
+                <element signature="e#21327#21435#0#PHP" />
+                <element signature="e#21457#21567#0#PHP" />
+                <element signature="e#21589#21696#0#PHP" />
+                <element signature="e#21742#21833#0#PHP" />
+                <element signature="e#21846#21937#0#PHP" />
+                <element signature="e#21950#22041#0#PHP" />
+                <element signature="e#22109#23271#1#PHP" />
+                <element signature="e#22167#22410#0#PHP" />
+                <element signature="e#22456#22864#0#PHP" />
+                <element signature="e#22617#22849#0#PHP" />
+                <element signature="e#22777#22849#0#PHP" />
+                <element signature="e#22877#23231#0#PHP" />
+                <element signature="e#22931#23217#0#PHP" />
+                <element signature="e#22990#23199#0#PHP" />
+                <element signature="e#23118#23199#0#PHP" />
+                <element signature="e#23282#23542#0#PHP" />
+                <element signature="e#23415#23542#0#PHP" />
+                <element signature="n#Scopemaker#0;n#ESI#0;n#!!top" />
+                <element signature="e#23723#24489#0#PHP" />
+                <element signature="e#23853#23991#0#PHP" />
+                <element signature="e#23992#24096#0#PHP" />
+                <element signature="e#24097#24215#0#PHP" />
+                <element signature="e#24216#24311#0#PHP" />
+                <element signature="e#24312#24447#0#PHP" />
+                <element signature="e#24448#24489#0#PHP" />
+                <element signature="n#ArraytoString#0;n#ESI#0;n#!!top" />
+                <element signature="e#24604#24954#0#PHP" />
+                <element signature="e#24627#24738#0#PHP" />
+                <element signature="e#24749#24911#0#PHP" />
+                <element signature="e#24790#24901#0#PHP" />
+                <element signature="e#24912#24954#0#PHP" />
+                <element signature="n#EveOauth#0;n#!!top" />
+                <element signature="n#rToken#0;n#EveOauth#0;n#!!top" />
+                <element signature="e#25853#25930#0#PHP" />
+                <element signature="n#Portrait#0;n#!!top" />
+                <element signature="n#Wallet#0;n#!!top" />
+                <element signature="n#Mail#0;n#!!top" />
+                <element signature="n#SendMail#0;n#Mail#0;n#!!top" />
+                <element signature="n#Maillist#0;n#Mail#0;n#!!top" />
+                <element signature="n#MailID#0;n#Mail#0;n#!!top" />
+                <element signature="n#run#0;n#Mail#0;n#!!top" />
+                <element signature="e#30224#30512#0#PHP" />
+                <element signature="e#30251#30433#0#PHP" />
+                <element signature="e#30350#30433#0#PHP" />
+                <element signature="e#30444#30512#0#PHP" />
+                <element signature="n#Assets#0;n#!!top" />
+                <element signature="n#__construct#0;n#Assets#0;n#!!top" />
+                <element signature="e#30772#30893#1#PHP" />
+                <element signature="n#Item_id#0;n#Assets#0;n#!!top" />
+                <element signature="e#30980#31075#0#PHP" />
+                <element signature="n#NameArray#0;n#Assets#0;n#!!top" />
+                <element signature="e#31187#31425#0#PHP" />
+                <element signature="e#31236#31415#0#PHP" />
+                <element signature="e#31343#31415#0#PHP" />
+                <element signature="n#Run#0;n#Assets#0;n#!!top" />
+                <element signature="e#32923#33118#0#PHP" />
+                <element signature="e#32973#33108#0#PHP" />
+                <element signature="n#Skills#0;n#!!top" />
+                <element signature="n#Skillplace#0;n#Skills#0;n#!!top" />
+                <element signature="e#33440#34129#0#PHP" />
+                <element signature="e#33558#34119#0#PHP" />
+                <element signature="e#33818#33946#0#PHP" />
+                <element signature="e#33961#34119#0#PHP" />
+                <element signature="n#Queplace#0;n#Skills#0;n#!!top" />
+                <element signature="e#34251#34909#0#PHP" />
+                <element signature="e#34338#34899#0#PHP" />
+                <element signature="e#34598#34726#0#PHP" />
+                <element signature="e#34741#34899#0#PHP" />
+                <element signature="n#__construct#0;n#Skills#0;n#!!top" />
+                <element signature="n#run#0;n#Skills#0;n#!!top" />
+                <element signature="e#35711#35863#0#PHP" />
+                <element signature="e#36242#36518#0#PHP" />
+                <element signature="e#36289#36460#0#PHP" />
+                <element signature="e#36382#36460#0#PHP" />
+                <element signature="n#Bookmarks#0;n#!!top" />
+                <element signature="n#standing#0;n#Bookmarks#0;n#!!top" />
+                <element signature="e#37056#37500#0#PHP" />
+                <element signature="e#37105#37490#0#PHP" />
+                <element signature="e#37271#37392#0#PHP" />
+                <element signature="e#37407#37490#0#PHP" />
+                <element signature="n#run#0;n#Bookmarks#0;n#!!top" />
+                <element signature="e#38389#38524#0#PHP" />
+                <element signature="e#38533#39592#0#PHP" />
+                <element signature="e#38586#38830#0#PHP" />
+                <element signature="e#39022#39128#0#PHP" />
+                <element signature="e#39214#39517#0#PHP" />
+                <element signature="e#39439#39517#0#PHP" />
+                <element signature="n#Login#0;n#!!top" />
+                <element signature="n#run#0;n#Login#0;n#!!top" />
+                <element signature="n#Debug#0;n#!!top" />
+                <element signature="n#Run#0;n#Debug#0;n#!!top" />
+                <element signature="e#40558#40728#0#PHP" />
+                <element signature="e#40737#40937#0#PHP" />
+                <element signature="e#40786#40927#0#PHP" />
+                <element signature="e#41081#42113#0#PHP" />
+                <element signature="e#41123#42103#0#PHP" />
+                <element signature="e#41489#42089#0#PHP" />
+                <element signature="e#41559#41705#0#PHP" />
+                <element signature="e#41726#41887#0#PHP" />
+                <element signature="e#41908#42071#0#PHP" />
+                <element signature="e#42335#42440#0#PHP" />
+                <element signature="e#42453#42927#0#PHP" />
+                <element signature="e#42488#42904#0#PHP" />
+                <element signature="e#42676#42904#0#PHP" />
+                <element signature="e#42940#43042#0#PHP" />
+                <element signature="e#43092#43173#0#PHP" />
+                <element signature="e#43260#43336#0#PHP" />
+                <element signature="e#43425#43504#0#PHP" />
+                <element signature="e#43592#43678#0#PHP" />
+                <element signature="e#43762#43842#0#PHP" />
+                <element signature="e#43856#43934#0#PHP" />
+                <element signature="e#43990#44068#0#PHP" />
+                <element signature="e#44081#44162#0#PHP" />
+                <element signature="e#44246#44330#0#PHP" />
+                <element signature="e#44408#44480#0#PHP" />
+                <element signature="n#_Echo#0;n#pullclass#0;n#!!top" />
+                <element signature="n#_Return#0;n#pullclass#0;n#!!top" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="true" current-in-tab="false">
+        <entry file="remoteDeploymentFS://&lt;55942164-864a-4914-a8fe-19e1eab5b72a&gt;/evidenceChecker.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="391">
+              <caret line="5" selection-start-line="5" selection-end-line="5" selection-end-column="19" />
+              <caret line="23" selection-start-line="23" selection-end-line="23" selection-end-column="54" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="true" current-in-tab="true">
+        <entry file="remoteDeploymentFS://&lt;55942164-864a-4914-a8fe-19e1eab5b72a&gt;/testfiles/tespage.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="340">
+              <caret line="20" column="17" selection-start-line="20" selection-start-column="17" selection-end-line="20" selection-end-column="17" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>\&quot;</find>
+      <find>echo &quot;hallo&quot;</find>
+      <find>DATAPOST</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>geolo</replace>
+    </replaceStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="&lt;dc307c02-43cf-462f-bdc7-b3429c6794fd&gt;/Old/OldFunctions.php" />
+        <option value="&lt;dc307c02-43cf-462f-bdc7-b3429c6794fd&gt;/Config.php" />
+        <option value="&lt;dc307c02-43cf-462f-bdc7-b3429c6794fd&gt;/testfiles/Javascript.js" />
+        <option value="&lt;dc307c02-43cf-462f-bdc7-b3429c6794fd&gt;/Functions.php" />
+        <option value="$PROJECT_DIR$/../Eve.MoonCreators.com/testfiles/Javascript.js" />
+        <option value="$PROJECT_DIR$/../Eve.MoonCreators.com/recruiter.php" />
+        <option value="&lt;dc307c02-43cf-462f-bdc7-b3429c6794fd&gt;/tempfunc.php" />
+        <option value="&lt;dc307c02-43cf-462f-bdc7-b3429c6794fd&gt;/tespage.php" />
+        <option value="&lt;dc307c02-43cf-462f-bdc7-b3429c6794fd&gt;/ascee.droeftoeters.com/.htaccess" />
+        <option value="&lt;dc307c02-43cf-462f-bdc7-b3429c6794fd&gt;/ascee.droeftoeters.com/testfiles/tespage.php" />
+        <option value="&lt;dc307c02-43cf-462f-bdc7-b3429c6794fd&gt;/ascee.droeftoeters.com/output/wallet.php" />
+        <option value="&lt;dc307c02-43cf-462f-bdc7-b3429c6794fd&gt;/ascee.droeftoeters.com/Config.php" />
+        <option value="&lt;dc307c02-43cf-462f-bdc7-b3429c6794fd&gt;/ascee.droeftoeters.com/testfiles/templates/mailList.hbs" />
+        <option value="&lt;dc307c02-43cf-462f-bdc7-b3429c6794fd&gt;/design.droeftoeters.com/index.php" />
+        <option value="&lt;dc307c02-43cf-462f-bdc7-b3429c6794fd&gt;/ascee.droeftoeters.com/testfiles/Javascript.js" />
+        <option value="&lt;dc307c02-43cf-462f-bdc7-b3429c6794fd&gt;/ascee.droeftoeters.com/output/mailID.php" />
+        <option value="$PROJECT_DIR$/../Eve.MoonCreators.com/testfiles/tempfunc.php" />
+        <option value="&lt;dc307c02-43cf-462f-bdc7-b3429c6794fd&gt;/ascee.droeftoeters.com/testfiles/wallet.js" />
+        <option value="&lt;dc307c02-43cf-462f-bdc7-b3429c6794fd&gt;/ascee.droeftoeters.com/testfiles/Pullpage.php" />
+        <option value="&lt;dc307c02-43cf-462f-bdc7-b3429c6794fd&gt;/ascee.droeftoeters.com/testfiles/templates/walletList.hbs" />
+        <option value="&lt;dc307c02-43cf-462f-bdc7-b3429c6794fd&gt;/ascee.droeftoeters.com/output/login.php" />
+        <option value="&lt;dc307c02-43cf-462f-bdc7-b3429c6794fd&gt;/ascee.droeftoeters.com/tespage.php" />
+        <option value="&lt;dc307c02-43cf-462f-bdc7-b3429c6794fd&gt;/ascee.droeftoeters.com/Functions.php" />
+        <option value="&lt;dc307c02-43cf-462f-bdc7-b3429c6794fd&gt;/ascee.droeftoeters.com/test4.php" />
+        <option value="&lt;dc307c02-43cf-462f-bdc7-b3429c6794fd&gt;/ascee.droeftoeters.com/tempfunc.php" />
+        <option value="&lt;f7801da1-d3b7-4151-bd0a-6424048ca2fa&gt;/tempfunc.php" />
+        <option value="$PROJECT_DIR$/test4.php" />
+        <option value="$PROJECT_DIR$/tespage.php" />
+        <option value="$PROJECT_DIR$/test3.php" />
+        <option value="&lt;19a149ea-66da-4890-b5e9-d7ab522f6af8&gt;/Config.php" />
+        <option value="$PROJECT_DIR$/tempfunc.php" />
+        <option value="$PROJECT_DIR$/Functions.php" />
+        <option value="&lt;19a149ea-66da-4890-b5e9-d7ab522f6af8&gt;/tespage.php" />
+        <option value="&lt;19a149ea-66da-4890-b5e9-d7ab522f6af8&gt;/test3.php" />
+        <option value="&lt;19a149ea-66da-4890-b5e9-d7ab522f6af8&gt;/test4.php" />
+        <option value="&lt;19a149ea-66da-4890-b5e9-d7ab522f6af8&gt;/tempfunc.php" />
+        <option value="&lt;19a149ea-66da-4890-b5e9-d7ab522f6af8&gt;/Functions.php" />
+        <option value="&lt;19a149ea-66da-4890-b5e9-d7ab522f6af8&gt;/output/wallet.php" />
+        <option value="&lt;19a149ea-66da-4890-b5e9-d7ab522f6af8&gt;/updatepullers/Skills.php" />
+        <option value="&lt;55942164-864a-4914-a8fe-19e1eab5b72a&gt;/test3.php" />
+        <option value="&lt;55942164-864a-4914-a8fe-19e1eab5b72a&gt;/Config.php" />
+        <option value="&lt;55942164-864a-4914-a8fe-19e1eab5b72a&gt;/test4.php" />
+        <option value="&lt;55942164-864a-4914-a8fe-19e1eab5b72a&gt;/output/Skills.php" />
+        <option value="&lt;55942164-864a-4914-a8fe-19e1eab5b72a&gt;/updatepullers/Skills.php" />
+        <option value="&lt;55942164-864a-4914-a8fe-19e1eab5b72a&gt;/output/skill.php" />
+        <option value="&lt;55942164-864a-4914-a8fe-19e1eab5b72a&gt;/Functions.php" />
+        <option value="&lt;55942164-864a-4914-a8fe-19e1eab5b72a&gt;/tespage.php" />
+        <option value="&lt;55942164-864a-4914-a8fe-19e1eab5b72a&gt;/output/bookmarks.php" />
+        <option value="&lt;55942164-864a-4914-a8fe-19e1eab5b72a&gt;/tempfunc.php" />
+        <option value="&lt;55942164-864a-4914-a8fe-19e1eab5b72a&gt;/testfiles/Pullpage.php" />
+        <option value="&lt;55942164-864a-4914-a8fe-19e1eab5b72a&gt;/testfiles/tespage.php" />
+      </list>
+    </option>
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
+  </component>
+  <component name="NodePackageJsonFileManager">
+    <packageJsonPaths>
+      <path value="$PROJECT_DIR$/package.json" />
+    </packageJsonPaths>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="1600" />
+    <option name="width" value="1600" />
+    <option name="height" value="1200" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="ProjectPane" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="SearchEverywhereHistoryKey" value="git&#9;ACTION&#9;Github.Share" />
+    <property name="WebServerToolWindowFactoryState" value="true" />
+    <property name="WebServerToolWindowPanel.toolwindow.highlight.mappings" value="true" />
+    <property name="WebServerToolWindowPanel.toolwindow.highlight.symlinks" value="true" />
+    <property name="WebServerToolWindowPanel.toolwindow.show.date" value="false" />
+    <property name="WebServerToolWindowPanel.toolwindow.show.permissions" value="false" />
+    <property name="WebServerToolWindowPanel.toolwindow.show.size" value="false" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="71410a27-b67c-49c7-bf0b-018288042687" name="Default Changelist" comment="" />
+      <created>1529530984612</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1529530984612</updated>
+      <workItem from="1529530985815" duration="872000" />
+      <workItem from="1529581912973" duration="14058000" />
+      <workItem from="1529610383416" duration="5314000" />
+      <workItem from="1529619073243" duration="10238000" />
+      <workItem from="1529634355785" duration="405000" />
+      <workItem from="1529634783350" duration="12898000" />
+      <workItem from="1529707598218" duration="649000" />
+      <workItem from="1529711986043" duration="8321000" />
+      <workItem from="1529848317327" duration="38764000" />
+      <workItem from="1529890463620" duration="8000" />
+      <workItem from="1529948496331" duration="1398000" />
+      <workItem from="1529964925482" duration="2918000" />
+      <workItem from="1530028296492" duration="110000" />
+      <workItem from="1530113125745" duration="4525000" />
+      <workItem from="1530143969151" duration="2103000" />
+      <workItem from="1530192568332" duration="37997000" />
+      <workItem from="1530293201900" duration="26444000" />
+      <workItem from="1530463608775" duration="4522000" />
+      <workItem from="1530468240790" duration="19034000" />
+      <workItem from="1530503783210" duration="1239000" />
+      <workItem from="1530641185043" duration="17000" />
+      <workItem from="1530648385877" duration="13767000" />
+      <workItem from="1530699088132" duration="28369000" />
+      <workItem from="1530750713973" duration="767000" />
+      <workItem from="1530808037929" duration="13369000" />
+      <workItem from="1530827023182" duration="1053000" />
+      <workItem from="1530828136985" duration="34887000" />
+      <workItem from="1530884383374" duration="5666000" />
+      <workItem from="1531072267241" duration="14791000" />
+      <workItem from="1531123447654" duration="19959000" />
+      <workItem from="1531243153772" duration="13391000" />
+      <workItem from="1531421734583" duration="600000" />
+      <workItem from="1531433962527" duration="4568000" />
+      <workItem from="1531441350885" duration="599000" />
+      <workItem from="1531511542704" duration="3492000" />
+      <workItem from="1531571721522" duration="2338000" />
+      <workItem from="1531685071056" duration="1503000" />
+      <workItem from="1531750455925" duration="19180000" />
+      <workItem from="1531841479854" duration="1086000" />
+      <workItem from="1532036317719" duration="2146000" />
+      <workItem from="1532125594267" duration="618000" />
+      <workItem from="1532188226688" duration="876000" />
+      <workItem from="1532204375004" duration="711000" />
+      <workItem from="1532230320927" duration="2464000" />
+      <workItem from="1532272924999" duration="9097000" />
+      <workItem from="1532328633412" duration="5952000" />
+      <workItem from="1533137792405" duration="2294000" />
+      <workItem from="1533565333216" duration="3758000" />
+      <workItem from="1533676903080" duration="1206000" />
+      <workItem from="1533737645115" duration="33759000" />
+      <workItem from="1533827664457" duration="12310000" />
+      <workItem from="1534117954719" duration="3058000" />
+      <workItem from="1535122453528" duration="619000" />
+      <workItem from="1535238844465" duration="2654000" />
+      <workItem from="1535573647795" duration="161000" />
+      <workItem from="1535858171374" duration="15496000" />
+      <workItem from="1536124483044" duration="1669000" />
+      <workItem from="1536247014285" duration="607000" />
+      <workItem from="1536328226233" duration="17911000" />
+      <workItem from="1536367927957" duration="9351000" />
+      <workItem from="1536561163046" duration="28792000" />
+      <workItem from="1536657647222" duration="603000" />
+      <workItem from="1536743635568" duration="13444000" />
+      <workItem from="1536923780008" duration="7691000" />
+      <workItem from="1537043920024" duration="1948000" />
+      <workItem from="1537092811569" duration="5592000" />
+      <workItem from="1537551366668" duration="5887000" />
+      <workItem from="1537728901819" duration="3054000" />
+      <workItem from="1537829768653" duration="6367000" />
+      <workItem from="1537929011999" duration="6710000" />
+      <workItem from="1537941135730" duration="6672000" />
+      <workItem from="1537962592803" duration="10369000" />
+      <workItem from="1538063729789" duration="7082000" />
+      <workItem from="1538081200977" duration="615000" />
+      <workItem from="1538116945818" duration="463000" />
+      <workItem from="1538118047293" duration="1928000" />
+      <workItem from="1538120245793" duration="2314000" />
+      <workItem from="1538123942049" duration="2037000" />
+      <workItem from="1538129941035" duration="5523000" />
+      <workItem from="1538219919899" duration="7861000" />
+      <workItem from="1538307620174" duration="4685000" />
+      <workItem from="1538513555823" duration="5224000" />
+      <workItem from="1538568363019" duration="6758000" />
+      <workItem from="1538675711848" duration="5384000" />
+      <workItem from="1538830335272" duration="43000" />
+      <workItem from="1538830493979" duration="5702000" />
+      <workItem from="1538906831753" duration="1382000" />
+      <workItem from="1538910409415" duration="625000" />
+      <workItem from="1538911062056" duration="864000" />
+      <workItem from="1538911979760" duration="5843000" />
+      <workItem from="1538946731346" duration="6511000" />
+      <workItem from="1539091942415" duration="3433000" />
+      <workItem from="1539110843524" duration="12433000" />
+      <workItem from="1539184499511" duration="8569000" />
+      <workItem from="1539274008198" duration="908000" />
+      <workItem from="1539393495646" duration="904000" />
+      <workItem from="1539432400986" duration="23164000" />
+      <workItem from="1539621537488" duration="11448000" />
+    </task>
+    <task id="LOCAL-00001" summary="Update on Cache,&#10;&#10;Added Cache Key Arrays,&#10;Added Cache ESI calls,&#10;Added Cache KeyReplacer functions,&#10;Added Unfinished Character / Corperation / Alliance Pulls.&#10;Added Debug subClass for all Cache debugs and future test environments.">
+      <created>1538128065833</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1538128065834</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Update on Cache,&#10;&#10;Added database Updater,&#10;Lacking database Inserter.">
+      <created>1538517738549</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1538517738549</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Update on Cache,&#10;&#10;Added database Inserter.">
+      <created>1538675777578</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1538675777578</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Update on Cache,&#10;&#10;GroupCache done,&#10;&#10;StructureCache ESI puller done, &#10;StructureCache Database made,&#10;Updater and Inserter NOT working">
+      <created>1538684128055</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1538684128055</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Update on Cache,&#10;&#10;Lost alot of work today thanks to a failed Sync.   &#10;So this is our fail-save">
+      <created>1538864609558</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1538864609558</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Update on Cache,&#10;                                                      &#10;Lost alot of work today thanks to a failed Sync.   &#10;So this is our fail-save">
+      <created>1538910467493</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1538910467493</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Update on Cache,&#10;                                                      &#10;Lost alot of work today thanks to a failed Sync.   &#10;So this is our fail-save">
+      <created>1538911390830</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1538911390830</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="726768000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="1600" y="0" width="1600" height="1200" extended-state="6" />
+    <layout>
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49812382" weight="0.11948052" />
+      <window_info id="Structure" order="1" sideWeight="0.4990619" weight="0.24935065" />
+      <window_info id="Favorites" order="2" sideWeight="0.5018762" side_tool="true" weight="0.287013" />
+      <window_info anchor="bottom" id="File Transfer" order="0" visible="true" weight="0.3292683" />
+      <window_info anchor="bottom" id="Message" order="1" />
+      <window_info anchor="bottom" id="Find" order="2" weight="0.32911393" />
+      <window_info anchor="bottom" id="Run" order="3" />
+      <window_info anchor="bottom" id="Debug" order="4" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="5" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="6" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="7" weight="0.32748538" />
+      <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" weight="0.32833022" />
+      <window_info anchor="bottom" id="Version Control" order="9" weight="0.31578946" />
+      <window_info anchor="bottom" id="Terminal" order="10" weight="0.32833022" />
+      <window_info anchor="bottom" id="Docker" order="11" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Database Changes" order="12" show_stripe_button="false" />
+      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info active="true" anchor="right" id="Remote Host" order="3" visible="true" weight="0.3025974" />
+      <window_info anchor="right" id="Database" order="4" weight="0.32857144" />
+    </layout>
+    <layout-to-restore>
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49812382" weight="0.11948052" />
+      <window_info id="Structure" order="1" sideWeight="0.4990619" weight="0.24935065" />
+      <window_info id="Favorites" order="2" sideWeight="0.5018762" side_tool="true" weight="0.287013" />
+      <window_info anchor="bottom" id="File Transfer" order="0" weight="0.3292683" />
+      <window_info anchor="bottom" id="Message" order="1" />
+      <window_info anchor="bottom" id="Find" order="2" weight="0.32911393" />
+      <window_info anchor="bottom" id="Run" order="3" />
+      <window_info anchor="bottom" id="Debug" order="4" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="5" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="6" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="7" weight="0.32748538" />
+      <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" weight="0.32833022" />
+      <window_info anchor="bottom" id="Version Control" order="9" weight="0.31578946" />
+      <window_info anchor="bottom" id="Terminal" order="10" weight="0.32833022" />
+      <window_info anchor="bottom" id="Docker" order="11" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Database Changes" order="12" show_stripe_button="false" />
+      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info active="true" anchor="right" id="Remote Host" order="3" visible="true" weight="0.3025974" />
+      <window_info anchor="right" id="Database" order="4" weight="0.32857144" />
+    </layout-to-restore>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="RECENTLY_FILTERED_USER_GROUPS">
+                <collection />
+              </option>
+              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+                <collection />
+              </option>
+              <option name="COLUMN_ORDER">
+                <list>
+                  <option value="0" />
+                  <option value="1" />
+                  <option value="2" />
+                  <option value="3" />
+                </list>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="php">
+          <url>remoteDeploymentFS://&lt;55942164-864a-4914-a8fe-19e1eab5b72a&gt;/Functions.php</url>
+          <line>220</line>
+          <option name="timeStamp" value="31" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="php">
+          <url>remoteDeploymentFS://&lt;55942164-864a-4914-a8fe-19e1eab5b72a&gt;/tempfunc.php</url>
+          <line>690</line>
+          <option name="timeStamp" value="43" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="php">
+          <url>remoteDeploymentFS://&lt;55942164-864a-4914-a8fe-19e1eab5b72a&gt;/tempfunc.php</url>
+          <line>699</line>
+          <option name="timeStamp" value="45" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="php">
+          <url>remoteDeploymentFS://&lt;55942164-864a-4914-a8fe-19e1eab5b72a&gt;/tempfunc.php</url>
+          <line>1092</line>
+          <option name="timeStamp" value="47" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
