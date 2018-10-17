@@ -32,7 +32,7 @@ export default class TabsHeader extends React.Component {
     this.state = {};
   }
 
-  showTab(name){
+  showTab = (name) => {
     //open the tab
     if (this.onClick){
       this.onClick(name);

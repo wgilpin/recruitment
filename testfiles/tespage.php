@@ -1,5 +1,4 @@
-header('Location: evidence.html');
-exit;
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -15,6 +14,8 @@ exit;
             include_once '../tempfunc.php';
             $portrait = new pullclass("Portrait");
             $db = new questions();
+            header('Location: evidence.html');
+            exit;
             ?>
             </div>
         </header>
