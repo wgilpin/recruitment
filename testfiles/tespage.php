@@ -1,3 +1,5 @@
+header('Location: evidence.html');
+exit;
 <!DOCTYPE html>
 <html>
     <head>
