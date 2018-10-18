@@ -99,7 +99,7 @@ export default class Wallet extends React.Component {
             <div style={styles.cell}>AMOUNT</div>
             <div style={styles.cell}>BALANCE</div>
             <div style={styles.cell}>DESCRIPTION</div>
-            <div style={styles.cell}>"TO WHO"</div>
+            <div style={styles.cell}>TO WHO</div>
             <div style={styles.cell}>DATE</div>
           </div>
           {this.state.walletList.map((line, idx) => {
