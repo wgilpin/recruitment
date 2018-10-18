@@ -27,3 +27,4 @@ yarn-error.log*
 precache*
 /testfiles/static/css
 /testfiles/static/js
+asset-manifest.json

@@ -8,13 +8,14 @@ const styles = {
   div: {
     marginLeft: 12,
     display: 'grid',
-    gridTemplateColumns: '100 auto',
+    gridTemplateColumns: '200 auto',
     gridTemplateRows: '100 row2-end 40',
     gridColumnGap: '12px',
     gridTemplateAreas: '". tabHeader" "alts tabBody"',
   },
   alts: {
-    gridArea: 'alts'
+    gridArea: 'alts',
+    width: 200,
   },
   tabHeader: {
     gridArea: 'tabHeader',
