@@ -21,3 +21,9 @@ yarn-debug.log*
 yarn-error.log*
 
 /testfiles/node_modules
+
+# yarn build output
+/testfiles/build
+precache*
+/testfiles/static/css
+/testfiles/static/js

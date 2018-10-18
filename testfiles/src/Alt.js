@@ -14,9 +14,9 @@ const defaultProps = {};
 export default class Alt extends React.Component {
 
   handleClick = () => {
-    debugger;
-    console.log(this);
+    console.log('alt click');
     if (this.props.onClick){
+      console.log('alt click handled');
       this.props.onClick (this.props.id);
     }
   }
@@ -26,11 +26,12 @@ export default class Alt extends React.Component {
 
     const altStyle = {
       div: {
-        padding: 4,
+        padding: 8,
         display: 'grid',
         gridTemplateColumns: `${size || '32px'} auto`,
-        gridTemplateRows: 'auto',
-        gridColumnGap: 12,
+        gridTemplateRows: '50',
+        gridColumnGap: 18,
+        gridRowGap: 18,
       },
       span: {
         size: 14,

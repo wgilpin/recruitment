@@ -12,6 +12,7 @@ class App extends Component {
     return (
       <Router basename="testfiles">
         <div className="App">
+          Evidence
           <Evidence>
           </Evidence>
         </div >

@@ -1,11 +1,17 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Alt from './Alt';
 
-const propTypes = {};
+const propTypes = {
+  onAltSelect: PropTypes.func,
+};
 
 const defaultProps = {};
 
 const styles = {
+  outer: {
+    height: '40px',
+  },
   div: {
     display: 'block',
   },
@@ -17,13 +23,15 @@ export default class Alts extends React.Component {
   }
 
   handleClick = (alt) => {
-    debugger;
-    this.props.onChange || this.props.onChange(alt);
+    console.log('alts click ', this.props.onAltSelect);
+    if (this.props.onAltSelect) {
+      this.props.onAltSelect(alt);
+    }
   }
 
   render() {
     return (
-      <div >
+      <div style={styles.outer} >
         <Alt style={styles.div}
           name="Will Gilpin"
           id="1"

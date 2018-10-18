@@ -5,6 +5,7 @@ const propTypes = {
   src: PropTypes.string,
   onClick: PropTypes.func,
   id: PropTypes.string,
+  size: PropTypes.number,
 };
 
 export default class RoundImage extends React.Component<Props> {
@@ -21,7 +22,6 @@ export default class RoundImage extends React.Component<Props> {
       width: this.props.size || 32,
       height: this.props.size || 32,
     };
-    
     return (
       <React.Fragment>
         <img src={ this.props.src } alt="Avatar" style={ imgStyle } onClick={this.handleClick}/>

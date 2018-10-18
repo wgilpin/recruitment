@@ -7,18 +7,18 @@ import mailImg from './images/mail.png';
 import blueprintImg from './images/blueprints.png';
 
 const propTypes = {
-    onClick: PropTypes.func,
+    onTabChange: PropTypes.func,
 };
 
 const defaultProps = {};
 
 const headerStyle = {
   div: {
-    width: 40*8,
+    width: 50*8,
     display: 'grid',
     gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr',
     gridTemplateRows: 'auto',
-    gridColumnGap: '12px',
+    gridColumnGap: '20px',
   },
   span: {
     size: 14,
@@ -29,29 +29,34 @@ const headerStyle = {
 export default class TabsHeader extends React.Component {
   constructor(props) {
     super(props);
+    console.log('cons',this);
     this.state = {};
   }
 
   showTab = (name) => {
     //open the tab
-    if (this.onClick){
-      this.onClick(name);
+    console.log('tabsHeader click ');
+
+    if (this.props.onTabChange){
+      console.log('tabsHeader click handled ');
+
+      this.props.onTabChange(name);
     }
   }
 
   render() {
     return (
       <div style={headerStyle.div}>
-        <RoundImage style={{gridColumn: 2}} src={walletImg} onClick={this.showTab} id="wallet"></RoundImage>
-        <RoundImage style={{gridColumn: 3}} src={assetsImg} onClick={this.showTab} id="assets"></RoundImage>
-        <RoundImage style={{gridColumn: 4}} src={mailImg} onClick={this.showTab} id='titles'></RoundImage>
-        <RoundImage style={{gridColumn: 5}} src={mailImg} onClick={this.showTab} id='bookmarks'></RoundImage>
-        <RoundImage style={{gridColumn: 6}} src={blueprintImg} onClick={this.showTab} id='blueprints'></RoundImage>
-        <RoundImage style={{gridColumn: 7}} src={mailImg} onClick={this.showTab} id='mail'></RoundImage>
+        <RoundImage style={{gridColumn: 2}} size={40} src={walletImg} onClick={this.showTab} id="wallet"></RoundImage>
+        <RoundImage style={{gridColumn: 3}} size={40} src={assetsImg} onClick={this.showTab} id="assets"></RoundImage>
+        <RoundImage style={{gridColumn: 4}} size={40} src={mailImg} onClick={this.showTab} id='titles'></RoundImage>
+        <RoundImage style={{gridColumn: 5}} size={40} src={mailImg} onClick={this.showTab} id='bookmarks'></RoundImage>
+        <RoundImage style={{gridColumn: 6}} size={40} src={blueprintImg} onClick={this.showTab} id='blueprints'></RoundImage>
+        <RoundImage style={{gridColumn: 7}} size={40} src={mailImg} onClick={this.showTab} id='mail'></RoundImage>
       </div>
     );
   }
 }
 
- TabsHeader.propTypes = propTypes;
- TabsHeader.defaultProps = defaultProps;
+TabsHeader.propTypes = propTypes;
+TabsHeader.defaultProps = defaultProps;

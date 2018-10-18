@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import TabBase from './TabBase';
+import FetchData from './FetchData';
 
 const propTypes = {
   alt: PropTypes.string,
@@ -8,7 +8,7 @@ const propTypes = {
 
 const defaultProps = {};
 
-export default class Mail extends TabBase {
+export default class Mail extends FetchData {
   constructor(props) {
     super(props);
     this.state = {
