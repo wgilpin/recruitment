@@ -15,16 +15,16 @@ export default class Alt extends React.Component {
 
   handleClick = () => {
     console.log('alt click');
-    if (this.props.onClick){
+    if (this.props.onClick) {
       console.log('alt click handled');
-      this.props.onClick (this.props.id);
+      this.props.onClick(this.props.id);
     }
   }
 
   render() {
     const { size, src, name } = this.props;
 
-    const altStyle = {
+    const styles = {
       div: {
         padding: 8,
         display: 'grid',
@@ -40,13 +40,13 @@ export default class Alt extends React.Component {
     };
 
     return (
-      <div style={ altStyle.div } onClick={this.handleClick}>
-          <RoundImage src={src}></RoundImage>
-          <span style={altStyle.span}>{name}</span>
+      <div style={styles.div} onClick={this.handleClick}>
+        <RoundImage src={src}></RoundImage>
+        <span style={styles.span}>{name}</span>
       </div>
     );
   }
 }
 
- Alt.propTypes = propTypes;
- Alt.defaultProps = defaultProps;
+Alt.propTypes = propTypes;
+Alt.defaultProps = defaultProps;

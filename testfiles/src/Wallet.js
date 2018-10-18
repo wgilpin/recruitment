@@ -103,25 +103,26 @@ export default class Wallet extends React.Component {
   }
 
 
-  static commarize(min) {
+  static commarize(num, min=1e3) {
     // from https://gist.github.com/MartinMuzatko/1060fe584d17c7b9ca6e
-    min = min || 1e3;
     // Alter numbers larger than 1k
-    if (this >= min) {
+    if (num >= min) {
       var units = ["k", "M", "B", "T"];
-      var order = Math.floor(Math.log(this) / Math.log(1000));
+      var order = Math.floor(Math.log(num) / Math.log(1000));
       var unitname = units[order - 1];
-      var num = Math.floor(this / Math.pow(1000, order));
+      var out = Math.floor(num / Math.pow(1000, order));
       // output number remainder + unitname
-      return num + unitname;
+      return out + unitname;
     }
     // return formatted original number
-    return min.toLocaleString();
+    return num.toLocaleString();
   }
 
   render() {
+    let balance = (this.state.walletList[0] || {balance: 0}).balance;
     return (
       <div style={styles.div}>
+        <div>Balance {Wallet.commarize(balance)} ISK</div>
         {Wallet.walletLine(
           "Titles",
           {
