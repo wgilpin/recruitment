@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import FetchData from './FetchData';
+import TableStyles from './TableStyles';
 
 const propTypes = {
   alt: PropTypes.string,
@@ -10,49 +11,7 @@ const propTypes = {
 const defaultProps = {
 };
 
-const styles = {
-  div: {
-    marginLeft: 12,
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr auto 2fr 1fr 1fr',
-    gridTemplateRows: 'auto',
-    gridRowGap: '12px',
-    gridColumnGap: '12px',
-    width: '100%',
-    padding: '16px',
-  },
-  amount: {
-    gridColumn: 1,
-    textAlign: 'left',
-    paddingTop: '8px',
-  },
-  balance: {
-    gridColumn: 2,
-    textAlign: 'left',
-    paddingTop: '8px',
-  },
-  description: {
-    gridColumn: 3,
-    textAlign: 'left',
-    paddingTop: '8px',
-  },
-  toWhom: {
-    gridColumn: 4,
-    textAlign: 'left',
-    paddingTop: '8px',
-  },
-  date: {
-    gridColumn: 5,
-    textAlign: 'left',
-    paddingTop: '8px',
-  },
-  isOdd: {
-    backgroundColor: '#111',
-  },
-  title: {
-    color: 'darkgoldenrod',
-  }
-}
+const styles = TableStyles.styles;
 
 export default class Wallet extends React.Component {
   constructor(props) {
@@ -95,27 +54,29 @@ export default class Wallet extends React.Component {
 
   static walletLine(key, { amount, balance, description, second_party_id, date }) {
     let lineStyle =
-      key === "Titles" ?
-        styles.title :
-        (key % 2 === 0 ? styles.isOdd : {});
+      (key % 2 === 0 ? styles.isOdd : {});
+    lineStyle = { ...lineStyle, ...styles.cell };
     let newdate = new Date(date);
     let theDate = date === "DATE" ? date : newdate.toLocaleDateString() + ' ' + newdate.toLocaleTimeString();
 
     return (
-      <React.Fragment>
-        <span style={{ ...lineStyle, ...styles.amount }}>{amount.toLocaleString()}</span>
-        <span style={{ ...lineStyle, ...styles.balance }}>{balance.toLocaleString()}</span>
-        <span style={{ ...lineStyle, ...styles.description }}>{description}</span>
-        <span style={{ ...lineStyle, ...styles.toWhom }}>{second_party_id.name}</span>
-        <span style={{ ...lineStyle, ...styles.date }}>{theDate}</span>
-      </React.Fragment>
+      <div style={styles.row} key={key}>
+        <div style={lineStyle}>{amount.toLocaleString()}</div>
+        <div style={lineStyle}>{balance.toLocaleString()}</div>
+        <div style={lineStyle}>{description}</div>
+        <div style={lineStyle}>{second_party_id.name}</div>
+        <div style={lineStyle}>{theDate}</div>
+      </div>
     )
   }
 
 
-  static commarize(num, min=1e3) {
+  static commarize(num, min = 1e3) {
     // from https://gist.github.com/MartinMuzatko/1060fe584d17c7b9ca6e
     // Alter numbers larger than 1k
+    if (!num) {
+      return '0';
+    }
     if (num >= min) {
       var units = ["k", "M", "B", "T"];
       var order = Math.floor(Math.log(num) / Math.log(1000));
@@ -129,23 +90,22 @@ export default class Wallet extends React.Component {
   }
 
   render() {
-    let balance = (this.state.walletList[0] || {balance: 0}).balance;
+    let balance = (this.state.walletList[0] || { balance: 0 }).balance;
     return (
       <div style={styles.div}>
         <div>Balance {Wallet.commarize(balance)} ISK</div>
-        {Wallet.walletLine(
-          "Titles",
-          {
-            amount: "AMOUNT",
-            balance: "BALANCE",
-            description: "DESCRIPTION",
-            second_party_id: {name: "TO WHO"},
-            date: "DATE",
-          }
-        )}
-        {this.state.walletList.map((line, idx) => {
-          return Wallet.walletLine(idx, line)
-        })}
+        <div style={styles.table}>
+          <div style={styles.header} key='header'>
+            <div style={styles.cell}>AMOUNT</div>
+            <div style={styles.cell}>BALANCE</div>
+            <div style={styles.cell}>DESCRIPTION</div>
+            <div style={styles.cell}>"TO WHO"</div>
+            <div style={styles.cell}>DATE</div>
+          </div>
+          {this.state.walletList.map((line, idx) => {
+            return Wallet.walletLine(idx, line)
+          })}
+        </div>
       </div>
     );
   }

@@ -6,7 +6,6 @@ import Mail from './Mail';
 
 const styles = {
   div: {
-    marginLeft: 12,
     display: 'grid',
     gridTemplateColumns: '200 auto',
     gridTemplateRows: '100 auto',
@@ -14,7 +13,7 @@ const styles = {
   },
   alts: {
     gridArea: 'alts',
-    width: 200,
+    width: '100%',
     backgroundColor: '#333',
     height: '100%',
     gridColumn: 1,
