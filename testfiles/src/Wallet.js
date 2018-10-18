@@ -14,7 +14,7 @@ const styles = {
   div: {
     marginLeft: 12,
     display: 'grid',
-    gridTemplateColumns: '1fr 1fr auto 1fr',
+    gridTemplateColumns: '1fr 1fr auto 2fr 1fr 1fr',
     gridTemplateRows: 'auto',
     gridRowGap: '12px',
     gridColumnGap: '12px',
@@ -24,20 +24,26 @@ const styles = {
   amount: {
     gridColumn: 1,
     textAlign: 'left',
-    //margin: '8px',
     paddingTop: '8px',
   },
   balance: {
     gridColumn: 2,
     textAlign: 'left',
-    //margin: '8px',
     paddingTop: '8px',
   },
   description: {
     gridColumn: 3,
     textAlign: 'left',
-    height: '36px',
-    //margin: '8px',
+    paddingTop: '8px',
+  },
+  toWhom: {
+    gridColumn: 4,
+    textAlign: 'left',
+    paddingTop: '8px',
+  },
+  date: {
+    gridColumn: 5,
+    textAlign: 'left',
     paddingTop: '8px',
   },
   isOdd: {
@@ -87,17 +93,21 @@ export default class Wallet extends React.Component {
     fetch.get();
   }
 
-  static walletLine(key, { amount, balance, description }) {
+  static walletLine(key, { amount, balance, description, second_party_id, date }) {
     let lineStyle =
       key === "Titles" ?
         styles.title :
         (key % 2 === 0 ? styles.isOdd : {});
-    console.log(key, lineStyle)
+    let newdate = new Date(date);
+    let theDate = date === "DATE" ? date : newdate.toLocaleDateString() + ' ' + newdate.toLocaleTimeString();
+
     return (
       <React.Fragment>
         <span style={{ ...lineStyle, ...styles.amount }}>{amount.toLocaleString()}</span>
         <span style={{ ...lineStyle, ...styles.balance }}>{balance.toLocaleString()}</span>
         <span style={{ ...lineStyle, ...styles.description }}>{description}</span>
+        <span style={{ ...lineStyle, ...styles.toWhom }}>{second_party_id.name}</span>
+        <span style={{ ...lineStyle, ...styles.date }}>{theDate}</span>
       </React.Fragment>
     )
   }
@@ -128,7 +138,9 @@ export default class Wallet extends React.Component {
           {
             amount: "AMOUNT",
             balance: "BALANCE",
-            description: "DESCRIPTION"
+            description: "DESCRIPTION",
+            second_party_id: {name: "TO WHO"},
+            date: "DATE",
           }
         )}
         {this.state.walletList.map((line, idx) => {
