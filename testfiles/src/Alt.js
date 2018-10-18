@@ -7,6 +7,7 @@ const propTypes = {
   src: PropTypes.string,
   id: PropTypes.string,
   onClick: PropTypes.func,
+  selected: PropTypes.bool,
 };
 
 const defaultProps = {};
@@ -22,7 +23,7 @@ export default class Alt extends React.Component {
   }
 
   render() {
-    const { size, src, name } = this.props;
+    const { size, src, name, selected } = this.props;
 
     const styles = {
       div: {
@@ -36,11 +37,19 @@ export default class Alt extends React.Component {
       span: {
         size: 14,
         textAlign: 'left',
+      },
+      selected: {
+        backgroundColor: '#222',
       }
     };
 
+    let style = styles.div;
+    if (selected){
+      style = {...style, ...styles.selected};
+    }
+
     return (
-      <div style={styles.div} onClick={this.handleClick}>
+      <div style={style} onClick={this.handleClick}>
         <RoundImage src={src}></RoundImage>
         <span style={styles.span}>{name}</span>
       </div>

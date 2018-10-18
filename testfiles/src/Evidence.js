@@ -9,20 +9,28 @@ const styles = {
     marginLeft: 12,
     display: 'grid',
     gridTemplateColumns: '200 auto',
-    gridTemplateRows: '100 row2-end 40',
+    gridTemplateRows: '100 auto',
     gridColumnGap: '12px',
-    gridTemplateAreas: '". tabHeader" "alts tabBody"',
   },
   alts: {
     gridArea: 'alts',
     width: 200,
+    backgroundColor: '#333',
+    height: '100%',
+    gridColumn: 1,
+    gridRow: '1 / span 2',
+    paddingTop: 100,
   },
   tabHeader: {
     gridArea: 'tabHeader',
     marginTop: 12,
+    gridColumn: 2,
+    gridRow: '1',
   },
-tabBody: {
+  tabBody: {
     gridArea: 'tabBody',
+    gridColumn: 2,
+    gridRow: '2',
   },
 };
 

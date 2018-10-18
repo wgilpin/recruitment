@@ -19,6 +19,7 @@ const headerStyle = {
     gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr',
     gridTemplateRows: 'auto',
     gridColumnGap: '20px',
+    margin: 'auto',
   },
   span: {
     size: 14,
