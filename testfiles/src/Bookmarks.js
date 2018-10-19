@@ -23,14 +23,13 @@ export default class Bookmarks extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      scope: 'bookmark',
+      scope: 'bookmarks',
       bookmarkList: {},
     };
   }
 
 
   onLoaded = data => {
-    debugger;
     let { info } = data;
     if (Object.keys(info).length !== Object.keys(this.state.bookmarkList || {}).length) {
       this.setState({ bookmarkList: info });
@@ -39,7 +38,7 @@ export default class Bookmarks extends React.Component {
 
   componentDidMount() {
     let fetch = new FetchData(
-      { id: this.props.alt, scope: 'bookmark' },
+      { id: this.props.alt, scope: 'bookmarks' },
       this.onLoaded,
       this.onError
     );
@@ -50,6 +49,7 @@ export default class Bookmarks extends React.Component {
     let lineStyle =
       (key % 2 === 0 ? styles.isOdd : {});
     lineStyle = { ...lineStyle, ...styles.cell };
+    debugger;
     let startDate = new Date(start_date),
       endDate = new Date(finish_date),
       today = new Date(),
@@ -70,10 +70,10 @@ export default class Bookmarks extends React.Component {
     )
   }
 
-  static bookmarkLine(key, { item, location_id }) {
-    debugger;
+  static bookmarkLine(key, idx, { item, location_id }) {
     let lineStyle =
-      (key % 2 === 0 ? styles.isOdd : {});
+      (idx % 2 === 0 ? styles.isOdd : {});
+    debugger;
     lineStyle = { ...lineStyle, ...styles.cell };
     let location = `${location_id.regionName}/${location_id.solarSystemName}`;
     return (
@@ -92,12 +92,12 @@ export default class Bookmarks extends React.Component {
       <React.Fragment>
         <div style={styles.row} key={folder.folder_id}>
           <div style={styles.folder}>{folder.name}</div>
-          <div style={styles.folder}></div>
-          <div style={styles.folder}></div>
+          <div style={styles.folder}> </div>
+          <div style={styles.folder}> </div>
         </div>
-          <hr/>
+        <div style={styles.hr}/>
         {Object.keys(folder.inside).map((key, idx) => {
-          return Bookmarks.bookmarkLine(key, folder.inside[key]);
+          return Bookmarks.bookmarkLine(key, idx, folder.inside[key]);
         })}
       </React.Fragment>
     )} else {

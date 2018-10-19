@@ -39,38 +39,13 @@ export default class Evidence extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      showWallet: false,
-      showMail: false,
-      showSkills: false,
-      showBookmarks: false,
+      activeTab: null,
     };
   }
 
   changeTab = (tabId) => {
     console.log('evidence click ');
-    let nullState = {
-      ...this.state,
-      showWallet: false,
-      showMail: false,
-      showSkills: false,
-      showBookmarks: false,
-    }
-    switch (tabId) {
-      case 'wallet':
-        this.setState({ ...nullState, showWallet: true });
-        break;
-      case 'mail':
-        this.setState({ ...nullState, showMail: true });
-        break;
-      case 'skills':
-        this.setState({ ...nullState, showSkills: true });
-        break;
-      case 'bookmarks':
-        this.setState({ ...nullState, showBookmarks: true });
-        break;
-      default:
-        this.setState(nullState);
-    }
+    this.setState({ activeTab: tabId });
   }
 
   changeAlt = (altId) => {
@@ -79,6 +54,7 @@ export default class Evidence extends React.Component {
   }
 
   render() {
+    let active = (this.state || {}).activeTab;
     return (
       <div style={styles.div}>
         <div style={styles.tabHeader}>
@@ -90,16 +66,15 @@ export default class Evidence extends React.Component {
           ></Alts>
         </div>
         <div style={{ gridArea: 'tabBody' }}>
-          {(this.state || {}).showWallet &&
+          {(active === 'wallet') &&
             <Wallet style={styles.tabBody} alt={this.state.currentAlt}></Wallet>}
-          {(this.state || {}).showMail &&
+          {(active === 'mail') &&
             <Mail style={styles.tabBody} alt={this.state.currentAlt}></Mail>}
-          {(this.state || {}).showSkills &&
+          {(active === 'skills') &&
             <Skills style={styles.tabBody} alt={this.state.currentAlt}></Skills>}
-          {(this.state || {}).showBookmarks &&
+          {(active === 'bookmarks') &&
             <Bookmarks style={styles.tabBody} alt={this.state.currentAlt}></Bookmarks>}
         </div>
-
       </div>
     );
   }

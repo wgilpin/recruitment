@@ -28,5 +28,10 @@ export default class TableStyles {
   isOdd: {
     backgroundColor: '#222',
   },
+  hr:{
+    borderBottom: '1px solid blue',
+    display: 'table-row',
+    height: '2px',
+  }
 }
 }
