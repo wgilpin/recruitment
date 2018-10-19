@@ -26,61 +26,61 @@ export default class Mocks {
         }
       ],
     skills:
+    {
+      "22536": {
+        active_skill_level: 5,
+        skill_id:
+        {
+          standing: 0,
+          id: 22536,
+          type_id: 22536,
+          name: "Mining Foreman",
+          description: "Basic proficiency at boosting the mining capabilities of allied ships. Grants a 10% bonus to the duration of Mining Foreman Burst effects per level.",
+          multiplier: 2,
+          groupName: "Fleet Support",
+          primaryAttribute: "Charisma",
+          secondaryAttribute: "Willpower",
+        },
+        skillpoints_in_skill: 512000,
+        trained_skill_level: 5,
+      },
+      "22541":
       {
-        "22536": {
-          active_skill_level: 5,
-          skill_id:
-          {
-            standing: 0,
-            id: 22536,
-            type_id: 22536,
-            name: "Mining Foreman",
-            description: "Basic proficiency at boosting the mining capabilities of allied ships. Grants a 10% bonus to the duration of Mining Foreman Burst effects per level.",
-            multiplier: 2,
-            groupName: "Fleet Support",
-            primaryAttribute: "Charisma",
-            secondaryAttribute: "Willpower",
-          },
-          skillpoints_in_skill: 512000,
-          trained_skill_level: 5,
-        },
-        "22541":
+        active_skill_level: 4,
+        skill_id:
         {
-          active_skill_level: 4,
-          skill_id:
-          {
-            standing: 0,
-            id: 22541,
-            type_id: 22541,
-            name: "Mining Drone Specialization",
-            description: "Advanced proficiency at controlling mining drones. 2% bonus to the mining yield and max velocity of drones requiring Mining Drone Specialization per level.",
-            multiplier: 5,
-            groupName: "Drones",
-            primaryAttribute: "Memory",
-            secondaryAttribute: "Perception",
-          },
-          skillpoints_in_skill: 505410,
-          trained_skill_level: 4,
+          standing: 0,
+          id: 22541,
+          type_id: 22541,
+          name: "Mining Drone Specialization",
+          description: "Advanced proficiency at controlling mining drones. 2% bonus to the mining yield and max velocity of drones requiring Mining Drone Specialization per level.",
+          multiplier: 5,
+          groupName: "Drones",
+          primaryAttribute: "Memory",
+          secondaryAttribute: "Perception",
         },
-        "43702":
+        skillpoints_in_skill: 505410,
+        trained_skill_level: 4,
+      },
+      "43702":
+      {
+        active_skill_level: 4,
+        skill_id:
         {
-          active_skill_level: 4,
-          skill_id:
-          {
-            standing: 0,
-            id: 43702,
-            type_id: 43702,
-            name: "Ice Harvesting Drone Operation",
-            description: "Skill at controlling ice harvesting drones. 5% reduction in ice harvesting drone cycle time per level.",
-            multiplier: 2,
-            groupName: "Drones",
-            primaryAttribute: "Memory",
-            secondaryAttribute: "Perception",
-          },
-          skillpoints_in_skill: 90510,
-          trained_skill_level: 4,
-        }
+          standing: 0,
+          id: 43702,
+          type_id: 43702,
+          name: "Ice Harvesting Drone Operation",
+          description: "Skill at controlling ice harvesting drones. 5% reduction in ice harvesting drone cycle time per level.",
+          multiplier: 2,
+          groupName: "Drones",
+          primaryAttribute: "Memory",
+          secondaryAttribute: "Perception",
+        },
+        skillpoints_in_skill: 90510,
+        trained_skill_level: 4,
       }
+    }
   };
 
   static mockMail = {
@@ -158,14 +158,14 @@ export default class Mocks {
         "first_party_id": {
           "standing": "0",
           "name": "martijn dammer",
-          "id": 2113085333
+          "id": 2113085333,
         },
         "id": 16038171070,
         "ref_type": "player_donation",
         "second_party_id": {
           "standing": "0",
           "name": "youdontknow me",
-          "id": 2113171022
+          "id": 2113171022,
         }
       },
       {
@@ -178,16 +178,318 @@ export default class Mocks {
         "first_party_id": {
           "standing": "0",
           "name": "martijn dammer",
-          "id": 2113085333
+          "id": 2113085333,
         },
         "id": 16038154261,
         "ref_type": "market_escrow",
         "second_party_id": {
           "standing": "0",
           "name": "martijn dammer",
-          "id": 2113085333
+          "id": 2113085333,
         }
       },
     ]
   };
+
+  static mockBookmarks = {
+    blacklist: [],
+    info:
+    {
+      "3785181":
+      {
+        folder_id: "3785181",
+        name: "MTU's",
+      },
+
+      "3785192":
+      {
+        folder_id: "3785192",
+        name: "Cargo",
+        inside:
+        {
+          "1140313571":
+          {
+            bookmark_id: "1140313571",
+            created: "2018-01-12T13:46:21Z",
+            creator_id:
+            {
+              name: "Runar Elshenar",
+              ID: "94443335",
+              Standing: 10.0,
+            },
+
+            folder_id: "3785192",
+            item:
+            {
+              item_id: "1021841317822",
+              type_id: "35832",
+              typeName: "Astrahus",
+              description: `As the entry-level product in the Upwell Consortium's Citadel range of space stations, the Astrahus has been designed as an economical option for medium-scale operations in space, such as serving as a base of operations for a small- to medium-sized corporation, or as an outpost for larger corporations or even small alliances.
+
+  The Astrahus has been built with new spaceship tethering technology as standard, and will happily accommodate ships under capital size, and even freighter-class hulls, in its internal docking bays. The Astrahus can be configured using Upwell's Standup brand service and structure modules so as to serve the specific needs of the structure operator. Further adjustment of the hardware of the Astrahus can be achieved by installed Standup M-Set rigs to optimize the specific role of the citadel.`,
+              standing: 0,
+            },
+
+            label: "4K-TRB - Jump Freighter Piloting College { Citadel }",
+            location_id:
+            {
+              solarSystemID: "30004716",
+              solarSystemName: "4K-TRB",
+              constellationName: "B4H-9W",
+              regionName: "Delve",
+              standing: 0,
+            },
+
+            notes: "",
+          },
+
+          "1140475240":
+          {
+            bookmark_id: "1140475240",
+            created: "2018-01-13T07:05:43Z",
+            creator_id:
+            {
+              name: "Runar Elshenar",
+              ID: "94443335",
+              Standing: 10.0,
+            },
+
+            folder_id: "3785192",
+            item:
+            {
+              item_id: "1024322800616",
+              type_id: "35833",
+              typeName: "Fortizar",
+              description: `Conceived as a good balance of capability and investment in the Upwell Consortium's Citadel range of space stations, the Fortizar has been designed for large-scale operations in space, such as providing a well-equipped home for large corporations and small alliances, or as a border or trade post for larger alliances.
+
+            The Fortizar has been built with new spaceship tethering technology as standard, and will readily accommodate most ships, including freighters and even capital ships, in its internal docking bays.While the docks are unable to service 'supercapital' level vessels, the defensive capabilities of the Fortizar are considerably enhanced in lower security star systems with the ability to mount area effect weapons.The Fortizar can be configured using Upwell's Standup brand service and structure modules so as to serve the specific needs of the structure operator. Further adjustment of the hardware of the Fortizar can be achieved by installed Standup L-Set rigs to optimize the specific role of the citadel.`,
+              standing: 0,
+            },
+
+            label: "Cargo",
+            location_id:
+            {
+              solarSystemID: "30004746",
+              solarSystemName: "4O-239",
+              constellationName: "D5-SOW",
+              regionName: "Delve",
+              standing: 0,
+            },
+
+            notes: "",
+          },
+
+          "1140526237":
+          {
+            bookmark_id: "1140526237",
+            created: "2018-01-13T12:54:40Z",
+            creator_id:
+            {
+              name: "Runar Elshenar",
+              ID: "94443335",
+              Standing: 10.0,
+            },
+
+            folder_id: "3785192",
+            item:
+            {
+              item_id: "1022091479734",
+              type_id: "35832",
+              typeName: "Astrahus",
+              description: `As the entry-level product in the Upwell Consortium's Citadel range of space stations, the Astrahus has been designed as an economical option for medium-scale operations in space, such as serving as a base of operations for a small- to medium-sized corporation, or as an outpost for larger corporations or even small alliances.
+
+  The Astrahus has been built with new spaceship tethering technology as standard, and will happily accommodate ships under capital size, and even freighter-class hulls, in its internal docking bays. The Astrahus can be configured using Upwell's Standup brand service and structure modules so as to serve the specific needs of the structure operator. Further adjustment of the hardware of the Astrahus can be achieved by installed Standup M-Set rigs to optimize the specific role of the citadel.`,
+              standing: 0,
+            },
+
+            label: "Cargo",
+            location_id:
+            {
+              solarSystemID: "30004749",
+              solarSystemName: "Q-JQSG",
+              constellationName: "D5-SOW",
+              regionName: "Delve",
+              standing: 0,
+            },
+
+            notes: "",
+          },
+
+          "1144115272":
+          {
+            bookmark_id: "1144115272",
+            created: "2018-01-30T12:52:22Z",
+            creator_id:
+            {
+              name: "Runar Elshenar",
+              ID: "94443335",
+              Standing: 10.0,
+            },
+
+            folder_id: "3785192",
+            item:
+            {
+              item_id: "1027847404774",
+              type_id: "47513",
+              typeName: "'Draccous' Fortizar",
+              description: "",
+              standing: 0,
+            },
+
+            label: "cargo",
+            location_id:
+            {
+              solarSystemID: "30004731",
+              solarSystemName: "JP4-AA",
+              constellationName: "SPNZ-Z",
+              regionName: "Delve",
+              standing: 0,
+            },
+
+            notes: "",
+          },
+
+          "1159667079":
+          {
+            bookmark_id: "1159667079",
+            created: "2018-04-13T05:12:17Z",
+            creator_id:
+            {
+              name: "Runar Elshenar",
+              ID: "94443335",
+              Standing: 10.0,
+            },
+
+            folder_id: "3785192",
+            item:
+            {
+              item_id: "1026060773356",
+              type_id: "35833",
+              typeName: "Fortizar",
+              description: `Conceived as a good balance of capability and investment in the Upwell Consortium's Citadel range of space stations, the Fortizar has been designed for large-scale operations in space, such as providing a well-equipped home for large corporations and small alliances, or as a border or trade post for larger alliances.
+
+            The Fortizar has been built with new spaceship tethering technology as standard, and will readily accommodate most ships, including freighters and even capital ships, in its internal docking bays.While the docks are unable to service 'supercapital' level vessels, the defensive capabilities of the Fortizar are considerably enhanced in lower security star systems with the ability to mount area effect weapons.The Fortizar can be configured using Upwell's Standup brand service and structure modules so as to serve the specific needs of the structure operator. Further adjustment of the hardware of the Fortizar can be achieved by installed Standup L-Set rigs to optimize the specific role of the citadel.`,
+              standing: 0,
+            },
+
+            label: "1B-VKF - DEP Naval Station { Citadel },	",
+            location_id:
+            {
+              solarSystemID: "30004728",
+              solarSystemName: "1B-VKF",
+              constellationName: "O5K-Y6",
+              regionName: "Delve",
+              standing: 0,
+            },
+
+            notes: "",
+          },
+        },
+      },
+      "3785201":
+      {
+        folder_id: "3785201",
+        name: "Safe",
+        inside:
+        {
+          "1140308596":
+          {
+            bookmark_id: "1140308596",
+            coordinates:
+            {
+              x: -106337406906.9,
+              y: -294908066963.25,
+              z: -234604451436.37,
+            },
+
+            created: "2018-01-12T13:14:55Z",
+            creator_id:
+            {
+              name: "Runar Elshenar",
+              ID: "94443335",
+              Standing: 10.0,
+            },
+
+            folder_id: "3785201",
+            label: "Safe ?",
+            location_id:
+            {
+              solarSystemID: "30004746",
+              solarSystemName: "4O-239",
+              constellationName: "D5-SOW",
+              regionName: "Delve",
+              standing: 0,
+            },
+
+            notes: "",
+          },
+
+          "1140314566":
+          {
+            bookmark_id: "1140314566",
+            coordinates:
+            {
+              x: 37917818880,
+              y: 18956943360,
+              z: -62147788800,
+            },
+
+            created: "2018-01-12T13:52:36Z",
+            creator_id:
+            {
+              name: "Runar Elshenar",
+              ID: "94443335",
+              Standing: 10.0,
+            },
+
+            folder_id: "3785201",
+            label: "Safe",
+            location_id:
+            {
+              solarSystemID: "30004716",
+              solarSystemName: "4K-TRB",
+              constellationName: "B4H-9W",
+              regionName: "Delve",
+              standing: 0,
+            },
+
+            notes: "",
+          },
+
+          "1140521409":
+          {
+            bookmark_id: "1140521409",
+            coordinates:
+            {
+              x: 124653404179.41,
+              y: -85866579830.278,
+              z: -143630011405.37,
+            },
+
+            created: "2018-01-13T12:28:33Z",
+            creator_id:
+            {
+              name: "Runar Elshenar",
+              ID: "94443335",
+              Standing: 10.0,
+            },
+
+            folder_id: "3785201",
+            label: "safe",
+            location_id:
+            {
+              solarSystemID: "30004749",
+              solarSystemName: "Q-JQSG",
+              constellationName: "D5-SOW",
+              regionName: "Delve",
+              standing: 0,
+            },
+
+            notes: "",
+          },
+        }
+      }
+    }
+  };
+
 }

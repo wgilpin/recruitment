@@ -42,8 +42,11 @@ export default class FetchData {
             case 'wallet':
               return Mocks.mockWallet;
             case 'skill':
-            console.log('skills mock', Mocks.mockSkills);
+              console.log('skills mock', Mocks.mockSkills);
               return Mocks.mockSkills;
+            case 'bookmark':
+              console.log('bms mock', Mocks.mockBookmarks);
+              return Mocks.mockBookmarks;
             default:
               return null;
           }

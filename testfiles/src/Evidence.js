@@ -4,6 +4,7 @@ import Alts from './Alts';
 import Wallet from './Wallet';
 import Mail from './Mail';
 import Skills from './Skills';
+import Bookmarks from './Bookmarks';
 
 const styles = {
   div: {
@@ -41,6 +42,7 @@ export default class Evidence extends React.Component {
       showWallet: false,
       showMail: false,
       showSkills: false,
+      showBookmarks: false,
     };
   }
 
@@ -51,6 +53,7 @@ export default class Evidence extends React.Component {
       showWallet: false,
       showMail: false,
       showSkills: false,
+      showBookmarks: false,
     }
     switch (tabId) {
       case 'wallet':
@@ -61,6 +64,9 @@ export default class Evidence extends React.Component {
         break;
       case 'skills':
         this.setState({ ...nullState, showSkills: true });
+        break;
+      case 'bookmarks':
+        this.setState({ ...nullState, showBookmarks: true });
         break;
       default:
         this.setState(nullState);
@@ -90,6 +96,8 @@ export default class Evidence extends React.Component {
             <Mail style={styles.tabBody} alt={this.state.currentAlt}></Mail>}
           {(this.state || {}).showSkills &&
             <Skills style={styles.tabBody} alt={this.state.currentAlt}></Skills>}
+          {(this.state || {}).showBookmarks &&
+            <Bookmarks style={styles.tabBody} alt={this.state.currentAlt}></Bookmarks>}
         </div>
 
       </div>
