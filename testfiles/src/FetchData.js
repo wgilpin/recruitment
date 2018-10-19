@@ -32,15 +32,18 @@ export default class FetchData {
       })
       .then(function(res){
         console.log('response', res);
-        // TODO: DEV only
+        // TODO: DEV server only
         if (res.type === "opaque") {
           console.log('opaque');
-          // it's a CORS problem so we arew on the dev server
+          // it's a CORS problem so we are on the dev server
           switch(this.scope){
             case 'mail':
               return Mocks.mockMail;
             case 'wallet':
               return Mocks.mockWallet;
+            case 'skill':
+            console.log('skills mock', Mocks.mockSkills);
+              return Mocks.mockSkills;
             default:
               return null;
           }
@@ -49,7 +52,7 @@ export default class FetchData {
       }.bind(this))
       .then(
         (result) => {
-          console.log('fetch last then', result.info);
+          console.log('fetch last then', result);
           (this.onLoaded || Function)(result);
         },
         (error) => {

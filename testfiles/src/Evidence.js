@@ -3,6 +3,7 @@ import TabsHeader from './TabsHeader';
 import Alts from './Alts';
 import Wallet from './Wallet';
 import Mail from './Mail';
+import Skills from './Skills';
 
 const styles = {
   div: {
@@ -39,6 +40,7 @@ export default class Evidence extends React.Component {
     this.state = {
       showWallet: false,
       showMail: false,
+      showSkills: false,
     };
   }
 
@@ -48,6 +50,7 @@ export default class Evidence extends React.Component {
       ...this.state,
       showWallet: false,
       showMail: false,
+      showSkills: false,
     }
     switch (tabId) {
       case 'wallet':
@@ -55,6 +58,9 @@ export default class Evidence extends React.Component {
         break;
       case 'mail':
         this.setState({ ...nullState, showMail: true });
+        break;
+      case 'skills':
+        this.setState({ ...nullState, showSkills: true });
         break;
       default:
         this.setState(nullState);
@@ -70,7 +76,7 @@ export default class Evidence extends React.Component {
     return (
       <div style={styles.div}>
         <div style={styles.tabHeader}>
-          <TabsHeader  arb="xxx" onTabChange={this.changeTab}></TabsHeader>
+          <TabsHeader onTabChange={this.changeTab}></TabsHeader>
         </div>
         <div style={styles.alts}>
           <Alts
@@ -82,6 +88,8 @@ export default class Evidence extends React.Component {
             <Wallet style={styles.tabBody} alt={this.state.currentAlt}></Wallet>}
           {(this.state || {}).showMail &&
             <Mail style={styles.tabBody} alt={this.state.currentAlt}></Mail>}
+          {(this.state || {}).showSkills &&
+            <Skills style={styles.tabBody} alt={this.state.currentAlt}></Skills>}
         </div>
 
       </div>

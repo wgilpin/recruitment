@@ -13,12 +13,6 @@ const defaultProps = {
 
 const styles = {
   ...TableStyles.styles,
-  timestamp: {
-  },
-  from: {
-  },
-  subject: {
-  },
   isRead: {
     fontWeight: 'normal',
   },
@@ -71,10 +65,10 @@ export default class Mail extends React.Component {
     let newdate = new Date(timestamp);
     formattedDate = newdate.toLocaleDateString() + ' ' + newdate.toLocaleTimeString();
     return (
-      <div style={styles.row} key={key}>
-        <div style={{ ...lineStyle, ...styles.timestamp }}>{formattedDate}</div>
-        <div style={{ ...lineStyle, ...styles.from }}>{from.name}</div>
-        <div style={{ ...lineStyle, ...styles.subject }}>{subject}</div>
+      <div style={styles.row}>
+        <div style={lineStyle}>{formattedDate}</div>
+        <div style={lineStyle}>{from.name}</div>
+        <div style={lineStyle}>{subject}</div>
       </div>
     );
   }
@@ -84,7 +78,7 @@ export default class Mail extends React.Component {
     console.log(this.state.mailList.length ? Mail.mailItem(1, this.state.mailList[0]) : null)
     return (
       <div style={styles.table}>
-        <div style={styles.header} key='header'>
+        <div style={styles.header}>
           <div style={styles.cell}>DATE</div>
           <div style={styles.cell}>FROM</div>
           <div style={styles.cell}>SUBJECT</div>

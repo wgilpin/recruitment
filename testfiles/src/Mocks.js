@@ -1,4 +1,88 @@
 export default class Mocks {
+  static mockSkills = {
+    blacklist: [],
+    queue:
+      [
+        {
+          finish_date: "2018-10-25T20:31:02Z",
+          finished_level: 5,
+          level_end_sp: 512000,
+          level_start_sp: 90510,
+          queue_position: 3,
+          skill_id:
+          {
+            standing: 0,
+            id: 43702,
+            type_id: 43702,
+            name: "Ice Harvesting Drone Operation",
+            description: "Skill at controlling ice harvesting drones. 5% reduction in ice harvesting drone cycle time per level.",
+            multiplier: 2,
+            groupName: "Drones",
+            primaryAttribute: "Memory",
+            secondaryAttribute: "Perception",
+          },
+          start_date: "2018-10-15T22:23:14Z",
+          training_start_sp: 90510,
+        }
+      ],
+    skills:
+      {
+        "22536": {
+          active_skill_level: 5,
+          skill_id:
+          {
+            standing: 0,
+            id: 22536,
+            type_id: 22536,
+            name: "Mining Foreman",
+            description: "Basic proficiency at boosting the mining capabilities of allied ships. Grants a 10% bonus to the duration of Mining Foreman Burst effects per level.",
+            multiplier: 2,
+            groupName: "Fleet Support",
+            primaryAttribute: "Charisma",
+            secondaryAttribute: "Willpower",
+          },
+          skillpoints_in_skill: 512000,
+          trained_skill_level: 5,
+        },
+        "22541":
+        {
+          active_skill_level: 4,
+          skill_id:
+          {
+            standing: 0,
+            id: 22541,
+            type_id: 22541,
+            name: "Mining Drone Specialization",
+            description: "Advanced proficiency at controlling mining drones. 2% bonus to the mining yield and max velocity of drones requiring Mining Drone Specialization per level.",
+            multiplier: 5,
+            groupName: "Drones",
+            primaryAttribute: "Memory",
+            secondaryAttribute: "Perception",
+          },
+          skillpoints_in_skill: 505410,
+          trained_skill_level: 4,
+        },
+        "43702":
+        {
+          active_skill_level: 4,
+          skill_id:
+          {
+            standing: 0,
+            id: 43702,
+            type_id: 43702,
+            name: "Ice Harvesting Drone Operation",
+            description: "Skill at controlling ice harvesting drones. 5% reduction in ice harvesting drone cycle time per level.",
+            multiplier: 2,
+            groupName: "Drones",
+            primaryAttribute: "Memory",
+            secondaryAttribute: "Perception",
+          },
+          skillpoints_in_skill: 90510,
+          trained_skill_level: 4,
+        }
+      }
+  };
+
   static mockMail = {
     blacklist: [],
     info:
@@ -62,7 +146,7 @@ export default class Mocks {
         },
       ]
   };
-  
+
   static mockWallet = {
     "blacklist": [],
     "info": [
