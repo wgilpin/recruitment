@@ -2,6 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import FetchData from './FetchData';
 import TableStyles from './TableStyles';
+import skill1 from './images/skill1.png';
+import skill2 from './images/skill2.png';
+import skill3 from './images/skill3.png';
+import skill4 from './images/skill4.png';
+import skill5 from './images/skill5.png';
+import train1 from './images/train1.png';
+import train2 from './images/train2.png';
+import train3 from './images/train3.png';
+import train4 from './images/train4.png';
+import train5 from './images/train5.png';
 
 const propTypes = {
   alt: PropTypes.string,
@@ -14,9 +24,12 @@ const styles = {
   ...TableStyles.styles,
   progress: {
     backgroundColor: '#444',
-    color: 'cyan',
+    color: '#0084A8',
     height: '7px',
   },
+  skillImage:{
+    verticalAlign: 'bottom',
+  }
 }
 
 export default class Skill extends React.Component {
@@ -69,6 +82,22 @@ export default class Skill extends React.Component {
     fetch.get();
   }
 
+  static skill2image = {
+    1: skill1,
+    2: skill2,
+    3: skill3,
+    4: skill4,
+    5: skill5,
+  };
+
+  static train2image = {
+    1: train1,
+    2: train2,
+    3: train3,
+    4: train4,
+    5: train5,
+  };
+
   static skillQLine(key, { finish_date, start_date, finished_level, skill_id }) {
     let lineStyle =
       (key % 2 === 0 ? styles.isOdd : {});
@@ -82,7 +111,13 @@ export default class Skill extends React.Component {
     return (
       <div style={styles.row} key={key}>
         <div style={lineStyle}>{skill_id.name}</div>
-        <div style={lineStyle}>{finished_level}</div>
+        <div style={lineStyle}>
+          <img
+            src={Skill.train2image[finished_level]}
+            alt={finished_level}
+            style={styles.skillImage}
+          />
+        </div>
         <div style={lineStyle}>{
           soFar > 0.0 ?
             <progress style={styles.progress} value={soFar} max={fullRange}/> :
@@ -102,7 +137,9 @@ export default class Skill extends React.Component {
       <div style={styles.row} key={key}>
         <div style={lineStyle}></div>
         <div style={lineStyle}>{name}</div>
-        <div style={lineStyle}>{active_skill_level}</div>
+        <div style={lineStyle}>
+          <img src={Skill.skill2image[active_skill_level]} alt={active_skill_level}/>
+        </div>
       </div>
     )
   }
