@@ -179,7 +179,7 @@ export default class Skill extends React.Component {
   render() {
     this.skillQueueLinesShown = 0;
     return (
-      <div style={styles.div}></div>
+      <div style={styles.div}>
         <div style={styles.table}>
           <div style={styles.header} key='header'>
             <div style={styles.cell}>SKILL QUEUE (ROLLED UP)</div>

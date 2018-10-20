@@ -57,8 +57,8 @@ export default class Wallet extends React.Component {
 
     return (
       <div style={styles.row} key={key}>
-        <div style={lineStyle}>{amount.toLocaleString()}</div>
-        <div style={lineStyle}>{balance.toLocaleString()}</div>
+        <div style={lineStyle}>{Math.round(amount).toLocaleString()}</div>
+        <div style={lineStyle}>{Math.round(balance).toLocaleString()}</div>
         <div style={lineStyle}>{description}</div>
         <div style={lineStyle}>{second_party_id.name}</div>
         <div style={lineStyle}>{theDate}</div>
@@ -89,7 +89,7 @@ export default class Wallet extends React.Component {
     let balance = (this.state.walletList[0] || { balance: 0 }).balance;
     return (
       <div style={styles.div}>
-        <div>Balance {Wallet.commarize(balance)} ISK</div>
+        <div>Balance {Wallet.commarize(Math.round(balance))} ISK</div>
         <div style={styles.table}>
           <div style={styles.header} key='header'>
             <div style={styles.cell}>AMOUNT</div>
