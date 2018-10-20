@@ -8,11 +8,21 @@ import skill2 from './images/skill2.png';
 import skill3 from './images/skill3.png';
 import skill4 from './images/skill4.png';
 import skill5 from './images/skill5.png';
-import train1 from './images/train1.png';
-import train2 from './images/train2.png';
-import train3 from './images/train3.png';
-import train4 from './images/train4.png';
-import train5 from './images/train5.png';
+import train01 from './images/train02.png';
+import train02 from './images/train02.png';
+import train03 from './images/train03.png';
+import train04 from './images/train04.png';
+import train05 from './images/train05.png';
+import train12 from './images/train12.png';
+import train13 from './images/train13.png';
+import train14 from './images/train14.png';
+import train15 from './images/train15.png';
+import train23 from './images/train23.png';
+import train24 from './images/train24.png';
+import train25 from './images/train25.png';
+import train34 from './images/train34.png';
+import train35 from './images/train35.png';
+import train45 from './images/train45.png';
 
 const propTypes = {
   alt: PropTypes.string,
@@ -44,10 +54,23 @@ export default class Skill extends React.Component {
   }
 
   static jsonToskillList(json) {
+    let trainLevels = {};
     let queue = [];
     if (json && json.queue) {
       for (let idx in json.queue) {
         queue.push(json.queue[idx]);
+        let { finished_level, skill_id: { name }} = json.queue[idx];
+        console.log('added', idx, name, finished_level)
+        // store the level being trained to for later
+        if (trainLevels[name]){
+          console.log('update', name, finished_level)
+          trainLevels[name].finish = finished_level;
+        } else {
+          // it only doesn't have this prop the first time
+          console.log('start is ', finished_level-1)
+          trainLevels[name] = {start: finished_level-1, finish: finished_level};
+        }
+        console.log('end iter', trainLevels[name])
       }
     }
     let groupedList = {};
@@ -61,13 +84,13 @@ export default class Skill extends React.Component {
         groupedList[group][sk.skill_id.name] = sk.active_skill_level;
       }
     }
-    return { queue, groupedList };
+    return { queue, groupedList, trainLevels };
   }
 
   onLoaded = data => {
-    let { queue, groupedList } = Skill.jsonToskillList(data);
+    let { queue, groupedList, trainLevels } = Skill.jsonToskillList(data);
     if (queue.length !== (this.state.skillQueue || []).length) {
-      this.setState({ skillQueue: queue });
+      this.setState({ skillQueue: queue, trainLevels });
     };
     if (Object.keys(groupedList).length !== Object.keys(this.state.skillList || {}).length) {
       this.setState({ skillList: groupedList });
@@ -92,30 +115,37 @@ export default class Skill extends React.Component {
     5: skill5,
   };
 
-  static train2image = {
-    1: train1,
-    2: train2,
-    3: train3,
-    4: train4,
-    5: train5,
-  };
+  static train2Image = {
+    0: { 1: train01, 2: train02, 3: train03, 4: train04, 5: train05 },
+    1: { 2: train12, 3: train13, 4: train14, 5: train15 },
+    2: { 3: train23, 4: train24, 5: train25 },
+    3: { 4: train34, 5: train35 },
+    4: { 5: train45 },
+  }
 
-  static skillQLine(key, { finish_date, start_date, finished_level, skill_id }) {
+  skillQueueLinesShown = 0;
+
+  skillQLine(key, { finish_date, start_date, finished_level, skill_id }) {
     let lineStyle =
-      (key % 2 === 0 ? styles.isOdd : {});
+      (this.skillQueueLinesShown % 2 === 0 ? styles.isOdd : {});
     lineStyle = { ...lineStyle, ...styles.cell };
     let startDate = new Date(start_date),
       endDate = new Date(finish_date),
       today = new Date(),
       fullRange = endDate - startDate,
       soFar = today - startDate;
-
+    let { start, finish } = this.state.trainLevels[skill_id.name];
+    let image = Skill.train2Image[start][finish];
+    if (finished_level !== finish){
+      return null;
+    }
+    this.skillQueueLinesShown += 1;
     return (
       <div style={styles.row} key={key}>
         <div style={lineStyle}>{skill_id.name}</div>
         <div style={lineStyle}>
           <img
-            src={Skill.train2image[finished_level]}
+            src={image}
             alt={finished_level}
             style={styles.skillImage}
           />
@@ -130,7 +160,7 @@ export default class Skill extends React.Component {
     )
   }
 
-  static skillLine(key, name, active_skill_level) {
+  skillLine(key, name, active_skill_level) {
     let lineStyle =
       (key % 2 === 0 ? styles.isOdd : {});
     lineStyle = { ...lineStyle, ...styles.cell };
@@ -147,16 +177,17 @@ export default class Skill extends React.Component {
   }
 
   render() {
+    this.skillQueueLinesShown = 0;
     return (
-      <div style={styles.div}>
+      <div style={styles.div}></div>
         <div style={styles.table}>
           <div style={styles.header} key='header'>
-            <div style={styles.cell}>SKILL QUEUE</div>
-            <div style={styles.cell}>LVL</div>
+            <div style={styles.cell}>SKILL QUEUE (ROLLED UP)</div>
+            <div style={styles.cell}>LEVEL</div>
             <div style={styles.cell}>PROGRESS</div>
           </div>
           {this.state.skillQueue.map((line, idx) => {
-            return Skill.skillQLine(idx, line)
+            return this.skillQLine(idx, line)
           })}
         </div>
         <hr/>
@@ -176,7 +207,7 @@ export default class Skill extends React.Component {
                   <div style={styles.cell}></div>
                 </div>
                 {Object.keys(this.state.skillList[group]).map((line, idx) => {
-                  return Skill.skillLine(idx,line, this.state.skillList[group][line])
+                  return this.skillLine(idx,line, this.state.skillList[group][line])
                 })}
               </React.Fragment>
             )

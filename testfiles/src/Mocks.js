@@ -4,6 +4,27 @@ export default class Mocks {
     queue:
       [
         {
+          finish_date: "2018-10-15T20:31:02Z",
+          finished_level: 4,
+          level_end_sp: 51200,
+          level_start_sp: 9051,
+          queue_position: 2,
+          skill_id:
+          {
+            standing: 0,
+            id: 43702,
+            type_id: 43702,
+            name: "Ice Harvesting Drone Operation",
+            description: "Skill at controlling ice harvesting drones. 5% reduction in ice harvesting drone cycle time per level.",
+            multiplier: 2,
+            groupName: "Drones",
+            primaryAttribute: "Memory",
+            secondaryAttribute: "Perception",
+          },
+          start_date: "2018-10-10T22:23:14Z",
+          training_start_sp: 9051,
+        },
+        {
           finish_date: "2018-10-25T20:31:02Z",
           finished_level: 5,
           level_end_sp: 512000,
