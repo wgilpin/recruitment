@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import FetchData from './FetchData';
 import TableStyles from './TableStyles';
+import skill0 from './images/skill0.png';
 import skill1 from './images/skill1.png';
 import skill2 from './images/skill2.png';
 import skill3 from './images/skill3.png';
@@ -83,6 +84,7 @@ export default class Skill extends React.Component {
   }
 
   static skill2image = {
+    0: skill0,
     1: skill1,
     2: skill2,
     3: skill3,
