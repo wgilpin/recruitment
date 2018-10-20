@@ -30,7 +30,7 @@ const styles = {
   },
   skillImage:{
     verticalAlign: 'bottom',
-  }
+  },
 }
 
 export default class Skill extends React.Component {
@@ -170,8 +170,10 @@ export default class Skill extends React.Component {
             console.log('group',this.state.skillList[group]);
             return (
               <React.Fragment>
-                <div style={styles.groupHeader} key={group}>
+                <div style={{...styles.row, ...styles.folderHeader}} key={group}>
                   <div style={styles.cell}>{group.toUpperCase()}</div>
+                  <div style={styles.cell}></div>
+                  <div style={styles.cell}></div>
                 </div>
                 {Object.keys(this.state.skillList[group]).map((line, idx) => {
                   return Skill.skillLine(idx,line, this.state.skillList[group][line])

@@ -2,10 +2,10 @@
 export default class TableStyles {
   static styles = {
   table: {
-    marginLeft: 12,
+    // paddingLeft: 12,
     display: 'table',
     width: '100%',
-    padding: '16px',
+    // padding: '16px',
   },
   header: {
     display: 'table-header-group',
@@ -32,6 +32,11 @@ export default class TableStyles {
     borderBottom: '1px solid blue',
     display: 'table-row',
     height: '2px',
+  },
+  folderHeader: {
+    fontWeight: 'bold',
+    textAlign: 'left',
+    backgroundColor: '#453204',
   }
 }
 }

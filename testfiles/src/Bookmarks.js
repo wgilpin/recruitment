@@ -17,11 +17,6 @@ const styles = {
     color: 'cyan',
     height: '7px',
   },
-  folderHeader: {
-    fontWeight: 'bold',
-    textAlign: 'left',
-    backgroundColor: '#555',
-  }
 }
 
 export default class Bookmarks extends React.Component {
