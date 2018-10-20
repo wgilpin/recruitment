@@ -17,6 +17,11 @@ const styles = {
     color: 'cyan',
     height: '7px',
   },
+  folderHeader: {
+    fontWeight: 'bold',
+    textAlign: 'left',
+    backgroundColor: '#555',
+  }
 }
 
 export default class Bookmarks extends React.Component {
@@ -45,37 +50,12 @@ export default class Bookmarks extends React.Component {
     fetch.get();
   }
 
-  static bookmarkQLine(key, { finish_date, start_date, finished_level, bookmark_id }) {
-    let lineStyle =
-      (key % 2 === 0 ? styles.isOdd : {});
-    lineStyle = { ...lineStyle, ...styles.cell };
-    debugger;
-    let startDate = new Date(start_date),
-      endDate = new Date(finish_date),
-      today = new Date(),
-      fullRange = endDate - startDate,
-      soFar = today - startDate;
-
-    return (
-      <div style={styles.row} key={key}>
-        <div style={lineStyle}>{bookmark_id.name}</div>
-        <div style={lineStyle}>{finished_level}</div>
-        <div style={lineStyle}>{
-          soFar > 0.0 ?
-            <progress style={styles.progress} value={soFar} max={fullRange}/> :
-            null
-          }
-        </div>
-      </div>
-    )
-  }
-
   static bookmarkLine(key, idx, { item, location_id }) {
     let lineStyle =
       (idx % 2 === 0 ? styles.isOdd : {});
     debugger;
     lineStyle = { ...lineStyle, ...styles.cell };
-    let location = `${location_id.regionName}/${location_id.solarSystemName}`;
+    let location = `${location_id.regionName} > ${location_id.solarSystemName}`;
     return (
       <div style={styles.row} key={key}>
         <div style={lineStyle}></div>
@@ -90,10 +70,10 @@ export default class Bookmarks extends React.Component {
     if (folder.inside){
       return (
       <React.Fragment>
-        <div style={styles.row} key={folder.folder_id}>
-          <div style={styles.folder}>{folder.name}</div>
-          <div style={styles.folder}> </div>
-          <div style={styles.folder}> </div>
+        <div style={{...styles.row, ...styles.folderHeader}} key={folder.folder_id}>
+          <div style={styles.cell}>&emsp;{folder.name}</div>
+          <div style={styles.cell}></div>
+          <div style={styles.cell}></div>
         </div>
         <div style={styles.hr}/>
         {Object.keys(folder.inside).map((key, idx) => {
@@ -114,8 +94,8 @@ export default class Bookmarks extends React.Component {
             <div style={styles.cell}>TYPE</div>
             <div style={styles.cell}>LOCATION</div>
           </div>
-          {Object.keys(this.state.bookmarkList).map((line) => {
-            return this.bookmarkFolder(line)
+          {Object.keys(this.state.bookmarkList).map((folder) => {
+            return this.bookmarkFolder(folder)
           })}
         </div>
       </div>
