@@ -48,7 +48,6 @@ export default class Bookmarks extends React.Component {
   static bookmarkLine(key, idx, { item, location_id }) {
     let lineStyle =
       (idx % 2 === 0 ? styles.isOdd : {});
-    debugger;
     lineStyle = { ...lineStyle, ...styles.cell };
     let location = `${location_id.regionName} > ${location_id.solarSystemName}`;
     return (
