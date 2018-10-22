@@ -179,7 +179,7 @@ export default class Skill extends React.Component {
                     {group.collapsed && <img src={collapsedImg} alt="-"></img>}
                     {' '+groupName.toUpperCase()} ({group.summary.count})
                   </div>
-                  <div style={styles.cell}>{(group.summary.spTotal.toLocaleString())} SP</div>
+                  <div style={{...styles.cell, textAlign: 'right'}}>{(group.summary.spTotal.toLocaleString())} SP</div>
                   <div style={styles.cell}></div>
                 </div>
                 {!(group.collapsed) && Object.keys(group.items).sort().map((line, idx) => {
