@@ -77,8 +77,8 @@ class SkillSquare extends React.Component {
   }
 }
 
-SkillSquare.propTypes = propTypes;
-SkillSquare.defaultProps = defaultProps;
+SkillSquare.propTypes = sqPropTypes;
+SkillSquare.defaultProps = sqDefaultProps;
 
 ///////////////////////////////////////////
 

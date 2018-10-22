@@ -31,8 +31,20 @@ export default class Bookmarks extends React.Component {
 
   onLoaded = data => {
     let { info } = data;
+    let newBmList = {other: {name: '[no folder]', inside: {}}};
     if (Object.keys(info).length !== Object.keys(this.state.bookmarkList || {}).length) {
-      this.setState({ bookmarkList: info });
+      console.log('loaded bms');
+      Object.keys(info).map(key => {
+        debugger;
+        if ('folder_id' in info[key]){
+          // it's a folder
+          newBmList[key] = info[key];
+        }else{
+          // a bm not in a folder
+          newBmList.other.inside[key] = info[key];
+        };
+      })
+      this.setState({ bookmarkList: newBmList });
     };
   }
 

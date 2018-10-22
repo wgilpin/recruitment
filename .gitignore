@@ -28,3 +28,7 @@ precache*
 /testfiles/static/css
 /testfiles/static/js
 asset-manifest.json
+testfiles/asset-manifest.json
+testfiles/service-worker.js
+testfiles/build/asset-manifest.json
+testfiles/build/service-worker.js
