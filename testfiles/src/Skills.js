@@ -165,7 +165,7 @@ export default class Skill extends React.Component {
             <div style={styles.cell}>SKILL</div>
             <div style={styles.cell}>LVL</div>
           </div>
-          {Object.keys(this.state.skillList).map((groupName) => {
+          {Object.keys(this.state.skillList).sort().map((groupName) => {
             let group = this.state.skillList[groupName];
             return (
               <React.Fragment>
@@ -182,7 +182,7 @@ export default class Skill extends React.Component {
                   <div style={styles.cell}>{group.summary.spTotal} SP</div>
                   <div style={styles.cell}></div>
                 </div>
-                {!(group.collapsed) && Object.keys(group.items).map((line, idx) => {
+                {!(group.collapsed) && Object.keys(group.items).sort().map((line, idx) => {
                   return this.skillLine(idx, line, group.items[line])
                 })}
               </React.Fragment>
