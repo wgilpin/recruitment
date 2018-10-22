@@ -11,7 +11,7 @@ export default class TableStyles {
     display: 'table-header-group',
     fontWeight: 'bold',
     paddingBottom: '19px',
-    color: 'darkgoldenrod',
+    color: '#01799A',
   },
   body: {
     display: 'table-row-group',
@@ -26,7 +26,7 @@ export default class TableStyles {
     padding: '6px',
   },
   isOdd: {
-    backgroundColor: '#222',
+    backgroundColor: '#151515',
   },
   hr:{
     borderBottom: '1px solid blue',
@@ -36,7 +36,7 @@ export default class TableStyles {
   folderHeader: {
     fontWeight: 'bold',
     textAlign: 'left',
-    backgroundColor: '#453204',
+    backgroundColor: '#05313E',
   }
 }
 }

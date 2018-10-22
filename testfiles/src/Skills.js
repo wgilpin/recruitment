@@ -23,6 +23,9 @@ const styles = {
   skillImage: {
     verticalAlign: 'bottom',
   },
+  div: {
+    maxWidth: 800,
+  }
 }
 
 export default class Skill extends React.Component {
@@ -158,6 +161,9 @@ export default class Skill extends React.Component {
             return this.skillQLine(idx, line)
           })}
         </div>
+        <br/>
+        <br/>
+        <br/>
         <hr />
         <div style={styles.table}>
           <div style={styles.header} key='header'>
