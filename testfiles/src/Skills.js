@@ -2,27 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import FetchData from './FetchData';
 import TableStyles from './TableStyles';
-import skill0 from './images/skill0.png';
-import skill1 from './images/skill1.png';
-import skill2 from './images/skill2.png';
-import skill3 from './images/skill3.png';
-import skill4 from './images/skill4.png';
-import skill5 from './images/skill5.png';
-import train01 from './images/train02.png';
-import train02 from './images/train02.png';
-import train03 from './images/train03.png';
-import train04 from './images/train04.png';
-import train05 from './images/train05.png';
-import train12 from './images/train12.png';
-import train13 from './images/train13.png';
-import train14 from './images/train14.png';
-import train15 from './images/train15.png';
-import train23 from './images/train23.png';
-import train24 from './images/train24.png';
-import train25 from './images/train25.png';
-import train34 from './images/train34.png';
-import train35 from './images/train35.png';
-import train45 from './images/train45.png';
+import SkillLights from './SkillLights';
+
 
 const propTypes = {
   alt: PropTypes.string,
@@ -106,23 +87,6 @@ export default class Skill extends React.Component {
     fetch.get();
   }
 
-  static skill2image = {
-    0: skill0,
-    1: skill1,
-    2: skill2,
-    3: skill3,
-    4: skill4,
-    5: skill5,
-  };
-
-  static train2Image = {
-    0: { 1: train01, 2: train02, 3: train03, 4: train04, 5: train05 },
-    1: { 2: train12, 3: train13, 4: train14, 5: train15 },
-    2: { 3: train23, 4: train24, 5: train25 },
-    3: { 4: train34, 5: train35 },
-    4: { 5: train45 },
-  }
-
   skillQueueLinesShown = 0;
 
   skillQLine(key, { finish_date, start_date, finished_level, skill_id }) {
@@ -135,7 +99,6 @@ export default class Skill extends React.Component {
       fullRange = endDate - startDate,
       soFar = today - startDate;
     let { start, finish } = this.state.trainLevels[skill_id.name];
-    let image = Skill.train2Image[start][finish];
     if (finished_level !== finish){
       return null;
     }
@@ -144,11 +107,7 @@ export default class Skill extends React.Component {
       <div style={styles.row} key={key}>
         <div style={lineStyle}>{skill_id.name}</div>
         <div style={lineStyle}>
-          <img
-            src={image}
-            alt={finished_level}
-            style={styles.skillImage}
-          />
+          <SkillLights currentLevel={start-1} trainLevel={finish} />
         </div>
         <div style={lineStyle}>{
           soFar > 0.0 ?
@@ -170,7 +129,8 @@ export default class Skill extends React.Component {
         <div style={lineStyle}></div>
         <div style={lineStyle}>{name}</div>
         <div style={lineStyle}>
-          <img src={Skill.skill2image[active_skill_level]} alt={active_skill_level}/>
+          <SkillLights currentLevel={active_skill_level} />
+          {/* <img src={Skill.skill2image[active_skill_level]} alt={active_skill_level}/> */}
         </div>
       </div>
     )
