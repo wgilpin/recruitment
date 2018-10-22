@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import FetchData from './FetchData';
 import TableStyles from './TableStyles';
 import SkillLights from './SkillLights';
-
+import collapsedImg from './images/collapsed.png';
+import expandedImg from './images/expanded.png';
 
 const propTypes = {
   alt: PropTypes.string,
@@ -19,7 +20,7 @@ const styles = {
     color: '#0084A8',
     height: '7px',
   },
-  skillImage:{
+  skillImage: {
     verticalAlign: 'bottom',
   },
 }
@@ -40,29 +41,31 @@ export default class Skill extends React.Component {
     if (json && json.queue) {
       for (let idx in json.queue) {
         queue.push(json.queue[idx]);
-        let { finished_level, skill_id: { name }} = json.queue[idx];
+        let { finished_level, skill_id: { name } } = json.queue[idx];
         console.log('added', idx, name, finished_level)
         // store the level being trained to for later
-        if (trainLevels[name]){
+        if (trainLevels[name]) {
           console.log('update', name, finished_level)
           trainLevels[name].finish = finished_level;
         } else {
           // it only doesn't have this prop the first time
-          console.log('start is ', finished_level-1)
-          trainLevels[name] = {start: finished_level-1, finish: finished_level};
+          console.log('start is ', finished_level - 1)
+          trainLevels[name] = { start: finished_level - 1, finish: finished_level };
         }
         console.log('end iter', trainLevels[name])
       }
     }
     let groupedList = {};
-    if (json && json.skills){
+    if (json && json.skills) {
       for (let idx in json.skills) {
         let sk = json.skills[idx];
         let group = sk.skill_id.groupName;
-        if (!(group in groupedList)){
-          groupedList[group] = {};
+        if (!(group in groupedList)) {
+          groupedList[group] = { items: {}, collapsed: true, summary: { spTotal: 0, count: 0 } };
         };
-        groupedList[group][sk.skill_id.name] = sk.active_skill_level;
+        groupedList[group].items[sk.skill_id.name] = sk.active_skill_level;
+        groupedList[group].summary.spTotal += sk.skillpoints_in_skill;
+        groupedList[group].summary.count += 1;
       }
     }
     return { queue, groupedList, trainLevels };
@@ -99,7 +102,7 @@ export default class Skill extends React.Component {
       fullRange = endDate - startDate,
       soFar = today - startDate;
     let { start, finish } = this.state.trainLevels[skill_id.name];
-    if (finished_level !== finish){
+    if (finished_level !== finish) {
       return null;
     }
     this.skillQueueLinesShown += 1;
@@ -107,25 +110,24 @@ export default class Skill extends React.Component {
       <div style={styles.row} key={key}>
         <div style={lineStyle}>{skill_id.name}</div>
         <div style={lineStyle}>
-          <SkillLights currentLevel={start-1} trainLevel={finish} />
+          <SkillLights currentLevel={start - 1} trainLevel={finish} />
         </div>
         <div style={lineStyle}>{
           soFar > 0.0 ?
-            <progress style={styles.progress} value={soFar} max={fullRange}/> :
+            <progress style={styles.progress} value={soFar} max={fullRange} /> :
             null
-          }
+        }
         </div>
       </div>
     )
   }
 
-  skillLine(key, name, active_skill_level) {
+  skillLine(idx, name, active_skill_level) {
     let lineStyle =
-      (key % 2 === 0 ? styles.isOdd : {});
+      (idx % 2 === 0 ? styles.isOdd : {});
     lineStyle = { ...lineStyle, ...styles.cell };
-
     return (
-      <div style={styles.row} key={key}>
+      <div style={styles.row} key={name}>
         <div style={lineStyle}></div>
         <div style={lineStyle}>{name}</div>
         <div style={lineStyle}>
@@ -134,6 +136,12 @@ export default class Skill extends React.Component {
         </div>
       </div>
     )
+  }
+
+  toggleGroup = (e) => {
+    let updatedGroup = this.state.skillList[e];
+    updatedGroup.collapsed = ! updatedGroup.collapsed;
+    this.setState({skillList: {...this.state.skillList}})
   }
 
   render() {
@@ -150,24 +158,32 @@ export default class Skill extends React.Component {
             return this.skillQLine(idx, line)
           })}
         </div>
-        <hr/>
+        <hr />
         <div style={styles.table}>
           <div style={styles.header} key='header'>
             <div style={styles.cell}>GROUP</div>
             <div style={styles.cell}>SKILL</div>
             <div style={styles.cell}>LVL</div>
           </div>
-          {Object.keys(this.state.skillList).map((group) => {
-            console.log('group',this.state.skillList[group]);
+          {Object.keys(this.state.skillList).map((groupName) => {
+            let group = this.state.skillList[groupName];
             return (
               <React.Fragment>
-                <div style={{...styles.row, ...styles.folderHeader}} key={group}>
-                  <div style={styles.cell}>{group.toUpperCase()}</div>
-                  <div style={styles.cell}></div>
+                <div
+                  style={{ ...styles.row, ...styles.folderHeader }}
+                  key={groupName}
+                  onClick={this.toggleGroup.bind(this, groupName)}
+                  >
+                  <div style={styles.cell}>
+                    {!group.collapsed && <img src={expandedImg} alt="+"></img>}
+                    {group.collapsed && <img src={collapsedImg} alt="-"></img>}
+                    {' '+groupName.toUpperCase()} ({group.summary.count})
+                  </div>
+                  <div style={styles.cell}>{group.summary.spTotal} SP</div>
                   <div style={styles.cell}></div>
                 </div>
-                {Object.keys(this.state.skillList[group]).map((line, idx) => {
-                  return this.skillLine(idx,line, this.state.skillList[group][line])
+                {!(group.collapsed) && Object.keys(group.items).map((line, idx) => {
+                  return this.skillLine(idx, line, group.items[line])
                 })}
               </React.Fragment>
             )

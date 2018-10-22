@@ -35,7 +35,6 @@ export default class Bookmarks extends React.Component {
     if (Object.keys(info).length !== Object.keys(this.state.bookmarkList || {}).length) {
       console.log('loaded bms');
       Object.keys(info).map(key => {
-        debugger;
         if ('folder_id' in info[key]){
           // it's a folder
           newBmList[key] = info[key];
@@ -57,15 +56,16 @@ export default class Bookmarks extends React.Component {
     fetch.get();
   }
 
-  static bookmarkLine(key, idx, { item, location_id }) {
+  static bookmarkLine(key, idx, { item, label, location_id }) {
     let lineStyle =
       (idx % 2 === 0 ? styles.isOdd : {});
     lineStyle = { ...lineStyle, ...styles.cell };
     let location = `${location_id.regionName} > ${location_id.solarSystemName}`;
+    let displayName = (item || {}).typeName || label;
     return (
       <div style={styles.row} key={key}>
         <div style={lineStyle}></div>
-        <div style={lineStyle}>{(item || {}).typeName}</div>
+        <div style={lineStyle}>{displayName}</div>
         <div style={lineStyle}>{location}</div>
       </div>
     )

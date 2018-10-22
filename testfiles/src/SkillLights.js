@@ -62,7 +62,6 @@ class SkillSquare extends React.Component {
       ...(this.props.state === sqStates.trained ? styles.sqTrained : {} ),
       ...(this.props.state === sqStates.queued ? styles.sqQueued : {} ),
     }
-    console.log('square', style)
     return (
       <svg width={14} height={styles.square.height} style={{margin:'1px'}}>
         <rect
@@ -102,8 +101,6 @@ export default class SkillLights extends React.Component {
         states.push(sqStates.injected);
       }
     }
-    debugger;
-    console.log('lights', currentLevel, trainLevel, states)
 
     return (
       <div style={{...styles.both, ...styles.line}}>
