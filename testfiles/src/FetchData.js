@@ -18,25 +18,24 @@ export default class FetchData {
 
   get() {
     console.log(this.params);
-    fetch(
-      "https://ascee.droeftoeters.com/testfiles/Pullpage.php",
+    return fetch(
+      `https://ascee.droeftoeters.com/testfiles/Pullpage.php?${this.params}`,
       {
-        method: 'POST',
+        method: 'GET',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/x-www-form-urlencoded',
           'Access-Control-Allow-Origin': '*',
         },
         mode: 'no-cors',
-        body: this.params,
       })
-      .then(function(res){
+      .then(function (res) {
         console.log('response', res);
         // TODO: DEV server only
         if (res.type === "opaque") {
           console.log('opaque');
           // it's a CORS problem so we are on the dev server
-          switch(this.scope){
+          switch (this.scope) {
             case 'mail':
               return Mocks.mockMail;
             case 'wallet':
@@ -50,16 +49,6 @@ export default class FetchData {
           }
         };
         return res.json()
-      }.bind(this))
-      .then(
-        (result) => {
-          console.log('fetch last then', result);
-          (this.onLoaded || Function)(result);
-        },
-        (error) => {
-          console.log('error', error);
-          (this.onError || Function)();
-        }
-      )
+      }.bind(this));
   }
 }

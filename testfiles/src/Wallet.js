@@ -32,20 +32,18 @@ export default class Wallet extends React.Component {
     return list;
   }
 
-  onLoaded = data => {
-    let newList = Wallet.jsonToWalletList(data);
-    if (newList.length !== (this.state.walletList || []).length) {
-      this.setState({ walletList: newList })
-    }
-  }
-
   componentDidMount() {
-    let fetch = new FetchData(
+    new FetchData(
       { id: this.props.alt, scope: 'wallet' },
       this.onLoaded,
       this.onError
-    );
-    fetch.get();
+    ).get()
+      .then(data => {
+        let newList = Wallet.jsonToWalletList(data);
+        if (newList.length !== (this.state.walletList || []).length) {
+          this.setState({ walletList: newList })
+        }
+      });
   }
 
   static walletLine(key, { amount, balance, description, second_party_id, date }) {

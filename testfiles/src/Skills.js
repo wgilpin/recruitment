@@ -74,23 +74,21 @@ export default class Skill extends React.Component {
     return { queue, groupedList, trainLevels };
   }
 
-  onLoaded = data => {
-    let { queue, groupedList, trainLevels } = Skill.jsonToskillList(data);
-    if (queue.length !== (this.state.skillQueue || []).length) {
-      this.setState({ skillQueue: queue, trainLevels });
-    };
-    if (Object.keys(groupedList).length !== Object.keys(this.state.skillList || {}).length) {
-      this.setState({ skillList: groupedList });
-    };
-  }
-
   componentDidMount() {
-    let fetch = new FetchData(
+    new FetchData(
       { id: this.props.alt, scope: 'skill' },
       this.onLoaded,
       this.onError
-    );
-    fetch.get();
+    ).get()
+      .then(data => {
+        let { queue, groupedList, trainLevels } = Skill.jsonToskillList(data);
+        if (queue.length !== (this.state.skillQueue || []).length) {
+          this.setState({ skillQueue: queue, trainLevels });
+        };
+        if (Object.keys(groupedList).length !== Object.keys(this.state.skillList || {}).length) {
+          this.setState({ skillList: groupedList });
+        };
+      });
   }
 
   skillQueueLinesShown = 0;
@@ -143,8 +141,8 @@ export default class Skill extends React.Component {
 
   toggleGroup = (e) => {
     let updatedGroup = this.state.skillList[e];
-    updatedGroup.collapsed = ! updatedGroup.collapsed;
-    this.setState({skillList: {...this.state.skillList}})
+    updatedGroup.collapsed = !updatedGroup.collapsed;
+    this.setState({ skillList: { ...this.state.skillList } })
   }
 
   render() {
@@ -161,9 +159,9 @@ export default class Skill extends React.Component {
             return this.skillQLine(idx, line)
           })}
         </div>
-        <br/>
-        <br/>
-        <br/>
+        <br />
+        <br />
+        <br />
         <hr />
         <div style={styles.table}>
           <div style={styles.header} key='header'>
@@ -179,13 +177,13 @@ export default class Skill extends React.Component {
                   style={{ ...styles.row, ...styles.folderHeader }}
                   key={groupName}
                   onClick={this.toggleGroup.bind(this, groupName)}
-                  >
+                >
                   <div style={styles.cell}>
                     {!group.collapsed && <img src={expandedImg} alt="+"></img>}
                     {group.collapsed && <img src={collapsedImg} alt="-"></img>}
-                    {' '+groupName.toUpperCase()} ({group.summary.count})
+                    {' ' + groupName.toUpperCase()} ({group.summary.count})
                   </div>
-                  <div style={{...styles.cell, textAlign: 'right'}}>{(group.summary.spTotal.toLocaleString())} SP</div>
+                  <div style={{ ...styles.cell, textAlign: 'right' }}>{(group.summary.spTotal.toLocaleString())} SP</div>
                   <div style={styles.cell}></div>
                 </div>
                 {!(group.collapsed) && Object.keys(group.items).sort().map((line, idx) => {
