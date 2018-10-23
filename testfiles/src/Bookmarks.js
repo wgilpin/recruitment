@@ -57,10 +57,13 @@ export default class Bookmarks extends React.Component {
   }
 
   static bookmarkLine(key, idx, { item, label, location_id }) {
+    if (! location_id){
+      return null;
+    }
     let lineStyle =
       (idx % 2 === 0 ? styles.isOdd : {});
     lineStyle = { ...lineStyle, ...styles.cell };
-    let location = `${location_id.regionName} > ${location_id.solarSystemName}`;
+    let location = `${(location_id || {}).regionName} > ${(location_id || {}).solarSystemName}`;
     let displayName = (item || {}).typeName || label;
     return (
       <div style={styles.row} key={key}>
