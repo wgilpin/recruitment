@@ -37,7 +37,9 @@ export default class FetchData {
           // it's a CORS problem so we are on the dev server
           switch (this.scope) {
             case 'mail':
-              return Mocks.mockMail;
+              return this.params.search('param1') === -1 ? Mocks.mockMail : Mocks.mockMailBody;
+            case 'linkID':
+              return Mocks.mockLink;
             case 'wallet':
               return Mocks.mockWallet;
             case 'skill':

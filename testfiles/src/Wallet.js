@@ -35,8 +35,6 @@ export default class Wallet extends React.Component {
   componentDidMount() {
     new FetchData(
       { id: this.props.alt, scope: 'wallet' },
-      this.onLoaded,
-      this.onError
     ).get()
       .then(data => {
         let newList = Wallet.jsonToWalletList(data);

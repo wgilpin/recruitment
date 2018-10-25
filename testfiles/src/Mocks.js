@@ -1,4 +1,69 @@
 export default class Mocks {
+  static mockLink = {
+    "93215544":{
+      ID: 94443335,
+      type: 'character',
+      name: 'Runar Elshenar',
+      description: "lkdsijhf lsdkufhj wloisufghc owelieuufefgiuwh wloiedufh ",
+      corporation_id: {
+        ID: 98409330,
+        type: 'corporation',
+        name: 'Ascendance',
+        ticker: 'ASCEE',
+      },
+      alliance_id: {
+        ID: 1354830081,
+        type: 'alliance',
+        name: 'Goonswarm Federation',
+        corporation_id: '1344654522',
+        ticker: 'CONDI',
+      }
+    },
+    "299590276":{
+      ID: 299590276,
+      type: 'character',
+      name: 'Tyler Caderu',
+      description: "lkdsijhf lsdkufhj wloisufghc owelieuufefgiuwh wloiedufh ",
+      corporation_id: {
+        ID: 98409330,
+        type: 'corporation',
+        name: 'Ascendance',
+        ticker: 'ASCEE',
+      },
+      alliance_id: {
+        ID: 1354830081,
+        type: 'alliance',
+        name: 'Goonswarm Federation',
+        corporation_id: '1344654522',
+        ticker: 'CONDI',
+      }
+    },
+    "95685518":{
+      ID: 95685518,
+      type: 'character',
+      name: 'Major Sniper',
+      description: "lkdsijhf lsdkufhj wloisufghc owelieuufefgiuwh wloiedufh ",
+      corporation_id: {
+        ID: 98409330,
+        type: 'corporation',
+        name: 'Ascendance',
+        ticker: 'ASCEE',
+      },
+      alliance_id: {
+        ID: 1354830081,
+        type: 'alliance',
+        name: 'Goonswarm Federation',
+        corporation_id: '1344654522',
+        ticker: 'CONDI',
+      }
+    },
+    "30004759":{
+      solarSystemID: 30004759,
+      solarSystemName: '1DQ1-A',
+      regionName: 'Delve',
+    },
+  };
+  static mockMailBody = `"\u003Cfont size=\"12\" color=\"#bfffffff\"\u003EThank you for asking that question rather broadly. While we dont normally reply to all (i got your mail apologising and its all good) its a great question. \u003Cbr\u003E\u003Cbr\u003EThese guys we mail you about, are all scamming in 1DQ. Because normally we dont ever goon fuck our own members, we kinda take it for granted that all the contracts are legit in our home system. Recently a few guys have put neuts in there and are scamming our Goons by putting in contracts that are bad and amount to scamming to catch our unaware members. We just add their names so you can BLOCK them and hence you dont accidentally accept their contracts.\u003Cbr\u003E\u003Cbr\u003EPlease dont ever reply all or send corp mails.\u003Cbr\u003E\u003Cbr\u003E--------------------------------\u003Cbr\u003ERe: Another 1DQ scammer\u003Cbr\u003EFrom: \u003C\/font\u003E\u003Cfont size=\"12\" color=\"#ffffa600\"\u003E\u003Ca href=\"showinfo:1377\/\/93215544\"\u003EVictoria Udinof\u003C\/a\u003E\u003Cbr\u003E\u003C\/font\u003E\u003Cfont size=\"12\" color=\"#bfffffff\"\u003ESent: 2018.10.23 21:21\u003Cbr\u003ETo: Ascendance, \u003C\/font\u003E\u003Cfont size=\"12\" color=\"#ffffa600\"\u003E\u003Ca href=\"showinfo:1377\/\/299590276\"\u003EMajor Sniper\u003C\/a\u003E\u003C\/font\u003E\u003Cfont size=\"12\" color=\"#bfffffff\"\u003E,  \u003Cbr\u003E\u003Cbr\u003EThanks for the heads up, but I am not sure what it is we need to watch out for? Could you clarify?\u003Cbr\u003E\u003Cbr\u003EThanks.\u003Cbr\u003E\u003Cbr\u003E--------------------------------\u003Cbr\u003EAnother 1DQ scammer\u003Cbr\u003EFrom: \u003C\/font\u003E\u003Cfont size=\"12\" color=\"#ffffa600\"\u003E\u003Ca href=\"showinfo:1377\/\/299590276\"\u003EMajor Sniper\u003C\/a\u003E\u003Cbr\u003E\u003C\/font\u003E\u003Cfont size=\"12\" color=\"#bfffffff\"\u003ESent: 2018.10.17 13:54\u003Cbr\u003ETo: Ascendance, \u003Cbr\u003E\u003Cbr\u003EPlease block this idiot too  \u003C\/font\u003E\u003Cfont size=\"12\" color=\"#ffffa600\"\u003E\u003Ca href=\"showinfo:1373\/\/95685518\"\u003ETyler Caderu\u003C\/a\u003E\u003C\/font\u003E\u003Cfont size=\"12\" color=\"#bfffffff\"\u003E scamming in  \u003C\/font\u003E\u003Cfont size=\"12\" color=\"#ffffa600\"\u003E\u003Ca href=\"showinfo:5\/\/30004759\"\u003E1DQ1-A\u003C\/a\u003E\u003C\/font\u003E\u003Cfont size=\"12\" color=\"#bfffffff\"\u003E \u003Cbr\u003E\u003Cbr\u003EREAD YOUR CONTRACTS ALWAYS\u003C\/font\u003E"`;
   static mockSkills = {
     blacklist: [],
     queue:
