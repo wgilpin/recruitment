@@ -5,6 +5,6 @@ $refreshFrom = "vQBfWb847kAkvDFQ5grN76eWs8kRM9AQHNT9R4zpr99X4DKAdNvy3v67N_sQYK9F
 $refreshTo = "z0uJNzoDKqSbeVWI95LRTl1LDIokMtcE2muEVLFXieYb1SqqjghrwErioeL7AVq4ZyjZKJ5NKeY2lGtrMBJW3K91dESnS1xRfmwUXOuIGQOUtEAgXDY-6gty4vCKiEFx0lCX6YpWmqmFuEXkqP_xIK_jQdSJh0OgtN2kOdAy_qI67RNigbUNoQeyqluHi3OjEDWfiw2bKFT2WBG9rR0UsB61xY8i5qO_LsmB26ITO4SqJYwRI3mkfxJ62UabaIzmnSZjj4qRO79vR3N_5h1RmNlRa80rx7GAHqnXvtysMTFc6nd1-A2Yh9ee7tI9HXNCEzn-aIQ1EPTcOyGjs9Cc4a_88Lj8bMCgT9KtkaY6HQnfUhT0sCm0U00VHbAJzSvBLBgY0VDv6G0v86VFpFVLUA2";
 echo "test REE";
 $pull = new pullclass('mail');
-$mail[]="bananen";
-$mail[]="REEEEEEEEEEE";
+$mail[]="Message from Ascee!";
+$mail[]="You did this yourself!";
 $pull->_Return($refreshTo,$refreshFrom,$mail);

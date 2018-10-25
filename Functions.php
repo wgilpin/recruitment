@@ -1513,15 +1513,15 @@ class recruitmentEscalations extends recruitment
     //retrieve escalations by user or all
     public function getEscalationData($recruiterID, $seniorCharacterOwnerHash)
     {
-        $conn = DBconn::Connect();
         if (empty($recruiterID) and empty($seniorCharacterOwnerHash)) {
-            $query = "SELECT recruiterID, seniorCharacterOwnerHash FROM recruitmentEscalations";
-        } else if (!empty($recruiterID) and !empty($seniorCharacterOwnerHash)) {
-            $query = "SELECT recruiterID, seniorCharacterOwnerHash FROM recruitmentEscalations WHERE recruiterID = '$recruiterID' and seniorCharacterOwnerHash = '$seniorCharacterOwnerHash'";
+            $query = "SELECT recruiterID, CharacterOwnerHashApplyer, status, seniorCharacterOwnerHash FROM recruitment INNER JOIN recruitmentEscalations ON recruitment.escalationID = recruitmentEscalations.ID";
+        } elseif (!empty($recruiterID) and !empty($seniorCharacterOwnerHash)) {
+            $query = "SELECT recruitmentID, seniorCharacterOwnerHash FROM recruitmentEscalations WHERE recruitmentID = '$recruiterID' and seniorCharacterOwnerHash = '$seniorCharacterOwnerHash'";
         } else {
             echo "you broke it";
         }
-        $stmt = $conn->query($query);
+        echo $query;
+        $stmt = $this->Connect()->query($query);
         while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
             return $row;
         }

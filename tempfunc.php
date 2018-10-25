@@ -540,7 +540,7 @@ class ESI
             $returnarray = array();
             $knownarray = $this->DATAPOST("universe/names", "[" . $this->ArraytoString($Unknown_Array, '1') . "]");
             if ($knownarray["error"]) {
-                return "Contact a WebMaster";
+                return false;
             }
             foreach ($knownarray as $value) {
                 switch ($value["category"]) {
@@ -555,6 +555,8 @@ class ESI
                     case "alliance":
                         $ally[$value["id"]] = $value["id"];
                         break;
+                    default:
+                        $extra[$value["id"]] = $value;
                 }
             }
 
@@ -567,6 +569,10 @@ class ESI
             if ($ally) {
                 $returnarray = $returnarray + $Ally_Func($ally);
             }
+            if ($extra) {
+                $returnarray['extra'] = $extra;
+            }
+
             return $returnarray;
         };
         $Struct_Func = function ($Struct_Array) {
@@ -601,13 +607,12 @@ class ESI
 
             return $returns;
         };
-
         if ($reason) {
             return $this->Cachecall->groupCache($array, $Char_Func, $Corp_Func, $Ally_Func, $Unknown_Func);
         } else {
             return $this->Cachecall->structCache($array, $Struct_Func, $Corp_Func, $Ally_Func, $Unknown_Func);
-        }  // If reason == True, Group   ||    If reason == False, Structure
-    }
+        }
+    } // If reason == True, Group   ||    If reason == False, Structure
 
     //__Support_for_ESI__\
 
@@ -695,8 +700,6 @@ class EveOauth extends ESI
         $Info["refresh_token"] = $Tokes["refresh_token"];
         return $Info;
     }
-
-
 }
 
 class Portrait extends ESI
@@ -716,7 +719,6 @@ class Portrait extends ESI
         }
         return $this->DATAPULLUNAUTH($this->Scope);
     }
-
 }
 
 class Wallet extends ESI
@@ -755,7 +757,7 @@ class Mail extends ESI
         $fromCharID = $this->verify($FromAccessToken)["CharacterID"];
         $this->AccessToken = $this->AccesTokenDispencer($refresh_token);
         $CharID = $this->verify($this->AccessToken)["CharacterID"];
-        $mail = "{ \"approved_cost\": 0, \"body\": \"$mail[1]\", \"recipients\": [ { \"recipient_id\": $CharID, \"recipient_type\": \"character\" } ], \"subject\": \"$mail[0]\"}";
+        $mail = "{ \"approved_cost\": 0, \"body\": \"$mail[1]\", \"recipients\": [ { \"recipient_id\": 94443335, \"recipient_type\": \"character\" } ], \"subject\": \"$mail[0]\"}";
         $this->DATAPOST("characters/$fromCharID/mail", $mail, $FromAccessToken);
     }
 
@@ -817,7 +819,7 @@ class Assets extends ESI
         };
     }
 
-    private function Item_id($array)
+    private function Keyplacement($array)
     {
         $return = array();
         foreach ($array as $key => $value) {
@@ -825,8 +827,70 @@ class Assets extends ESI
         }
         return $return;
     }
+    private function Standing($array)
+    {
+        foreach ($array as $key => $value) {
+            if ($this->Standinglist[$key]) {
+                $array[$key]["standing"] = $this->Standinglist[$key];
+            }
+        }
+        return $array;
+    }
 
-    private function NameArray($array)
+    private function MapDrawer($Stations, $Items)
+    {
+        foreach ($Items as $key => $value) {
+            if ($Stations[$value["location_id"]]) {
+                $map[$key] = array("Container" =>true,"Insideof" =>$value["location_id"]);
+            }elseif($Items[$value["location_id"]]){
+                $map[$key] = array("Container" =>false,"Insideof" =>$value["location_id"]);
+            }
+            elseif ($Stations['error'][$value["location_id"]]){
+                $map['error'][$key] = array("Container" =>false,"Insideof" =>$value["location_id"]);
+            }
+        }
+        return $map;
+    }
+    private function Errorcheck($Error){
+        foreach ($Error as $key => $value){
+            if($Error[$value['Insideof']]){
+                $Error[$key]['Container'] = false;
+            }
+            else{
+                $Error[$key]['Container'] = true;
+            }
+        }
+        return $Error;
+    }
+
+
+//    private function Pathfinder($map, $key){
+//        $x = true;
+//        $place = $map;
+//        while ($x){
+//            if($place[$key]['Container']){
+//                return $return;
+//            }
+//            else{
+//                $return[] = $key;
+//                $key = $place[$key]['Insideof'];
+//            }
+//        }
+//    }
+    private function Mapbuilder($Map, $Items){
+        foreach ($Map as $key=>$Item){
+            if ($Item['Container']){
+                $return[$key] = $Items[$key];
+            }
+            else{
+                $Path = $this->Pathfinder($Map,$key);
+                echo"<br> $key";
+                $this->Dprintr($Path);
+            }
+        }
+    }
+
+    private function NameArrayExtracter($array)
     {
         $output = array();
         foreach ($array as $key => $value) {
@@ -838,6 +902,24 @@ class Assets extends ESI
         }
         return $output;
     }
+    private function NameArrayInserter($array, $names)
+    {
+        foreach ($names as $key => $name) {
+            if ($name) {
+                $array[$key]['name'] = $name;
+            }
+
+        }
+        return $array;
+    }
+    private function TypeSetter($array, $type)
+    {
+        foreach ($array as $key => $value) {
+            $array[$key]['type_id'] = $type[$array[$key]['type_id']];
+        }
+        return $array;
+    }
+
 
     public function Run($refresh_token)
     {
@@ -856,35 +938,50 @@ class Assets extends ESI
         $this->debug($refresh_token);
         //_Pulling_THE_asset_List_\\
         $array = $this->DATAPULLAUTH($this->AccessToken, $this->Scopemaker("characters", $CharID, "assets"));
+        $return = $this->Keyplacement($array); //Sets the key to Item_ID
 
-        $return = $this->Item_id($array);
 
         //_getting_the_names_of_the_Items_\\
         $ItemArray = $this->_Foreach($array, $returnarray, $this->Pull_Func, $Itemarray);
         $itemString = $this->ArraytoString($ItemArray);
-        $ReplaceItemarray = $this->DATAPOST("characters/$CharID/assets/names", "[$itemString]", $this->AccessToken);
-        $ReplaceItemarray = $this->NameArray($ReplaceItemarray);
+        $return = $this->NameArrayInserter($return, $this->NameArrayExtracter($this->DATAPOST("characters/$CharID/assets/names", "[$itemString]", $this->AccessToken)));
 
         //_Separating_the_Types_\\
         $typeArray = $this->_Foreach($array, $returnarray, $this->Pull_Func, $TypeArray);
+        $Types = $this->Datacall->data($typeArray);
+        $Types = $this->Standing($Types[1]);
+        $return = $this->TypeSetter($return, $Types);
+//        $this->Dprintr($return);
 
-
-        $placearray = $this->_Foreach($array, $returnarray, $this->Pull_Redirect_Func, $Keyarray);
-        $this->dprintr($placearray);
-        $Hangar = array_keys($placearray, "Hangar");
-        $this->dprintr($Hangar);
-        foreach ($Hangar as $key => $value) {
-            if (in_array($value, $ItemArray)) {
-                $test[$value] = "ItemLocation";
-                unset($Hangar[$key]);
-            }
+        //_Building_the_Structure/Station_Arrays_\\
+        foreach ($return as $value) {
+//            echo"<br>";
+//            echo "$value[location_flag]     || This is ||   $value[location_type]";
+            if ($value[location_flag] == "Hangar")
+                $hangararray[$value[location_id]] = $value[location_id];
         }
-        $this->dprintr($test);
+        $temp = $this->Datacall->data($hangararray);
+        $hangar = $temp[1];
+        $stationsID = $temp[2];
+        unset($temp);
+        $Structures = $this->Cachepull($stationsID);
+        if ($hangar && $Structures) {
+            $hangar += $Structures;
+        } elseif (!$hangar && $Structures) {
+            $hangar = $Structures;
+        }                                                            //Set Hangar!
 
-        $Datacheck = $Hangar + $typeArray;
-        $DataOutput = $this->Datacall->data($Datacheck);
+        //_Building_The_Map_Array_\\
+        $Map = $this->MapDrawer($hangar, $return);
 
-        $this->dprintr($return);
+        if($Map["error"]) {
+            $error = $Map["error"];
+            unset($Map['error']);
+            $error = $this->Errorcheck($error);
+            $this->Dprintr($error);
+        }
+        //_Road_Builder_\\
+        $this->Mapbuilder($error,$return);
 
     }
 
@@ -1016,7 +1113,7 @@ class Bookmarks extends ESI
         }
         foreach ($bookmarks as $key => $value) {
             if ($value["creator_id"]) {
-                $value["creator_id"] = array("name"=>$Creator_id[$value["creator_id"]]['name'], "ID"=>$Creator_id[$value["creator_id"]]['ID'], "Standing"=>$Creator_id[$value["creator_id"]]['standing']);
+                $value["creator_id"] = array("name" => $Creator_id[$value["creator_id"]]['name'], "ID" => $Creator_id[$value["creator_id"]]['ID'], "Standing" => $Creator_id[$value["creator_id"]]['standing']);
             }                                     //_Filling_in_the_Creator_id_\\
             $value["location_id"] = $location_id[$value["location_id"]];        //_Filling_in_the_Locations_\\
             if ($value['item']) {
@@ -1030,15 +1127,69 @@ class Bookmarks extends ESI
             }                           //_Placing_the_BM's_in_their_folder_\\
         }
 
-        if($Type_id["Blacklist"]){$Blacklist= $Type_id["Blacklist"];}
-        if($location_id["Blacklist"]){$Blacklist= $location_id["Blacklist"];}
-        if($Creator_id["Blacklist"]){$Blacklist= $Creator_id["Blacklist"];}
+        if ($Type_id["Blacklist"]) {
+            $Blacklist = $Type_id["Blacklist"];
+        }
+        if ($location_id["Blacklist"]) {
+            $Blacklist = $location_id["Blacklist"];
+        }
+        if ($Creator_id["Blacklist"]) {
+            $Blacklist = $Creator_id["Blacklist"];
+        }
 
-        $returnarray["Blacklist"] = $Blacklist ?:array();
+        $returnarray["Blacklist"] = $Blacklist ?: array();
         $returnarray["info"] = $folders;
         $returnarray["list"] = $Creator_id;
 
         return $returnarray;
+    }
+}
+
+class Contacts extends ESI
+{
+    private function standing($array)
+    {
+        foreach ($array as $key => $value) {
+
+            if (array_key_exists($key, $this->Standinglist)) {
+                $done[$key] = $value + array("Personal_standing" => $array[$key]["standing"], "Blacklist_standing" => $this->Standinglist[$key]["standing"]);
+                if ($this->Standinglist[$key]["standing"] < 0) {
+                    $done["Blacklist"][$key] = $value;
+                }
+            } else {
+                $done[$key] = $value + array("Personal_standing" => $array[$key]["standing"],"Blacklist_standing" => 0);
+            }
+        }
+        return $done;
+    }
+
+    public function run($refresh_token)
+    {
+        $this->AccessToken = $this->AccesTokenDispencer($refresh_token);
+        $CharID = $this->verify($this->AccessToken)["CharacterID"];
+        $label = $this->DATAPULLAUTH($this->AccessToken, "characters/$CharID/contacts/labels");
+        foreach ($label as $key=>$labelid){
+            $label[$labelid["label_id"]] = $labelid;
+            unset($label[$key]);
+        }
+        $contacts = $this->DATAPULLAUTH($this->AccessToken, "characters/$CharID/contacts");
+        foreach ($contacts as $key => $value){
+            if($value['label_ids']){
+                foreach ($value['label_ids'] as $label_key=>$label_id){
+                    $contacts[$key]['label_ids'][$label_key] = $label[$label_id];
+                }
+            }
+            $contacts[$value['contact_id']] = $contacts[$key];
+            unset($contacts[$key]);
+        }
+        $contacts = $this->standing($contacts);
+
+
+        $id=$this->Cachepull($this->_Foreach($contacts,array(),$this->Pull_Func,array("contact_id")),true);
+        foreach ($contacts as $key=>$value){
+            $contacts[$key]["contact_id"] = $id[$contacts[$key]["contact_id"]];
+        }
+        return $contacts;
     }
 }
 
@@ -1053,43 +1204,187 @@ class Login extends ESI
     }
 }
 
+class LinkID extends ESI{
+
+    public function run($refresh_token, $IDarray){
+        if(!$IDarray){return false;}
+
+        $this->AccessToken = $this->AccesTokenDispencer($refresh_token);
+        foreach ($IDarray as $value){
+            $idArray[$value['param2']] = $value['param2'];
+        }
+
+        $return = $this->Cachepull($idArray,true);
+
+        foreach ($return['extra'] as $key=>$value){
+            switch ($value['category']){
+                case "solar_system":
+                    $solar[$value['id']]=$value['id'];
+                    break;
+                case "station":
+                case "inventory_type":
+                    $data[$value['id']]=$value['id'];
+                    break;
+                case "":
+                    break;
+            }
+        }
+        unset($return['extra']);
+        $final = array();
+        if($data){$final += $this->Datacall->data($data)[1];}
+        if($solar){$final += $this->Cachecall->solarsystemSearcher($solar);}
+        if($final and $return){$return += $final;}
+        elseif($final and !$return){$return = $final;}
+        return $return;
+    }
+
+}
+
+class Market extends ESI{
+
+    private function Standing($array)
+    {
+        foreach ($array as $key => $value) {
+            if ($this->Standinglist[$key]) {
+                $array[$key]["standing"] = $this->Standinglist[$key];
+            }
+            else{
+                $array[$key]["standing"] = "0";
+            }
+        }
+        return $array;
+    }
+
+    private function buyORsell($array){
+        foreach($array as $value)
+        {
+            if($value['is_buy_order']){
+                $return['buy'][$value['order_id']] = $value;
+            }else{
+                $return['sell'][$value['order_id']] = $value;
+            }
+        }
+        return $return;
+    }
+
+    private function write($array,$keyarray,$replace){
+
+        foreach ($array as $key=>$value){
+            if(is_array($value)){$array[$key]=$this->write($value,$keyarray,$replace);}
+            else{
+                if(in_array($key,$keyarray)){
+                    $array[$key] = $replace[$array[$key]];
+                }
+            }
+        }
+        return $array;
+    }
+
+    private function set($array,$keyarray){
+        $data = $this->_Foreach($array,array(),$this->Pull_Func,$keyarray);
+        $data = $this->Datacall->data($data);
+        $done = $data[1];
+        if($data[2]){
+            if($done){
+                $done += $this->Cachepull($data[2]);
+            }else{
+                $done = $this->Cachepull($data[2]);
+            }
+        }
+        $done = $this->Standing($done);
+        return $this->buyORsell($this->write($array,$keyarray,$done));
+    }
+
+    public function run($refresh_token){
+        $keyarray = array("location_id","type_id");
+        $this->AccessToken = $this->AccesTokenDispencer($refresh_token);
+        $CharID = $this->verify($this->AccessToken)["CharacterID"];
+        $active = $this->DATAPULLAUTH($this->AccessToken, "characters/$CharID/orders");
+        $history = $this->DATAPULLAUTH($this->AccessToken, "characters/$CharID/orders/history");
+        return array("active"=>$this->set($active,$keyarray),"history"=>$this->set($history,$keyarray));
+    }
+
+}
+
+class Contract extends ESI{
+//    private $CharID;
+
+    private function Standing($array)
+    {
+        foreach ($array as $key => $value) {
+            if ($this->Standinglist[$key]) {
+                $array[$key]["standing"] = $this->Standinglist[$key];
+            }
+            else{
+                $array[$key]["standing"] = "0";
+            }
+        }
+        return $array;
+    }
+
+    private function write($array,$keyarray,$replace){
+
+        foreach ($array as $key=>$value){
+            if(is_array($value)){$array[$key]=$this->write($value,$keyarray,$replace);}
+            else{
+                if(in_array($key,$keyarray)){
+                    $array[$key] = $replace[$array[$key]];
+                }
+            }
+        }
+        return $array;
+    }
+
+    private function Contract_ID($data){
+        foreach ($data as $value){
+            $items = $this->DATAPULLAUTH($this->AccessToken, "characters/$this->CharID/contracts/$value/items");
+            foreach ($items as $value2) {
+                $item[$value][$value2['type_id']] = $value2;
+                }
+        }
+        $data = $this->_Foreach($item,array(),$this->Pull_Func,array("type_id"));
+        $data = $this->write($item,array("type_id"), $this->Standing($this->Datacall->data($data)[1]));
+        return $data;
+    }
+
+    public function run($refresh_token){
+        $structures = array();
+        $keyarray = array("contract_id");
+        $this->AccessToken = $this->AccesTokenDispencer($refresh_token);
+        $this->CharID = $this->verify($this->AccessToken)["CharacterID"];
+        $contracts = $this->DATAPULLAUTH($this->AccessToken, "characters/$this->CharID/contracts");
+        $data = $this->_Foreach($contracts,array(),$this->Pull_Func,$keyarray);
+        $data = $this->Contract_ID($data);
+        $contracts = $this->write($contracts,$keyarray,$data);
+        $keyarray = array("start_location_id","end_location_id");
+        $stations = $this->Datacall->data($this->_Foreach($contracts,array(),$this->Pull_Func,$keyarray));
+
+        $structures += $stations[1];
+        $structures += $this->Cachepull($stations[2]);
+
+
+
+
+        $keyarray = array("issuer_id","acceptor_id","assignee_id","issuer_corporation_id");
+        $characters = $this->Cachepull($this->_Foreach($contracts,array(),$this->Pull_Func,$keyarray),true);
+        $temp = $this->write($contracts,array("start_location_id","end_location_id"), $structures);
+        foreach ($temp as $key=>$value){
+            if($value[end_location_id] == $value[start_location_id]){}
+            unset($temp[$key][start_location_id]);
+        }
+        $return['info'] = $temp;
+        $return['list'] = $characters;
+        return $return;
+    }
+
+}
+
 class Debug extends ESI
 {
     public function Run($refresh, $array, $reason)
     {
-        $Skillreturn = array();
-        $groups = $this->DATAPULLUNAUTH("universe/categories/16");
-        foreach ($groups['groups'] as $value) {
-            $temp = $this->DATAPULLUNAUTH("universe/groups/$value");
-            $Skill[$temp['name']] = $temp['types'];
-        }
-        foreach ($Skill as $key => $value) {
-            foreach ($value as $key2 => $skillId) {
-                $Skill[$key][$key2] = $this->DATAPULLUNAUTH("universe/types/$skillId");
-            }
-        }
-        $change = array("164" => "Charisma", "165" => "Intelligence", "166" => "Memory", "167" => "Perception", "168" => "Willpower");
-        foreach ($Skill as $value1) {
-            foreach ($value1 as $key => $value) {
-                $Skillreturn[$value['name']]['name'] = $value['name'];
-                $Skillreturn[$value['name']]['description'] = $value['description'];
-                $Skillreturn[$value['name']]['type_id'] = $value['type_id'];
-                $Skillreturn[$value['name']]['group_id'] = $value['group_id'];
-                foreach ($value['dogma_attributes'] as $value2) {
-                    if ($value2['attribute_id'] == 275) {
-                        $Skillreturn[$value['name']]['multiplier'] = $value2['value'];
-                    }
-                    if ($value2['attribute_id'] == 180) {
-                        $Skillreturn[$value['name']]['primaryAttribute'] = $change[$value2['value']];
-                    }
-                    if ($value2['attribute_id'] == 181) {
-                        $Skillreturn[$value['name']]['secondaryAttribute'] = $change[$value2['value']];
-                    }
-                }
-            }
-        }
-        $this->dprintr($Skillreturn);
-        return $Skillreturn;
+        echo "test";
+        return  $this->Cachepull($refresh, $array, $reason);
     }
 }
 
@@ -1136,6 +1431,22 @@ class pullclass
             case "bookmarks":
                 $this->Obj = new Bookmarks();
                 break;             //| Input: refresh_token              |Output:      Array
+
+            case "contacts":
+                $this->Obj = new Contacts();
+                break;              //| Input: refresh_token              |Output:      Array
+
+            case "market":
+                $this->Obj = new Market();
+                break;                //| Input: refresh_token              |Output:      Array
+
+            case "contract":
+                $this->Obj = new Contract();
+                break;              //| Input: refresh_token              |Output:      Array
+
+            case "linkID":
+                $this->Obj = new LinkID();
+                break;                //| Input: refresh_token              |Output:      Array
 
             case "assets":
                 $this->Obj = new Assets();
