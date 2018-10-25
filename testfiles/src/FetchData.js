@@ -30,7 +30,6 @@ export default class FetchData {
         mode: 'no-cors',
       })
       .then(function (res) {
-        console.log('response', res);
         // TODO: DEV server only
         if (res.type === "opaque") {
           console.log('opaque');
