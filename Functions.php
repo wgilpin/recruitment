@@ -398,16 +398,25 @@ class localEveCache extends localEveDB
         }
 
         //unknown
+        $extra = array();
         foreach ($array["unknown"] as $key => $value) {
             $unknownInfo = $unknownFunc(array($key => $key), $charFunc, $corpFunc, $allyFunc);
-            $array["validID"][$key] = $unknownInfo[$key];
-            $array["upload"][$key] = $unknownInfo[$key];
+
+            if ($unknownInfo['extra']) {
+                $extra += $unknownInfo['extra'];
+            } else {
+                $array["validID"][$key] = $unknownInfo[$key];
+                $array["upload"][$key] = $unknownInfo[$key];
+            }
             unset($array["unknown"][$key]);
         }
         if (empty($array["unknown"])) {
             unset($array["unknown"]);
         }
-        $returnArray = $this->IDsplitter($array, $charFunc, $corpFunc, $allyFunc, $unknownFunc);
+        if($array){$returnArray = $this->IDsplitter($array, $charFunc, $corpFunc, $allyFunc, $unknownFunc);}
+        if($extra){
+            $returnArray["validID"]['extra'] = $extra;
+        }
         return $returnArray;
     }
 
@@ -696,7 +705,8 @@ class localEveCache extends localEveDB
 
 class skillDB extends localEveDB
 {
-    private function skillsSelectQueryMaker($array){
+    private function skillsSelectQueryMaker($array)
+    {
         $query = "";
         foreach ($array as $key => $value) {
             $query = $query . " SELECT type_id, name, description, multiplier, invGroups.groupName, primaryAttribute, secondaryAttribute FROM skills INNER JOIN invGroups ON skills.group_id = invGroups.groupID WHERE type_id = '$key' UNION ALL";
@@ -707,11 +717,11 @@ class skillDB extends localEveDB
 
     public function skillRun($array)
     {
-        
+
         $query = $this->skillsSelectQueryMaker($array);
         $stmt = $this->Connect()->query($query);
         while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
-            foreach ($row as $key=> $value){
+            foreach ($row as $key => $value) {
                 $row[$value['type_id']] = $value;
                 unset($row[$key]);
             }
@@ -1503,15 +1513,15 @@ class recruitmentEscalations extends recruitment
     //retrieve escalations by user or all
     public function getEscalationData($recruiterID, $seniorCharacterOwnerHash)
     {
-        $conn = DBconn::Connect();
         if (empty($recruiterID) and empty($seniorCharacterOwnerHash)) {
-            $query = "SELECT recruiterID, seniorCharacterOwnerHash FROM recruitmentEscalations";
-        } else if (!empty($recruiterID) and !empty($seniorCharacterOwnerHash)) {
-            $query = "SELECT recruiterID, seniorCharacterOwnerHash FROM recruitmentEscalations WHERE recruiterID = '$recruiterID' and seniorCharacterOwnerHash = '$seniorCharacterOwnerHash'";
+            $query = "SELECT recruiterID, CharacterOwnerHashApplyer, status, seniorCharacterOwnerHash FROM recruitment INNER JOIN recruitmentEscalations ON recruitment.escalationID = recruitmentEscalations.ID";
+        } elseif (!empty($recruiterID) and !empty($seniorCharacterOwnerHash)) {
+            $query = "SELECT recruitmentID, seniorCharacterOwnerHash FROM recruitmentEscalations WHERE recruitmentID = '$recruiterID' and seniorCharacterOwnerHash = '$seniorCharacterOwnerHash'";
         } else {
             echo "you broke it";
         }
-        $stmt = $conn->query($query);
+        echo $query;
+        $stmt = $this->Connect()->query($query);
         while ($row = $stmt->fetchAll(PDO::FETCH_ASSOC)) {
             return $row;
         }

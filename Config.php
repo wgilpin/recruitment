@@ -3,6 +3,9 @@
 //_________________________________________________________________________________________________________\\
 //EVE RELATED INFORMATION
 
+//Website URL
+$Url = "ascee.droeftoeters.com";
+
 //Client ID Puller
 $Client_ID = "da1c48bb9a65422e9ed3dd0ff86afa10";
 //Client password Puller
