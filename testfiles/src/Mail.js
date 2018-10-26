@@ -100,6 +100,9 @@ export default class Mail extends React.Component {
           return new FetchData({ scope: 'linkID', id: this.props.alt, param1: encodedList }).get();
         })
         .then((links) => {
+          if (!links){
+            return body;
+          };
           let markup;
           Object.keys(links).map(id => {
             let lookupRegex = new RegExp(`${id}">([\\w\\s]+)<`, 'g');

@@ -1206,7 +1206,12 @@ class Login extends ESI
 
 class LinkID extends ESI{
 
-    public function run($refresh_token, $IDarray){
+
+    public function run($refresh_token, $encodedstring){
+
+        $IDarray= json_decode(urldecode(urldecode($encodedstring)),true);
+
+
         if(!$IDarray){return false;}
 
         $this->AccessToken = $this->AccesTokenDispencer($refresh_token);
