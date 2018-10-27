@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 const propTypes = {
   src: PropTypes.string,
   onClick: PropTypes.func,
-  id: PropTypes.string,
+  name: PropTypes.string,
   size: PropTypes.number,
 };
 
@@ -12,7 +12,7 @@ export default class RoundImage extends React.Component<Props> {
   handleClick = () => {
     if (this.props.onClick){
       console.log('round click')
-      this.props.onClick(this.props.id);
+      this.props.onClick(this.props.name);
     }
   }
 

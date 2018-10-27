@@ -6,6 +6,7 @@ import Mail from './Mail';
 import Skills from './Skills';
 import Bookmarks from './Bookmarks';
 import Contacts from './Contacts';
+import Contracts from './Contracts';
 
 const styles = {
   outer: {
@@ -74,6 +75,8 @@ export default class Evidence extends React.Component {
               <Bookmarks style={styles.tabBody} alt={this.state.currentAlt}></Bookmarks>}
             {(active === 'contacts') &&
               <Contacts style={styles.tabBody} alt={this.state.currentAlt}></Contacts>}
+            {(active === 'contracts') &&
+              <Contracts style={styles.tabBody} alt={this.state.currentAlt}></Contracts>}
           </div>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import Mocks from "./Mocks";
 import MockContacts from './mocks/MockContacts'
+import MockContracts from './mocks/MockContracts'
 
 export default class FetchData {
   constructor(params, onLoaded, onError) {
@@ -48,6 +49,8 @@ export default class FetchData {
               return Mocks.mockBookmarks;
             case 'contacts':
               return MockContacts.mock;
+              case 'contracts':
+              return MockContracts.mock;
             default:
               return null;
           }
