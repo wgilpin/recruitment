@@ -5,6 +5,7 @@ import Wallet from './Wallet';
 import Mail from './Mail';
 import Skills from './Skills';
 import Bookmarks from './Bookmarks';
+import Contacts from './Contacts';
 
 const styles = {
   outer: {
@@ -60,7 +61,7 @@ export default class Evidence extends React.Component {
         </div>
         <div style={styles.right} >
           <div style={styles.tabHeader}>
-            <TabsHeader onTabChange={this.changeTab}/>
+            <TabsHeader onTabChange={this.changeTab} />
           </div>
           <div style={styles.tabBody}>
             {(active === 'wallet') &&
@@ -71,6 +72,8 @@ export default class Evidence extends React.Component {
               <Skills style={styles.tabBody} alt={this.state.currentAlt}></Skills>}
             {(active === 'bookmarks') &&
               <Bookmarks style={styles.tabBody} alt={this.state.currentAlt}></Bookmarks>}
+            {(active === 'contacts') &&
+              <Contacts style={styles.tabBody} alt={this.state.currentAlt}></Contacts>}
           </div>
         </div>
       </div>

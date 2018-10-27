@@ -51,7 +51,7 @@ export default class TabsHeader extends React.Component {
     return (
       <div style={headerStyle.div}>
         <RoundImage style={{gridColumn: 2}} size={40} src={walletImg} onClick={this.showTab} id="wallet"></RoundImage>
-        <RoundImage style={{gridColumn: 3}} size={40} src={assetsImg} onClick={this.showTab} id="assets"></RoundImage>
+        <RoundImage style={{gridColumn: 3}} size={40} src={assetsImg} onClick={this.showTab} id="contacts"></RoundImage>
         <RoundImage style={{gridColumn: 4}} size={40} src={skillsImg} onClick={this.showTab} id='skills'></RoundImage>
         <RoundImage style={{gridColumn: 5}} size={40} src={bookmarkImg} onClick={this.showTab} id='bookmarks'></RoundImage>
         <RoundImage style={{gridColumn: 6}} size={40} src={blueprintImg} onClick={this.showTab} id='blueprints'></RoundImage>

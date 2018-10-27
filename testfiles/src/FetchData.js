@@ -1,4 +1,5 @@
 import Mocks from "./Mocks";
+import MockContacts from './mocks/MockContacts'
 
 export default class FetchData {
   constructor(params, onLoaded, onError) {
@@ -45,6 +46,8 @@ export default class FetchData {
               return Mocks.mockSkills;
             case 'bookmarks':
               return Mocks.mockBookmarks;
+            case 'contacts':
+              return MockContacts.mock;
             default:
               return null;
           }
