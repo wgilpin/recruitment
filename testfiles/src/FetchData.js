@@ -49,7 +49,7 @@ export default class FetchData {
               return Mocks.mockBookmarks;
             case 'contacts':
               return MockContacts.mock;
-              case 'contracts':
+              case 'contract':
               return MockContracts.mock;
             default:
               return null;

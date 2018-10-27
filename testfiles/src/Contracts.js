@@ -16,7 +16,7 @@ export default class Contracts extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      scope: 'contracts',
+      scope: 'contract',
       contracts: {},
       people: {},
     };
