@@ -5,7 +5,7 @@
 version: 2
 jobs:
   build:
-    working_directory ~/testfiles
+    working_directory: ~/testfiles
     docker:
       # specify the version you desire here
       - image: circleci/node:7.10
