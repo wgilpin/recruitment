@@ -1,3 +1,5 @@
+/* eslint-disable no-useless-escape */
+
 export default class Mocks {
   static mockLink = {
     "93215544":{
