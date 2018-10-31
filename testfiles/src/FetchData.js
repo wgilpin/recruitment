@@ -21,7 +21,7 @@ export default class FetchData {
   get() {
     console.log(this.params);
     return fetch(
-      `https://ascee.droeftoeters.com/testfiles/Pullpage.php?${this.params}`,
+      `https://ascee.droeftoeters.com/backend/Pullpages/Evidence.php?${this.params}`,
       {
         method: 'GET',
         headers: {
