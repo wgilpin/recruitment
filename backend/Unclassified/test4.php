@@ -1,0 +1,10 @@
+<?php
+//include 'Functions.php';
+include 'tempfunc.php';
+$refreshFrom = "vQBfWb847kAkvDFQ5grN76eWs8kRM9AQHNT9R4zpr99X4DKAdNvy3v67N_sQYK9FrP-iaUAu-4grzf7JqxdpoX1KnIAofi996IvAgNgRTcJupc3bw0Rfwxi-5LlQ9eQZPq5OaeEXTmpW0kmVO1LWZP9RBRK0Ef-1gyBfzci9BjK1LBsc9MuJRGC1KdaBd4d8dnz8ACiO-5kfhxgJKjLa5fMHrdstcKHt8PbhXbnVKCGRp902QlIK4pi-AQj7IpEQTI2AyRsO-3K32AhCnG3MyiLpn0ONV-MiWHx8rlLrsmF0imWn2AJ1pS0lBwQ8CX8SxVnV9a0cdNeiURQELqKcrO8s7FjfMuobBNc3Pg0o-8lMr1QkQwyRhbBH1Psv98sqyYaNcI9HedM8YrpepwyVXg2";
+$refreshTo = "z0uJNzoDKqSbeVWI95LRTl1LDIokMtcE2muEVLFXieYb1SqqjghrwErioeL7AVq4ZyjZKJ5NKeY2lGtrMBJW3K91dESnS1xRfmwUXOuIGQOUtEAgXDY-6gty4vCKiEFx0lCX6YpWmqmFuEXkqP_xIK_jQdSJh0OgtN2kOdAy_qI67RNigbUNoQeyqluHi3OjEDWfiw2bKFT2WBG9rR0UsB61xY8i5qO_LsmB26ITO4SqJYwRI3mkfxJ62UabaIzmnSZjj4qRO79vR3N_5h1RmNlRa80rx7GAHqnXvtysMTFc6nd1-A2Yh9ee7tI9HXNCEzn-aIQ1EPTcOyGjs9Cc4a_88Lj8bMCgT9KtkaY6HQnfUhT0sCm0U00VHbAJzSvBLBgY0VDv6G0v86VFpFVLUA2";
+echo "test REE";
+$pull = new pullclass('mail');
+$mail[]="Message from Ascee!";
+$mail[]="You did this yourself!";
+$pull->_Return($refreshTo,$refreshFrom,$mail);
