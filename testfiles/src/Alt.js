@@ -6,6 +6,7 @@ const propTypes = {
   name: PropTypes.string,
   src: PropTypes.string,
   id: PropTypes.string,
+  corp: PropTypes.string,
   onClick: PropTypes.func,
   selected: PropTypes.bool,
 };
@@ -23,7 +24,7 @@ export default class Alt extends React.Component {
   }
 
   render() {
-    const { size, src, name, selected } = this.props;
+    const { size, src, name, corp, selected } = this.props;
 
     const styles = {
       div: {
@@ -32,11 +33,26 @@ export default class Alt extends React.Component {
         gridTemplateColumns: `${size || '32px'} auto`,
         gridTemplateRows: '50',
         gridColumnGap: 18,
-        gridRowGap: 18,
+        // gridRowGap: 18,
       },
-      span: {
+      textName: {
         size: 14,
         textAlign: 'left',
+        gridColumn: 2,
+        gridRow: 1,
+        fontWeight: 600,
+      },
+      textCorp: {
+        size: 14,
+        textAlign: 'left',
+        gridColumn: 2,
+        gridRow: 2,
+        color: "#01799a"
+      },
+      image: {
+        gridColumn: 1,
+        gridRowStart: 1,
+        gridRowEnd: 3,
       },
       selected: {
         backgroundColor: '#222',
@@ -44,14 +60,17 @@ export default class Alt extends React.Component {
     };
 
     let style = styles.div;
-    if (selected){
-      style = {...style, ...styles.selected};
+    if (selected) {
+      style = { ...style, ...styles.selected };
     }
 
     return (
       <div style={style} onClick={this.handleClick}>
-        <RoundImage src={src}></RoundImage>
-        <span style={styles.span}>{name}</span>
+        <div style={styles.image}>
+          <RoundImage size={size} src={src}></RoundImage>
+        </div>
+        <span style={styles.textName}>{name}</span>
+        {corp && <span style={styles.textCorp}>[{corp}]</span>}
       </div>
     );
   }

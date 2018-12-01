@@ -1,5 +1,18 @@
 import React from 'react';
 
+const styles = {
+  outer: {
+    overflow: "hidden",
+    borderBottomWidth: "1px",
+    borderBottomStyle: "solid",
+    borderBottomColour: "#ccc",
+  },
+  inner: {
+    margin: "0 auto",
+    width: "95%",
+  },
+}
+
 export default class Tab extends React.Component {
   constructor(props) {
     super(props);
@@ -8,9 +21,11 @@ export default class Tab extends React.Component {
 
   render() {
     return (
-      <React.Fragment>
-
-      </React.Fragment>
+      <div style={styles.outer}>
+        <div style={styles.inner}>
+          {this.props.children}
+        </div>
+      </div>
     );
   }
 }
